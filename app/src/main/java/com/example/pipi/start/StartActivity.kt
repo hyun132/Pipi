@@ -7,11 +7,13 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -31,19 +33,40 @@ class StartActivity : AppCompatActivity() {
                     .padding(16.dp)
                     .fillMaxWidth()
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
-                drawOnBoardingImage()
+                Image(
+                    painterResource(id = R.drawable.ic_small_logo),
+                    contentDescription = "small logo",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
+                        .height(56.dp)
+                        .padding(16.dp)
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+                drawOnBoardingImage(
+                    Modifier
+                        .height(168.dp)
+                        .width(168.dp)
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
+                )
                 Spacer(modifier = Modifier.height(20.dp))
                 drawOnBoardingText("모두의 건강을 보다 ", "철저하게")
                 drawOnBoardingText("모두의 건강을 보다 ", "섬세하게")
                 drawOnBoardingText("모두의 건강을 보다 ", "쉽게")
-                Spacer(modifier = Modifier.height(54.dp))
+                Spacer(modifier = Modifier.height(66.dp))
                 drawDefaultButton(
                     colorResource(R.color.main_purple),
-                    "트레이너로 시작하기"
-                ) { moveMainActivity() }
+                    text = "트레이너로 시작하기",
+                    onClick = { moveMainActivity() },
+                    isEnabled = true
+                )
                 Spacer(modifier = Modifier.height(15.dp))
-                drawDefaultButton(Color.Black, "일반회원으로 시작하기") { moveMainActivity() }
+                drawDefaultButton(
+                    Color.Black,
+                    "일반회원으로 시작하기",
+                    isEnabled = true,
+                    onClick = { moveMainActivity() })
             }
         }
     }
@@ -57,20 +80,22 @@ class StartActivity : AppCompatActivity() {
 }
 
 @Composable
-fun drawOnBoardingImage() {
+fun drawOnBoardingImage(modifier: Modifier) {
     Image(
         painterResource(R.drawable.onboarding), contentDescription = "onbarding Image",
-        Modifier
-            .width(343.dp)
-            .height(343.dp)
+        modifier
     )
 }
 
 @Composable
 fun drawOnBoardingText(plainText: String, boldText: String) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-        Text(text = plainText, fontFamily = appFontFamily)
-        Text(text = boldText, fontFamily = appFontFamily, fontWeight = FontWeight.W700)
+        Text(text = plainText, style = MaterialTheme.typography.subtitle1)
+        Text(
+            text = boldText,
+            style = MaterialTheme.typography.subtitle2,
+            fontWeight = FontWeight(700)
+        )
     }
 }
 
@@ -83,12 +108,27 @@ fun DefaultPreview() {
             .padding(16.dp)
             .fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        drawOnBoardingImage()
+        drawOnBoardingImage(
+            Modifier
+                .height(168.dp)
+                .width(168.dp)
+                .fillMaxWidth()
+        )
         drawOnBoardingText("모두의 건강을 보다 ", "철저하게")
         drawOnBoardingText("모두의 건강을 보다 ", "섬세하게")
         drawOnBoardingText("모두의 건강을 보다 ", "쉽게")
     }
     Spacer(modifier = Modifier.height(20.dp))
-    drawDefaultButton(colorResource(R.color.main_purple), "트레이너로 시작하기") { }
-    drawDefaultButton(Color.Black, "일반회원으로 시작하기") { }
+    drawDefaultButton(
+        colorResource(R.color.main_purple),
+        text = "트레이너로 시작하기",
+        onClick = { },
+        isEnabled = true
+    )
+    Spacer(modifier = Modifier.height(15.dp))
+    drawDefaultButton(
+        Color.Black,
+        "일반회원으로 시작하기",
+        isEnabled = true,
+        onClick = {  })
 }

@@ -3,19 +3,18 @@ package com.example.pipi.feature_login.presentation.login
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.BlendMode.Companion.Screen
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.pipi.feature_lo.MainLoginScreen
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import com.example.pipi.feature_login.presentation.login.MainLoginScreen
 
 class LoginActivity : ComponentActivity() {
 
     private val viewModel: LoginViewModel by viewModel()
 
+    @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
