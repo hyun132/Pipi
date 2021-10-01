@@ -3,7 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/rlaal/AndroidStudioProjects/Pipi/app/src/main/res/drawable-v24/ic_back.xml" value="0.1814814814814815" />
+        <entry key="..\:/Users/rlaal/AndroidStudioProjects/Pipi/app/src/main/res/drawable/ic_property_1_sign__property_2_success.xml" value="0.1814814814814815" />
+        <entry key="..\:/Users/rlaal/AndroidStudioProjects/Pipi/app/src/main/res/drawable/ic_success.xml" value="0.20092592592592592" />
         <entry key="..\:/Users/rlaal/AndroidStudioProjects/Pipi/app/src/main/res/drawable/round_square.xml" value="0.3194444444444444" />
+        <entry key="..\:/Users/rlaal/AndroidStudioProjects/Pipi/app/src/main/res/drawable/splash.xml" value="0.1814814814814815" />
         <entry key="..\:/Users/rlaal/AndroidStudioProjects/Pipi/app/src/main/res/font-v26/font.xml" value="0.38358974358974357" />
         <entry key="..\:/Users/rlaal/AndroidStudioProjects/Pipi/app/src/main/res/font/font.xml" value="0.38358974358974357" />
       </map>

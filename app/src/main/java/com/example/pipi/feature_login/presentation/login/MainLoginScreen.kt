@@ -1,4 +1,4 @@
-package com.example.pipi.feature_lo
+package com.example.pipi.feature_login.presentation.login
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
@@ -6,46 +6,41 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.VerticalAlignmentLine
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.text.isDigitsOnly
 import androidx.navigation.NavController
 import com.example.pipi.R
-import com.example.pipi.feature_login.presentation.login.LoginViewModel
 import com.example.pipi.global.constants.ui.*
+import com.example.pipi.global.constants.ui.Colors.ERROR_RED
+import com.example.pipi.global.constants.ui.Colors.GRAY2
+import com.example.pipi.global.constants.ui.Colors.MAIN_PURPLE
 
 @ExperimentalAnimationApi
 @Composable
 fun MainLoginScreen(
     navController: NavController,
-    viewModel: LoginViewModel
+    viewModel: LoginViewModel,
+    goSignUpActivity: () -> Unit
 ) {
     setProjectTheme(content = {
         Scaffold(topBar = { drawGoBackTopAppbar() }) {
@@ -55,7 +50,7 @@ fun MainLoginScreen(
                     .fillMaxHeight()
                     .padding(24.dp)
             ) {
-                val (button, titlebox, textfeildbox, checkbox, signbutton) = createRefs()
+                val (button, titlebox, textfeildbox, checkbox, signupLoginBox) = createRefs()
                 val id: String by viewModel.id.observeAsState("")
                 val passwrod: String by viewModel.password.observeAsState("")
                 Box(modifier = Modifier
@@ -88,21 +83,6 @@ fun MainLoginScreen(
                         }
                     }
                 }
-
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .constrainAs(button) {
-                        bottom.linkTo(parent.bottom)
-                    }) {
-                    Components.drawDefaultButton(
-                        color = colorResource(id = R.color.main_purple),
-                        text = "로그인",
-                        isEnabled = (viewModel.password.value?.length ?: 0) >= 6,
-                        onClick = {}
-                    )
-                    Spacer(modifier = Modifier.height(20.dp))
-                }
-
                 //자동로그인 체크박스 넣어야하는데, 체크되면 로그인성공시 sharedpreference에 저장하고 체크 해제하는 즉시 저장된 내용 삭제하는걸로.
                 Row(
                     modifier = Modifier
@@ -124,20 +104,52 @@ fun MainLoginScreen(
                     }
                 }
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 34.dp)
-                        .constrainAs(signbutton) { top.linkTo(checkbox.bottom) }) {
-                    Text(text = "아이디 찾기", Modifier.clickable(onClick = { Log.d("TAG", "비밀번호 찾기") }))
-                    Spacer(modifier = Modifier.weight(1F))
-                    Text(
-                        text = "회원가입",
-                        style = MaterialTheme.typography.body2,
-                        color = MaterialTheme.colors.primary,
-                        modifier = Modifier
-                            .clickable(onClick = { Log.d("TAG", "회원가입하기") })
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .constrainAs(button) {
+                        bottom.linkTo(parent.bottom)
+                    }) {
+                    Components.drawDefaultButton(
+                        color = colorResource(id = R.color.main_purple),
+                        text = "로그인",
+                        isEnabled = (viewModel.password.value?.length ?: 0) >= 6,
+                        onClick = {viewModel.login()}
                     )
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
+
+                Box(modifier = Modifier.constrainAs(signupLoginBox) { bottom.linkTo(parent.bottom) }) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "비밀번호찾기",
+                            Modifier.clickable(onClick = {
+                                Log.d("TAG", "비밀번호 찾기")
+                                navController.navigate("findpassword")
+                            })
+                        )
+                        Spacer(modifier = Modifier.height(22.dp))
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = "아직 회원이 아니신가요",
+                                style = MaterialTheme.typography.body2,
+                                color = GRAY2
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "회원가입",
+                                style = MaterialTheme.typography.body2,
+                                color = MaterialTheme.colors.primary,
+                                modifier = Modifier
+                                    .clickable(onClick = {
+                                        Log.d("TAG", "회원가입하기")
+                                        goSignUpActivity()
+                                    })
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -152,17 +164,16 @@ fun labeledCheckbox(label: String, checked: MutableState<Boolean>, onChecked: (B
             .clickable(onClick = { onChecked(!(checked.value)) }),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Checkbox(
-            checked = checked.value,
-            onCheckedChange = { it -> onChecked(it); Log.d("TAG", checked.toString()) },
-            enabled = true,
-            modifier = Modifier
-                .clip(CircleShape)
-                .size(24.dp)
-                .padding(5.dp)
-                .clip(CircleShape)
-                .background(if (checked.value) MaterialTheme.colors.primary else Color.LightGray)
+//        Checkbox(
+//            checked = checked.value,
+//            onCheckedChange = { it -> onChecked(it); Log.d("TAG", checked.toString()) },
+//            enabled = true,
+//            modifier = Modifier
+//                .drawBehind {  ImageVector.vectorResource(id = R.drawable.ic_success)}
+//        )
+        Image(imageVector = if (checked.value) ImageVector.vectorResource(id = R.drawable.ic_success) else ImageVector.vectorResource(id = R.drawable.ic_unshow), contentDescription = "checkbox",
         )
+//        if (checked.value)
         Text(text = label, style = MaterialTheme.typography.body2, color = Color.Black)
     }
 }
@@ -216,7 +227,7 @@ fun drawIdInput(
     id: String,
     onChanged: (String) -> Unit,
     onCancelClicked: () -> Unit,
-    endIcon: ImageVector = Icons.Default.Clear
+    endIcon: ImageVector = ImageVector.vectorResource(id = R.drawable.ic_delete)
 ) {
 
     Box(
@@ -240,7 +251,6 @@ fun drawIdInput(
                     .weight(1f)
                     .height(48.dp)
                     .padding(top = 16.dp, bottom = 8.dp)
-                    .background(ERROR_RED)
                     .fillMaxWidth()
                     .align(CenterVertically),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
@@ -292,7 +302,7 @@ fun drawIdInput(
 @Composable
 fun drawPwInput(password: String, onChanged: (String) -> Unit, onCancelClicked: (String) -> Unit) {
     var passwordVisibility by remember { mutableStateOf(true) }
-    val pwIcon = if (passwordVisibility) Icons.Default.Person else Icons.Default.Home
+    val pwIcon: Int = if (passwordVisibility) R.drawable.ic_unshow else R.drawable.ic_show
 
     TextField(
         value = password,
@@ -305,13 +315,13 @@ fun drawPwInput(password: String, onChanged: (String) -> Unit, onCancelClicked: 
             Row() {
                 IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
                     Icon(
-                        imageVector = pwIcon,
+                        imageVector = ImageVector.vectorResource(id = pwIcon),
                         contentDescription = null,
                     )
                 }
                 IconButton(onClick = { onCancelClicked }) {
                     Icon(
-                        imageVector = Icons.Default.Clear,
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
                         contentDescription = null,
                     )
                 }
@@ -328,53 +338,53 @@ fun drawPwInput(password: String, onChanged: (String) -> Unit, onCancelClicked: 
         )
     )
 }
-
-@Composable
-@Preview
-fun defaultPreview() {
-    val viewModel = LoginViewModel()
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(24.dp)
-    ) {
-        val (button, titlebox, textfeildbox) = createRefs()
-
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .constrainAs(titlebox) {
-                top.linkTo(parent.top)
-            }) {
-            drawTitle("트레이너님\n반갑습니다:)", "로그인 후 이용해주세요")
-        }
-
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .constrainAs(textfeildbox) {
-                top.linkTo(titlebox.bottom)
-            }) {
-            viewModel.id.value?.let {
-//                drawIdInput("", {}, {},null)
-            }
-            viewModel.password.value?.let {
-                drawPwInput("", onChanged = {}, {})
-            }
-        }
-
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .constrainAs(button) {
-                bottom.linkTo(parent.bottom)
-            }) {
-            Components.drawDefaultButton(
-                color = colorResource(id = R.color.main_purple),
-                "로그인",
-                onClick = {},
-                isEnabled = true
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-        }
-    }
-
-}
+//
+//@Composable
+//@Preview
+//fun defaultPreview() {
+//    val viewModel = LoginViewModel(LoginRepositoryImpl(PipiApi))
+//    ConstraintLayout(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .fillMaxHeight()
+//            .padding(24.dp)
+//    ) {
+//        val (button, titlebox, textfeildbox) = createRefs()
+//
+//        Box(modifier = Modifier
+//            .fillMaxWidth()
+//            .constrainAs(titlebox) {
+//                top.linkTo(parent.top)
+//            }) {
+//            drawTitle("트레이너님\n반갑습니다:)", "로그인 후 이용해주세요")
+//        }
+//
+//        Box(modifier = Modifier
+//            .fillMaxWidth()
+//            .constrainAs(textfeildbox) {
+//                top.linkTo(titlebox.bottom)
+//            }) {
+//            viewModel.id.value?.let {
+////                drawIdInput("", {}, {},null)
+//            }
+//            viewModel.password.value?.let {
+//                drawPwInput("", onChanged = {}, {})
+//            }
+//        }
+//
+//        Box(modifier = Modifier
+//            .fillMaxWidth()
+//            .constrainAs(button) {
+//                bottom.linkTo(parent.bottom)
+//            }) {
+//            Components.drawDefaultButton(
+//                color = colorResource(id = R.color.main_purple),
+//                "로그인",
+//                onClick = {},
+//                isEnabled = true
+//            )
+//            Spacer(modifier = Modifier.height(20.dp))
+//        }
+//    }
+//
+//}

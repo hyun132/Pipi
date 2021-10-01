@@ -26,6 +26,7 @@ import com.example.pipi.feature_login.presentation.login.LoginActivity
 
 class StartActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_Pipi)
         super.onCreate(savedInstanceState)
         setContent {
             Column(
@@ -33,26 +34,6 @@ class StartActivity : AppCompatActivity() {
                     .padding(16.dp)
                     .fillMaxWidth()
             ) {
-                Image(
-                    painterResource(id = R.drawable.ic_small_logo),
-                    contentDescription = "small logo",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                        .height(56.dp)
-                        .padding(16.dp)
-                )
-                Spacer(modifier = Modifier.height(32.dp))
-                drawOnBoardingImage(
-                    Modifier
-                        .height(168.dp)
-                        .width(168.dp)
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                drawOnBoardingText("모두의 건강을 보다 ", "철저하게")
-                drawOnBoardingText("모두의 건강을 보다 ", "섬세하게")
                 drawOnBoardingText("모두의 건강을 보다 ", "쉽게")
                 Spacer(modifier = Modifier.height(66.dp))
                 drawDefaultButton(

@@ -2,13 +2,14 @@ package com.example.pipi.global.constants.ui
 
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.example.pipi.global.constants.Fonts.typography
+import com.example.pipi.global.constants.ui.Colors.MAIN_PURPLE
+import com.example.pipi.global.constants.ui.Colors.SURFACE
 
 private val DarkColor = darkColors(
     primary = MAIN_PURPLE,

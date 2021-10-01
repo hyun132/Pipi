@@ -1,5 +1,6 @@
 package com.example.pipi.global.constants.ui
 
+import android.graphics.Color.BLACK
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pipi.R
 import com.example.pipi.global.constants.Fonts
+import com.example.pipi.global.constants.ui.Colors.SURFACE
 
 object Components {
     @Composable
@@ -62,7 +64,6 @@ object Components {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_back),
                             contentDescription = "go Back",
-                            tint = BLACK
                         )
                     },
                 )

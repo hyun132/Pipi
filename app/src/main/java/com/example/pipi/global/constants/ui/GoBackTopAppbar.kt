@@ -13,6 +13,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.Dimension
 import com.example.pipi.R
+import com.example.pipi.global.constants.ui.Colors.BLACK
+import com.example.pipi.global.constants.ui.Colors.SURFACE
 
 @Composable
 fun drawGoBackTopAppbar() {
