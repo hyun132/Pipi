@@ -13,7 +13,7 @@ fun SetNickNameScreen(
     viewModel: SignupViewModel
 ) {
     setProjectTheme(content = {
-        Scaffold(topBar = { Components.drawTextTitleTopAppbar("회원가입") }) {
+        Scaffold(topBar = { Components.drawTextTitleTopAppbar("회원가입", {}) }) {
             ConstraintLayout() {
 
 

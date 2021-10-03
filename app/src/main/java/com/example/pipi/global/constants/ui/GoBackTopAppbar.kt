@@ -17,27 +17,31 @@ import com.example.pipi.global.constants.ui.Colors.BLACK
 import com.example.pipi.global.constants.ui.Colors.SURFACE
 
 @Composable
-fun drawGoBackTopAppbar() {
+fun drawGoBackTopAppbar(isNavIconVisible: Boolean) {
     TopAppBar(
         title = {
             Image(
                 painter = painterResource(id = R.drawable.ic_small_logo),
                 contentDescription = "small logo",
                 alignment = Alignment.Center,
-                modifier = Modifier.padding(end = 76.dp).fillMaxWidth()
+                modifier = Modifier
+                    .padding(end = 76.dp)
+                    .fillMaxWidth()
             )
         },
         navigationIcon = { //navigationIcon이 뒤로가기, actions는 액션메뉴
-            IconButton(
-                onClick = { Log.d("TAG", "goBackClicked!") },
-                content = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_back),
-                        contentDescription = "go Back",
-                        tint = BLACK
-                    )
-                },
-            )
+            if (isNavIconVisible) {
+                IconButton(
+                    onClick = { Log.d("TAG", "goBackClicked!") },
+                    content = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_back),
+                            contentDescription = "go Back",
+                            tint = BLACK
+                        )
+                    },
+                )
+            } else null
         },
         elevation = 0.dp, backgroundColor = SURFACE,
     )

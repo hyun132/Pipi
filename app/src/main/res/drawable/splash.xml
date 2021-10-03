@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@color/main_purple" />
-    <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@drawable/ic_pipi"
-            android:tint="@color/white" />
+    <item
+        android:width="120dp"
+        android:height="66dp"
+        android:gravity="center"
+        android:drawable="@drawable/ic_pipi">
     </item>
-    <item android:top="25dp">
-        <bitmap
-            android:gravity="center"
-            android:src="@drawable/ic_pipi_text"
-            android:tint="@color/white" />
+    <item android:top="120dp"
+        android:height="24dp"
+        android:width="142dp"
+        android:gravity="center"
+        android:drawable="@drawable/ic_pipi_text">
     </item>
 </layer-list>

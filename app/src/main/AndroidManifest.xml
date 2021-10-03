@@ -12,11 +12,11 @@
         android:theme="@style/Theme.Pipi">
         <activity
             android:name=".feature_login.presentation.signup.SignUpActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".feature_login.presentation.login.LoginActivity"
-            android:exported="true"
-            android:windowSoftInputMode="adjustResize" />
+            android:exported="true" />
         <activity
             android:name=".start.StartActivity"
             android:exported="true"

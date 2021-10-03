@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -15,12 +17,16 @@ class SignUpActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-//            NavHost(navController = navController, startDestination = "phoneauth") {
-//                composable("phoneauth") {
-//                    SetPasswordScreen(navController = navController, viewModel = viewModel)
-//                }
-//            }
+            NavHost(navController = navController, startDestination = "phoneauth") {
+                composable("phoneauth") {
+                    PhoneAuthScreen(navController = navController, viewModel = viewModel,backToMain = { goBackToMainActivity() })
+                }
+            }
         }
 
+    }
+
+    fun goBackToMainActivity(){
+        finish()
     }
 }

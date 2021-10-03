@@ -9,14 +9,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import com.example.pipi.R
 import com.example.pipi.global.constants.Fonts
 import com.example.pipi.global.constants.ui.Colors.SURFACE
@@ -46,7 +50,7 @@ object Components {
     }
 
     @Composable
-    fun drawTextTitleTopAppbar(title: String) {
+    fun drawTextTitleTopAppbar(title: String,goBack:()->Unit) {
         TopAppBar(
             title = {
                 Text(
@@ -59,7 +63,8 @@ object Components {
             },
             navigationIcon = { //navigationIcon이 뒤로가기, actions는 액션메뉴
                 IconButton(
-                    onClick = { Log.d("TAG", "goBackClicked!") },
+                    onClick = { Log.d("TAG", "goBackClicked!")
+                        goBack()},
                     content = {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_back),
@@ -70,6 +75,20 @@ object Components {
             },
             elevation = 0.dp, backgroundColor = SURFACE,
         )
+    }
+
+    @Composable
+    fun showLoadingDialog(showDialog:MutableState<Boolean>){
+        if(showDialog.value){
+            AlertDialog(
+                onDismissRequest = { showDialog.value = false},
+                buttons = {
+                //여기 로딩이들어가야하지만 일단 아무거나로
+                Image(imageVector = ImageVector.vectorResource(id = R.drawable.ic_launcher_foreground), contentDescription = "loading") },
+                properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false),
+            )
+        }
+
     }
 
 }
