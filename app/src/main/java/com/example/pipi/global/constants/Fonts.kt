@@ -7,6 +7,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pipi.R
 
@@ -57,6 +58,7 @@ object Fonts {
         h5 = TextStyle(
             fontWeight = FontWeight.Normal,
             fontSize = 24.sp,
+            lineHeight = 36.sp,
             letterSpacing = 0.sp
         ),
         h6 = TextStyle(

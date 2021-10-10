@@ -1,4 +1,4 @@
-package com.example.pipi.feature_login.presentation.signup
+package com.example.pipi.feature_login.presentation.setting
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
@@ -31,9 +31,9 @@ import com.example.pipi.global.constants.ui.setProjectTheme
 
 @ExperimentalAnimationApi
 @Composable
-fun SetPasswordScreen(
+fun ReSetPasswordScreen(
     navController: NavController,
-    viewModel: SignupViewModel
+    viewModel: ResetUserInfoViewModel
 ) {
     val password: String by viewModel.password.observeAsState("")
     val confirmPassword: String by viewModel.confirmPassword.observeAsState("")
@@ -108,6 +108,7 @@ fun SetPasswordScreen(
                     )
                 }
             }
+
         }
     }
 }

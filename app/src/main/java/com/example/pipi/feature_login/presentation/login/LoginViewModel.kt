@@ -16,7 +16,8 @@ class LoginViewModel(private val repository: LoginRepositoryImpl) : ViewModel() 
     val autoLogin = mutableStateOf(false)
     val rememberPhoneNumber = mutableStateOf(false)
 
-    val isLoading = mutableStateOf(false)
+    val isLoading = MutableLiveData(false)
+    val isLoginSuccess = MutableLiveData<Boolean>(false)
 
     fun login() {
         viewModelScope.launch {

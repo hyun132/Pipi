@@ -8,4 +8,5 @@ object Colors {
     val BLACK = Color(0xff000000)
     val GRAY2 = Color(0xffAAABC3)
     val ERROR_RED = Color(0xffFF6C6C)
+    val DARK_GRAY = Color(0xff333333)
 }

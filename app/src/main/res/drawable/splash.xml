@@ -4,12 +4,14 @@
     <item
         android:width="120dp"
         android:height="66dp"
+        android:top="-33dp"
         android:gravity="center"
         android:drawable="@drawable/ic_pipi">
     </item>
-    <item android:top="120dp"
+    <item
         android:height="24dp"
         android:width="142dp"
+        android:top="60dp"
         android:gravity="center"
         android:drawable="@drawable/ic_pipi_text">
     </item>
