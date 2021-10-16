@@ -2,17 +2,17 @@ package com.example.pipi.feature_login.presentation.signup
 
 import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.compiler.plugins.kotlin.ComposeFqNames.remember
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
@@ -25,17 +25,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors
 import com.example.pipi.global.constants.ui.Colors.DARK_GRAY
+import com.example.pipi.global.constants.ui.Colors.ERROR_RED
 import com.example.pipi.global.constants.ui.Colors.GRAY2
 import com.example.pipi.global.constants.ui.Colors.MAIN_PURPLE
 import com.example.pipi.global.constants.ui.Components
 import com.example.pipi.global.constants.ui.Components.drawDefaultButton
 import com.example.pipi.global.constants.ui.Components.drawTextTitleTopAppbar
 import com.example.pipi.global.constants.ui.setProjectTheme
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.util.*
+import kotlin.concurrent.timer
 
 @ExperimentalAnimationApi
 @Composable
@@ -46,6 +53,9 @@ fun PhoneAuthScreen(
 ) {
     val phoneNumber: String by viewModel.phoneNumber.observeAsState("")
     val authNumber: String by viewModel.authNumber.observeAsState("")
+    val errorMessage: String by viewModel.dialogMessage.observeAsState("")
+    val timerStarted by viewModel.timerStarted.observeAsState(false)
+    val formattedTime by viewModel.formattedTime.observeAsState("")
 
     setProjectTheme {
         Scaffold(topBar = { drawTextTitleTopAppbar("회원가입") { backToMain() } }) {
@@ -82,36 +92,38 @@ fun PhoneAuthScreen(
                         hint = "휴대전화 번호(-제외)",
                         errorMessage = "",
                         rightComponent = {
-                            TextButton(onClick = {
-                                viewModel.dialogMessage.value = "인증번호를 문자로 전송하였습니다."
-                                viewModel.showDialog.value = true
-                            }, modifier = Modifier
-                                .height(32.dp)
-                                .width(86.dp)
-                                .padding(0.dp)
-                                .background(MAIN_PURPLE), content = {
-                                Text(
-                                    text = "인증번호전송",
-                                    style = MaterialTheme.typography.subtitle2,
-                                    fontSize = 11.sp,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(2.dp)),
-                                    color = Color.White,
-                                )
-                            })
+                            Row(verticalAlignment = CenterVertically) {
+                                if (timerStarted) {
+                                    Text(
+                                        text = formattedTime,
+                                        style = MaterialTheme.typography.subtitle2,
+                                        fontSize = 11.sp,
+                                        color = ERROR_RED
+                                    )
+                                }
+                                TextButton(onClick = {
+                                    viewModel.requestSendAuthMessage()
+                                }, modifier = Modifier
+                                    .height(32.dp)
+                                    .width(86.dp)
+                                    .padding(0.dp)
+                                    .background(MAIN_PURPLE), content = {
+                                    Text(
+                                        text = "인증번호전송",
+                                        style = MaterialTheme.typography.subtitle2,
+                                        fontSize = 11.sp,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clip(RoundedCornerShape(2.dp)),
+                                        color = Color.White,
+                                    )
+                                })
+                            }
+
                         },
                         hideInputData = false
                     )
-//                    InputTextFeildWithButton(
-//                        phoneNumber = phoneNumber,
-//                        onChanged = { input -> viewModel.phoneNumber.value = input },
-//                        onButtonClicked = {
-//                            viewModel.dialogMessage.value = "인증번호를 문자로 전송하였습니다."
-//                            viewModel.showDialog.value = true
-//                        },
-//                        hint = "휴대전화 번호(-제외)",
-//                        buttonText = "인증번호전송",
-//                    )
                     Components.InputTextField(
                         input = authNumber,
                         onChanged = { input -> viewModel.authNumber.value = input },
@@ -120,7 +132,6 @@ fun PhoneAuthScreen(
                         rightComponent = {
                             TextButton(onClick = {
                                 viewModel.dialogMessage.value = "인증번호를 문자로 전송하였습니다."
-                                viewModel.showDialog.value = true
                             }, modifier = Modifier
                                 .height(32.dp)
                                 .width(86.dp)
@@ -150,16 +161,16 @@ fun PhoneAuthScreen(
                         isEnabled = viewModel.checkAuthSuccess()
                     )
                 }
-                showSnackbar(viewModel.showDialog)
+                viewModel.countTime()
             }
         }
+        showSnackbar(errorMessage)
     }
 }
 
 @Composable
-fun showSnackbar(showDialog: MutableState<Boolean>) {
-    //스낵바는 따로 함수로 빼고, base에 넣을지 고민해볼것.
-    if (showDialog.value == true) {
+fun showSnackbar(message: String) {
+    if (message.isNotEmpty()) {
         Snackbar(
             action = {
                 TextButton(
@@ -172,7 +183,7 @@ fun showSnackbar(showDialog: MutableState<Boolean>) {
             backgroundColor = DARK_GRAY
         ) {
             Text(
-                text = "인증번호를 문자로 전송하였습니다.",
+                text = message,
                 style = MaterialTheme.typography.subtitle1,
                 fontSize = 11.sp,
                 color = Color.White

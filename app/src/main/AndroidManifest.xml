@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.pipi">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:name=".Pipi"
         android:allowBackup="false"
@@ -11,14 +13,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Pipi">
         <activity
+            android:name=".feature_login.presentation.main.MainActivity"
+            android:exported="true">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+        </activity>
+        <activity
             android:name=".feature_login.presentation.signup.SignUpActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature_login.presentation.login.LoginActivity"
             android:exported="true" />
         <activity
-            android:name=".start.StartActivity"
+            android:name="com.example.pipi.feature_login.presentation.start.StartActivity"
             android:exported="true"
             android:theme="@style/Theme.Splash">
             <intent-filter>
@@ -27,9 +38,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MainActivity"
-            android:exported="true" />
     </application>
 
 </manifest>

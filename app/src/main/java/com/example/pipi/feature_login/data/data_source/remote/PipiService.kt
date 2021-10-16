@@ -1,12 +1,13 @@
 package com.example.pipi.feature_login.data.data_source.remote
 
+import com.example.pipi.global.constants.Const.BASE_URL
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class PipiService {
-    private val LOGIN_URL = "https://nstaging.daouoffice.com"
+    private val LOGIN_URL = BASE_URL
 
     private val retrofit: Retrofit by lazy {
         val logging = HttpLoggingInterceptor()
