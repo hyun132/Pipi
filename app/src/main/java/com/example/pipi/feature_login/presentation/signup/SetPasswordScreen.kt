@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.example.pipi.R
+import com.example.pipi.feature_login.presentation.main.MainActivity
 import com.example.pipi.global.constants.ui.Colors
 import com.example.pipi.global.constants.ui.Colors.ERROR_RED
 import com.example.pipi.global.constants.ui.Components
@@ -33,10 +34,13 @@ import com.example.pipi.global.constants.ui.setProjectTheme
 @Composable
 fun SetPasswordScreen(
     navController: NavController,
-    viewModel: SignupViewModel
+    viewModel: SignupViewModel,
+    goToMainActivity: () -> Unit
 ) {
     val password: String by viewModel.password.observeAsState("")
     val confirmPassword: String by viewModel.confirmPassword.observeAsState("")
+    val signUpSuccess: Boolean by viewModel.signUpSuccess.observeAsState(false)
+    if (signUpSuccess) goToMainActivity()
     setProjectTheme {
         Scaffold(topBar = { drawTextTitleTopAppbar("회원가입") { navController.navigateUp() } }) {
             ConstraintLayout(
@@ -56,7 +60,7 @@ fun SetPasswordScreen(
                     )
                     Spacer(modifier = Modifier.height(22.dp))
                     Text(
-                        text = "휴대전화 번호 인증을 해주세요.",
+                        text = "비밀번호를 설정해 주세요.",
                         style = MaterialTheme.typography.body2,
                         fontWeight = FontWeight(400),
                         modifier = Modifier.fillMaxWidth(),
@@ -77,7 +81,8 @@ fun SetPasswordScreen(
                             } else {
                             }
                         },
-                        hideInputData = true
+                        hideInputData = true,
+                        title = "비밀번호"
                     )
                     Spacer(modifier = Modifier.height(50.dp))
                     InputTextField(
@@ -93,7 +98,8 @@ fun SetPasswordScreen(
                             }
 
                         },
-                        hideInputData = true
+                        hideInputData = true,
+                        title = "비밀번호 확인"
                     )
                 }
 
@@ -103,7 +109,9 @@ fun SetPasswordScreen(
                     Components.drawDefaultButton(
                         color = if (viewModel.checkConfirmPassword()) Colors.MAIN_PURPLE else Colors.GRAY2,
                         text = "다음",
-                        onClick = { /* 여기서 인증 성공했는지 체크하고 네비게이션 해야함*/ },
+                        onClick = {
+                            viewModel.requestSignUp()
+                        },
                         isEnabled = viewModel.checkConfirmPassword()
                     )
                 }

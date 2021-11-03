@@ -50,7 +50,9 @@ import com.example.pipi.global.constants.ui.setProjectTheme
 fun MainLoginScreen(
     navController: NavController,
     viewModel: LoginViewModel,
-    goSignUpActivity: () -> Unit
+    goSignUpActivity: () -> Unit,
+    goMainActivity: () -> Unit,
+    goFindPasswordActivity: () -> Unit
 ) {
     val id: String by viewModel.id.observeAsState("")
     val password: String by viewModel.password.observeAsState("")
@@ -121,32 +123,36 @@ fun MainLoginScreen(
                                 } else {
                                 }
                             },
-                            hideInputData = false
+                            hideInputData = false,
+                            title = ""
                         )
+                        Spacer(modifier = Modifier.height(24.dp))
                         Components.InputTextField(
                             input = password,
                             onChanged = { input -> viewModel.password.value = input },
                             hint = "비밀번호를 입력해 주세요",
                             errorMessage = null,
                             rightComponent = {
-                                Row() {
+                                Row(verticalAlignment = CenterVertically) {
                                     Icon(
                                         modifier = Modifier
-                                            .size(48.dp)
-                                            .padding(12.dp)
+//                                            .size(48.dp)
+//                                            .padding(12.dp)
                                             .clickable(
                                                 onClick = {
                                                     passwordVisibility = !passwordVisibility
                                                 }
                                             ),
 //                                        .align(CenterVertically),
-                                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
+                                        imageVector = if (passwordVisibility) ImageVector.vectorResource(
+                                            id = R.drawable.ic_unshow
+                                        ) else ImageVector.vectorResource(id = R.drawable.ic_show),
                                         contentDescription = null
                                     )
                                     if (id.isNotEmpty()) {
                                         Icon(
                                             modifier = Modifier
-                                                .size(24.dp)
+//                                                .size(24.dp)
                                                 .clickable(
                                                     onClick = { viewModel.password.value = "" }
                                                 ),
@@ -157,7 +163,8 @@ fun MainLoginScreen(
                                     }
                                 }
                             },
-                            hideInputData = passwordVisibility
+                            hideInputData = passwordVisibility,
+                            title = ""
                         )
                     }
                 }
@@ -193,8 +200,13 @@ fun MainLoginScreen(
                         color = colorResource(id = R.color.main_purple),
                         text = "로그인",
                         isEnabled = (viewModel.password.value?.length ?: 0) >= 6,
-                        onClick = { viewModel.login() }
+                        onClick = {
+                            viewModel.login()
+                        }
                     )
+                    if (isLoginSuccess) {
+                        goMainActivity()
+                    }
                     Spacer(modifier = Modifier.height(20.dp))
                 }
 
@@ -208,7 +220,7 @@ fun MainLoginScreen(
                             Modifier
                                 .clickable(onClick = {
                                     Log.d("TAG", "비밀번호 찾기")
-
+                                    goFindPasswordActivity()
                                 })
                                 .fillMaxWidth()
                                 .align(Alignment.CenterHorizontally),

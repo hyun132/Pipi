@@ -77,7 +77,8 @@ fun ReSetPasswordScreen(
                             } else {
                             }
                         },
-                        hideInputData = true
+                        hideInputData = true,
+                        title = "비밀번호"
                     )
                     Spacer(modifier = Modifier.height(50.dp))
                     InputTextField(
@@ -93,7 +94,8 @@ fun ReSetPasswordScreen(
                             }
 
                         },
-                        hideInputData = true
+                        hideInputData = true,
+                        title = "비밀번호 확인"
                     )
                 }
 

@@ -8,6 +8,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.pipi.feature_login.presentation.main.MainActivity
 import com.example.pipi.feature_login.presentation.signup.SignUpActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -22,10 +23,15 @@ class LoginActivity : ComponentActivity() {
             val navController = rememberNavController()
             NavHost(navController = navController, startDestination = "mainlogin") {
                 composable("mainlogin") {
-                    MainLoginScreen(navController = navController, viewModel = viewModel,goSignUpActivity = { goSignUpActivity() })
+                    MainLoginScreen(navController = navController, viewModel = viewModel,goSignUpActivity = { goSignUpActivity() },goMainActivity = { goMainActivity() },goFindPasswordActivity = {goFindPasswordActivity()})
                 }
             }
         }
+    }
+
+    fun goMainActivity() {
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 
     private fun goSignUpActivity(){

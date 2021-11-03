@@ -13,7 +13,7 @@ import com.example.pipi.global.constants.ui.Colors.SURFACE
 
 private val DarkColor = darkColors(
     primary = MAIN_PURPLE,
-    primaryVariant = Color(0xff000000),
+    primaryVariant = Color(0xffffffff),
     secondary = Color(0xff5d00d4),
     secondaryVariant = Color(0xff55D95A),
     surface = SURFACE

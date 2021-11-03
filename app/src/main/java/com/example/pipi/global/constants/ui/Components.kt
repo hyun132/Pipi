@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.example.pipi.R
 import com.example.pipi.global.constants.Fonts
+import com.example.pipi.global.constants.ui.Colors.FONT_GRAY
 import com.example.pipi.global.constants.ui.Colors.SURFACE
 
 object Components {
@@ -113,8 +114,12 @@ object Components {
         hint: String,
         errorMessage: String?,
         rightComponent: @Composable () -> Unit,
-        hideInputData: Boolean
+        hideInputData: Boolean,
+        title: String
     ) {
+        if (!title.isNullOrEmpty()){
+            Text(text = title,style = MaterialTheme.typography.subtitle2,fontSize = 12.sp,modifier = Modifier.fillMaxWidth(),color = FONT_GRAY)
+        }
         Box() {
             Row(modifier = Modifier
                 .fillMaxWidth()
@@ -143,7 +148,7 @@ object Components {
             }
             Box(
                 modifier = Modifier
-                    .height(48.dp), contentAlignment = Alignment.CenterStart
+                    .height(48.dp).padding(top = 4.dp), contentAlignment = Alignment.CenterStart
             ) {
                 Text(
                     text = if (input.isEmpty()) hint else "",
@@ -159,7 +164,8 @@ object Components {
                 color = Colors.ERROR_RED,
                 style = MaterialTheme.typography.body2,
                 fontWeight = FontWeight(400),
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
+                textAlign = TextAlign.Start
             )
         }
     }

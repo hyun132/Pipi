@@ -79,7 +79,8 @@ fun SetNickNameScreen(
                             } else {
                             }
                         },
-                        hideInputData = false
+                        hideInputData = false,
+                        title = "닉네임"
                     )
 //                    Components.drawDefaultButton(
 //                        color = if (viewModel.checkNickNameValid()) Colors.MAIN_PURPLE else Colors.GRAY2,

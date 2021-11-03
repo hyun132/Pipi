@@ -55,10 +55,10 @@ fun TosScreen(
                     .fillMaxWidth()
                     .constrainAs(button) { bottom.linkTo(parent.bottom) }) {
                     drawDefaultButton(
-                        color = if (viewModel.checkAuthSuccess()) MAIN_PURPLE else GRAY2,
+                        color = if (true) MAIN_PURPLE else GRAY2,
                         text = "다음",
                         onClick = { navController.navigate("nickName") },
-                        isEnabled = viewModel.checkAuthSuccess()
+                        isEnabled = true
                     )
                 }
             }

@@ -22,7 +22,7 @@ class LoginViewModel(private val repository: LoginRepositoryImpl) : ViewModel() 
     fun login() {
         viewModelScope.launch {
             isLoading.value = true
-            id.value?.let { id -> password.value?.let { pw -> repository.login(id, pw) } }
+            id.value?.let { id -> password.value?.let { pw -> isLoginSuccess.postValue(repository.login(id, pw).success) } }
             isLoading.value = false
         }
     }

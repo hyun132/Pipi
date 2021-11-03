@@ -1,4 +1,4 @@
-package com.example.pipi.feature_login.domain.use_case
+package com.example.pipi.feature_login.domain.use_case.base
 
 import com.example.pipi.global.result.Result
 import kotlinx.coroutines.CoroutineDispatcher

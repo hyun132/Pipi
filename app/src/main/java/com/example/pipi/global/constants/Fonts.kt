@@ -73,6 +73,7 @@ object Fonts {
             fontSize = 16.sp,
             letterSpacing = 0.15.sp
         ),
+        //16 / bold
         subtitle2 = TextStyle(
             fontWeight = FontWeight.W700,
             fontSize = 16.sp,

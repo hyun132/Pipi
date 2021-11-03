@@ -35,8 +35,8 @@ class StartActivity : AppCompatActivity() {
             Column(
                 modifier = Modifier
                     .padding(16.dp)
-                    .fillMaxWidth()
-                    .wrapContentWidth(align = CenterHorizontally)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(63.dp))
                 Row(
@@ -88,9 +88,10 @@ class StartActivity : AppCompatActivity() {
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_onboarding),
                     contentDescription = "onboarding",
                     modifier = Modifier
-                        .width(231.dp)
-                        .height(299.dp)
+//                        .width(231.dp)
+//                        .height(299.dp)
                         .align(CenterHorizontally)
+                        .weight(1F)
                 )
                 Spacer(modifier = Modifier.height(38.dp))
                 drawDefaultButton(
@@ -105,6 +106,7 @@ class StartActivity : AppCompatActivity() {
                     "일반회원으로 시작하기",
                     isEnabled = true,
                     onClick = { moveMainActivity() })
+                Spacer(modifier = Modifier.height(32.dp))
             }
         }
     }
@@ -113,7 +115,6 @@ class StartActivity : AppCompatActivity() {
         //do something
         startActivity(Intent(this, LoginActivity::class.java))
         finish()
-        Toast.makeText(this, "버튼 클릭", Toast.LENGTH_SHORT).show()
     }
 }
 

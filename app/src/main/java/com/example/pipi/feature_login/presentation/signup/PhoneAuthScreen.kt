@@ -56,6 +56,7 @@ fun PhoneAuthScreen(
     val errorMessage: String by viewModel.dialogMessage.observeAsState("")
     val timerStarted by viewModel.timerStarted.observeAsState(false)
     val formattedTime by viewModel.formattedTime.observeAsState("")
+    val isbuttonActive by viewModel.phoneAuthSuccess.observeAsState(false)
 
     setProjectTheme {
         Scaffold(topBar = { drawTextTitleTopAppbar("회원가입") { backToMain() } }) {
@@ -88,9 +89,9 @@ fun PhoneAuthScreen(
                     Spacer(modifier = Modifier.height(36.dp))
                     Components.InputTextField(
                         input = phoneNumber,
-                        onChanged = { input -> viewModel.phoneNumber.value = input },
+                        onChanged = { input -> viewModel.setPhoneNumber(input) },
                         hint = "휴대전화 번호(-제외)",
-                        errorMessage = "",
+                        errorMessage = phoneNumberCheck(phoneNumber),
                         rightComponent = {
                             Row(verticalAlignment = CenterVertically) {
                                 if (timerStarted) {
@@ -107,47 +108,53 @@ fun PhoneAuthScreen(
                                     .height(32.dp)
                                     .width(86.dp)
                                     .padding(0.dp)
-                                    .background(MAIN_PURPLE), content = {
-                                    Text(
-                                        text = "인증번호전송",
-                                        style = MaterialTheme.typography.subtitle2,
-                                        fontSize = 11.sp,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clip(RoundedCornerShape(2.dp)),
-                                        color = Color.White,
-                                    )
-                                })
+                                    .background(MAIN_PURPLE),
+                                    shape = RoundedCornerShape(2.dp),
+                                    content = {
+                                        Text(
+                                            text = "인증번호전송",
+                                            style = MaterialTheme.typography.subtitle2,
+                                            fontSize = 11.sp,
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier
+                                                .fillMaxWidth(),
+                                            color = Color.White,
+                                        )
+                                    })
                             }
 
                         },
-                        hideInputData = false
+                        hideInputData = false,
+                        title = "휴대전화 번호"
                     )
+                    Spacer(modifier = Modifier.height(24.dp))
                     Components.InputTextField(
                         input = authNumber,
-                        onChanged = { input -> viewModel.authNumber.value = input },
+                        onChanged = { input -> viewModel.setAuthNumber(input) },
                         hint = "인증번호 6자리",
                         errorMessage = "",
                         rightComponent = {
                             TextButton(onClick = {
-                                viewModel.dialogMessage.value = "인증번호를 문자로 전송하였습니다."
+                                viewModel.checkAuthSuccess()
                             }, modifier = Modifier
                                 .height(32.dp)
                                 .width(86.dp)
                                 .padding(0.dp)
-                                .background(MAIN_PURPLE), content = {
-                                Text(
-                                    text = "확인",
-                                    style = MaterialTheme.typography.subtitle2,
-                                    fontSize = 11.sp,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    color = Color.White
-                                )
-                            })
+                                .background(MAIN_PURPLE),
+                                shape = RoundedCornerShape(2.dp),
+                                content = {
+                                    Text(
+                                        text = "확인",
+                                        style = MaterialTheme.typography.subtitle2,
+                                        fontSize = 11.sp,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        color = Color.White
+                                    )
+                                })
                         },
-                        hideInputData = false
+                        hideInputData = false,
+                        title = "인증번호"
                     )
                 }
 
@@ -155,10 +162,10 @@ fun PhoneAuthScreen(
                     .fillMaxWidth()
                     .constrainAs(button) { bottom.linkTo(parent.bottom) }) {
                     drawDefaultButton(
-                        color = if (viewModel.checkAuthSuccess()) MAIN_PURPLE else GRAY2,
+                        color = if (isbuttonActive) MAIN_PURPLE else GRAY2,
                         text = "다음",
                         onClick = { navController.navigate("nickName") },
-                        isEnabled = viewModel.checkAuthSuccess()
+                        isEnabled = isbuttonActive
                     )
                 }
                 viewModel.countTime()
@@ -166,6 +173,12 @@ fun PhoneAuthScreen(
         }
         showSnackbar(errorMessage)
     }
+}
+
+fun phoneNumberCheck(phone: String): String {
+    return if (!phone.startsWith("010")) "올바른 형식이 아닙니다"
+    else if (phone.length < 11) "휴대전화 번호는 11자로 설정해 주세요"
+    else "이미 가입된 번호입니다." //이미 있는 번호 api요청
 }
 
 @Composable

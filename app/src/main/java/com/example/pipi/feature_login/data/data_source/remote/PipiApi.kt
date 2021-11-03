@@ -3,41 +3,36 @@ package com.example.pipi.feature_login.data.data_source.remote
 import com.example.pipi.feature_login.domain.model.LoginResponse
 import com.example.pipi.feature_login.domain.model.PhoneAuthResponse
 import com.example.pipi.feature_login.domain.model.SignUpResponse
+import com.example.pipi.feature_login.domain.model.dto.LoginDto
+import com.example.pipi.feature_login.domain.model.dto.PhoneAuthMessageRequestDto
+import com.example.pipi.feature_login.domain.model.dto.PhoneAuthRequestDto
+import com.example.pipi.feature_login.domain.model.dto.SignUpDto
 import com.example.pipi.global.constants.Const.BASE_URL
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface PipiApi {
 
     @POST("auth/sms/message")
     suspend fun requestAuthMessage(
-        @Query("phone") phone : String,
-        @Query("isTrainer") isTrainer : Boolean,
+        @Body phoneAuthRequestDto: PhoneAuthRequestDto,
     ):PhoneAuthResponse
 
     @POST("auth/sms/compare")
     suspend fun checkAuthMessage(
-        @Query("phone") phone : String,
-        @Query("isTrainer") isTrainer : Boolean,
-        @Query("key") key:Int
+        @Body phoneAuthMessageRequestDto: PhoneAuthMessageRequestDto
     ):PhoneAuthResponse
 
     @POST("trainers/register")
     suspend fun signUp(
-        @Query("trainerPhonNumber") id : String,
-        @Query("trainerPassword") password : String,
-        @Query("trainerName") name:String
+        @Body signUpDto: SignUpDto
     ):SignUpResponse
 
     @POST("trainers/login")
     suspend fun logIn(
-        @Query("trainerPhonNumber") id : String,
-        @Query("trainerPassword") password : String,
+        @Body loginDto: LoginDto,
     ):LoginResponse
 
-    @POST("trainers/logout")
+    @GET("trainers/logout")
     suspend fun logOut(
         @Path("trainerPhonNumber") id : String,
     )
