@@ -14,7 +14,7 @@ import com.example.pipi.global.constants.ui.Colors.BL_USE
 import com.example.pipi.global.constants.ui.Colors.SURFACE
 
 @Composable
-fun drawGoBackTopAppbar(isNavIconVisible: Boolean) {
+fun DrawGoBackTopAppbar(isNavIconVisible: Boolean) {
     TopAppBar(
         title = {
             Image(

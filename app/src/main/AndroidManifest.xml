@@ -16,7 +16,7 @@
         android:theme="@style/Theme.Pipi"
         tools:targetApi="m">
         <activity
-            android:name=".feature_login.presentation.main.MainActivity"
+            android:name="com.example.pipi.presentation.main.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,14 +25,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".feature_login.presentation.signup.SignUpActivity"
+            android:name="com.example.pipi.presentation.signup.SignUpActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature_login.presentation.login.LoginActivity"
+            android:name="com.example.pipi.presentation.login.LoginActivity"
             android:exported="true" />
         <activity
-            android:name="com.example.pipi.feature_login.presentation.start.StartActivity"
+            android:name="com.example.pipi.presentation.start.StartActivity"
             android:exported="true"
             android:theme="@style/Theme.Splash">
 <!--            <intent-filter>-->
