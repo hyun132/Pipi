@@ -7,6 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.pipi.data.repository.LoginRepositoryImpl
 import kotlinx.coroutines.launch
 
+/**
+ * TODO : LiveData 걷어내고 xxxFlow로 변경할 것
+ */
 class LoginViewModel(private val repository: LoginRepositoryImpl) : ViewModel() {
 
     val id = MutableLiveData<String>("")
@@ -21,7 +24,16 @@ class LoginViewModel(private val repository: LoginRepositoryImpl) : ViewModel() 
     fun login() {
         viewModelScope.launch {
             isLoading.value = true
-            id.value?.let { id -> password.value?.let { pw -> isLoginSuccess.postValue(repository.login(id, pw).success) } }
+            id.value?.let { id ->
+                password.value?.let { pw ->
+                    isLoginSuccess.postValue(
+                        repository.login(
+                            id,
+                            pw
+                        ).success
+                    )
+                }
+            }
             isLoading.value = false
         }
     }

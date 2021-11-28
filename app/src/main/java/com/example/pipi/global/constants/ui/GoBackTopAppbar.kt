@@ -1,9 +1,11 @@
 package com.example.pipi.global.constants.ui
 
-import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -12,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors.BL_USE
 import com.example.pipi.global.constants.ui.Colors.SURFACE
+import timber.log.Timber
 
 @Composable
 fun DrawGoBackTopAppbar(isNavIconVisible: Boolean) {
@@ -29,7 +32,7 @@ fun DrawGoBackTopAppbar(isNavIconVisible: Boolean) {
         navigationIcon = { //navigationIcon이 뒤로가기, actions는 액션메뉴
             if (isNavIconVisible) {
                 IconButton(
-                    onClick = { Log.d("TAG", "goBackClicked!") },
+                    onClick = { Timber.d("goBackClicked!") },
                     content = {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_back),

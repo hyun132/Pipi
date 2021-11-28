@@ -35,13 +35,14 @@ import kotlin.math.roundToInt
 
 @ExperimentalMaterialApi
 @Composable
-fun MemebersScreen(viewModel: MainViewModel) {
-    val members = viewModel.members.collectAsState()
+fun MemebersScreen(viewModel: MainViewModel, goToCalendarActivity: () -> Unit) {
+    val members = viewModel.members
     val revealedCardIds = viewModel.revealedCardIdsList.collectAsState()
     val scope = rememberCoroutineScope()
     val modalBottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
     )
+    viewModel.getMyMembers()
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
@@ -66,40 +67,43 @@ fun MemebersScreen(viewModel: MainViewModel) {
 //            items(dummyMemebers) { item: Member ->
 //                MemberItem(member = item)
 //            }
-            itemsIndexed(members.value) { index, item ->
-                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                    Row(
-                        Modifier
-                            .padding(4.dp)
-                            .height(86.dp)
-                            .background(Color.Red)
-                    ) {
-                        Text(
-                            text = "삭제",
+            members.value?.let {
+                itemsIndexed(it) { index, item ->
+                    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                        Row(
                             Modifier
-                                .height(72.dp)
-                                .fillMaxWidth()
-                                .padding(23.dp)
-                                .clip(RoundedCornerShape(10.dp)), textAlign = TextAlign.Center,
-                            color = Color.White
+                                .padding(4.dp)
+                                .height(86.dp)
+                                .background(Color.Red)
+                        ) {
+                            Text(
+                                text = "삭제",
+                                Modifier
+                                    .height(72.dp)
+                                    .fillMaxWidth()
+                                    .padding(23.dp)
+                                    .clip(RoundedCornerShape(10.dp)), textAlign = TextAlign.Center,
+                                color = Color.White
+                            )
+                        }
+                        DraggableItem(
+                            member = item,
+                            isRevealed = revealedCardIds.value.contains(index),
+                            cardOffset = 100F, // 스와이프 될 너비
+                            onExpand = { viewModel.onItemExpanded(index) },
+                            onCollapse = { viewModel.onItemCollapsed(index) },
+                            onClick = {
+//                            scope.launch { modalBottomSheetState.show() }
+                                // 달력 화면으로 이동하기
+                                goToCalendarActivity()
+                            }
                         )
                     }
-                    DraggableItem(
-                        member = item,
-                        isRevealed = revealedCardIds.value.contains(index),
-                        cardOffset = 100F, // 스와이프 될 너비
-                        onExpand = { viewModel.onItemExpanded(index) },
-                        onCollapse = { viewModel.onItemCollapsed(index) },
-                        onClick = {
-                            scope.launch { modalBottomSheetState.show() }
-
-                        }
-                    )
                 }
             }
         }
     }
-    ModalBottomSheet(modalBottomSheetState = modalBottomSheetState, member =Member("",0))
+    ModalBottomSheet(modalBottomSheetState = modalBottomSheetState, member = Member("", 0))
 }
 
 @Composable
@@ -144,6 +148,9 @@ fun ModalBottomSheet(modalBottomSheetState: ModalBottomSheetState, member: Membe
     }) {}
 }
 
+/**
+ * 아이템을 드래그 해서 삭제할 수 있음
+ */
 @SuppressLint("UnusedTransitionTargetStateParameter")
 @Composable
 fun DraggableItem(
@@ -218,5 +225,9 @@ fun MemberItem(
     }
 }
 
-//나중에 친구 목록 api 만들어지면 그때 model파일에 클래스 만들것. 현재는 ui데모 위한 임시객체
+
+/**
+ * TODO
+ * 나중에 친구 목록 api 만들어지면 그때 model파일에 클래스 만들것. 현재는 ui데모 위한 임시객체
+ */
 data class Member(val nickname: String, val profileImage: Int = R.drawable.ic_launcher_background)

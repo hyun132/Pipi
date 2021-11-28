@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Pipi</string>
     <string name="appbar_back">goBack</string>
+    <string name="title_activity_calendar">CalendarActivity</string>
 </resources>

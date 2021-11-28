@@ -1,5 +1,6 @@
 package com.example.pipi.presentation.main
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Components.drawTextTitleTopAppbar
+import com.example.pipi.presentation.main.calendar.CalendarActivity
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
@@ -37,15 +39,19 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainScreen(viewModel)
+            MainScreen(viewModel,::goToCalendarActivity)
         }
+    }
+
+    fun goToCalendarActivity() {
+        startActivity(Intent(this, CalendarActivity::class.java))
     }
 }
 
 @ExperimentalMaterialApi
 @ExperimentalPagerApi
 @Composable
-fun MainScreen(viewModel: MainViewModel) {
+fun MainScreen(viewModel: MainViewModel,goToCalendarActivity:()->Unit) {
     val tabs = listOf(
         "회원관리",
         "친구요청"
@@ -75,7 +81,13 @@ fun MainScreen(viewModel: MainViewModel) {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
                         contentDescription = "취소",
-                        modifier = Modifier.clickable(onClick = { coroutineScope.launch { viewModel.setBottomSheetState(false) } })
+                        modifier = Modifier.clickable(onClick = {
+                            coroutineScope.launch {
+                                viewModel.setBottomSheetState(
+                                    false
+                                )
+                            }
+                        })
                     )
                 }
                 Row(
@@ -122,7 +134,7 @@ fun MainScreen(viewModel: MainViewModel) {
             Tabs(tabs = tabs, state = pagerState)
             HorizontalPager(state = pagerState) { page ->
                 when (page) {
-                    0 -> MemebersScreen(viewModel = viewModel)
+                    0 -> MemebersScreen(viewModel = viewModel,goToCalendarActivity)
                     1 -> MemeberRequestScreen(viewModel = viewModel)
                 }
             }

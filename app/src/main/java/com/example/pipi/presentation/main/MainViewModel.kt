@@ -1,5 +1,7 @@
 package com.example.pipi.presentation.main
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,27 +14,25 @@ import kotlinx.coroutines.launch
 class MainViewModel(private val repository: MemberRepositoryImpl) : ViewModel() {
 
     //이 뷰모델 내 기능들 추후 bottomnavigation menu 바탕으로 viewmodel만들어서 나눌것.
-
-    init {
-        getMyMembers()
-        getMemberRequest()
-    }
-
     val isBottomSheetExpanded = MutableLiveData(false)
-    fun setBottomSheetState(expandBottomSheet: Boolean){
+    fun setBottomSheetState(expandBottomSheet: Boolean) {
         isBottomSheetExpanded.postValue(expandBottomSheet)
     }
 
-    private val _members = MutableStateFlow(listOf<Member>())
-    val members: StateFlow<List<Member>> get() = _members
+    private val _members: MutableState<List<Member>> = mutableStateOf(listOf())
+    val members: MutableState<List<Member>> get() = _members
 
-    private val _memberRequest = MutableStateFlow(listOf<Member>())
-    val memberRequest: StateFlow<List<Member>> get() = _members
+    private val _memberRequest: MutableState<List<Member>> = mutableStateOf(listOf())
+    val memberRequest: MutableState<List<Member>> get() = _members
 
     private val _revealedCardIdsList = MutableStateFlow(listOf<Int>())
     val revealedCardIdsList: StateFlow<List<Int>> get() = _revealedCardIdsList
 
-    private fun getMyMembers() {
+    /**
+     * TODO
+     * 멤버 불러오는 부분도 stateFlow로 변경할 것.
+     */
+    fun getMyMembers() {
         viewModelScope.launch(Dispatchers.Default) {
             val dummyMemebers = listOf<Member>(
                 Member("회원1"),
@@ -55,7 +55,7 @@ class MainViewModel(private val repository: MemberRepositoryImpl) : ViewModel() 
                 Member("회원18"),
                 Member("회원19"),
             )
-            _members.emit(dummyMemebers)
+            _members.value = dummyMemebers
         }
     }
 
@@ -82,7 +82,7 @@ class MainViewModel(private val repository: MemberRepositoryImpl) : ViewModel() 
                 Member("회원18"),
                 Member("회원19"),
             )
-            _memberRequest.emit(dummyMemebers)
+            _memberRequest.value = dummyMemebers
         }
     }
 
