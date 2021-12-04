@@ -18,14 +18,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Components.DefaultTopAppbar
-import com.example.pipi.global.constants.ui.Components.drawTextTitleTopAppbar
 import com.example.pipi.presentation.main.calendar.CalendarActivity
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
-import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -40,11 +41,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainScreen(viewModel, ::goToCalendarActivity)
+            val navController = rememberNavController()
+            MainScreen(viewModel, navController, ::goToCalendarActivity)
         }
     }
 
-    fun goToCalendarActivity() {
+    private fun goToCalendarActivity() {
         startActivity(Intent(this, CalendarActivity::class.java))
     }
 }
@@ -52,89 +54,21 @@ class MainActivity : AppCompatActivity() {
 @ExperimentalMaterialApi
 @ExperimentalPagerApi
 @Composable
-fun MainScreen(viewModel: MainViewModel, goToCalendarActivity: () -> Unit) {
-    val tabs = listOf(
-        "회원관리",
-        "친구요청"
-    )
-
-    val pagerState = rememberPagerState(pageCount = tabs.size)
-
-    //appbar도 통일 할 수 있도록 기존 컴포넌트 수정 필요.
+fun MainScreen(
+    viewModel: MainViewModel,
+    navController: NavHostController,
+    goToCalendarActivity: () -> Unit
+) {
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
-
     val isBottomSheetExpanded by viewModel.isBottomSheetExpanded.observeAsState(false)
     val coroutineScope = rememberCoroutineScope()
     BottomSheetScaffold(
         scaffoldState = bottomSheetScaffoldState,
-        sheetContent = {
-            Column(Modifier.fillMaxWidth()) {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(47.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(text = "회원 구분")
-                    Spacer(modifier = Modifier.weight(1F))
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
-                        contentDescription = "취소",
-                        modifier = Modifier.clickable(onClick = {
-                            coroutineScope.launch {
-                                viewModel.setBottomSheetState(
-                                    false
-                                )
-                            }
-                        })
-                    )
-                }
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(60.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(text = "사용중", style = MaterialTheme.typography.subtitle2)
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(text = "회원권이 있는 회원", style = MaterialTheme.typography.subtitle2)
-                }
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(60.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(text = "만료됨", style = MaterialTheme.typography.subtitle2)
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(text = "회원권이 없거나 만료된 회원")
-                }
-            }
-        },
-        sheetPeekHeight = 0.dp,
-        topBar = {
-            DefaultTopAppbar(
-                title = {
-                    Text(
-                        text = "회원관리",
-                        style = MaterialTheme.typography.h2,
-                        fontSize = 24.sp,
-                    )
-                },
-                optionComponent = {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_show),
-                        contentDescription = "회원추가",
-                        modifier = Modifier
-                            .size(22.dp)
-                            .clickable { println("add member clicked") }
-                    )
-                })
-        },
+        sheetContent = { BottomSheetsContents(coroutineScope) { viewModel.hideBottomSheet() } },
+        sheetPeekHeight = 0.dp
     )
-//    Scaffold(topBar = { drawTextTitleTopAppbar("sam트레이너", {}) })
     {
         if (isBottomSheetExpanded) {
             if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
@@ -149,16 +83,44 @@ fun MainScreen(viewModel: MainViewModel, goToCalendarActivity: () -> Unit) {
                 }
             }
         }
-        Column(modifier = Modifier.fillMaxSize()) {
-            Tabs(tabs = tabs, state = pagerState)
-            HorizontalPager(state = pagerState) { page ->
-                when (page) {
-                    0 -> MemebersScreen(viewModel = viewModel, goToCalendarActivity)
-                    1 -> MemeberRequestScreen(viewModel = viewModel)
+        Column(Modifier.fillMaxSize()) {
+            NavHost(navController = navController, startDestination = "membersScreen") {
+                composable("membersScreen") {
+                    MembersScreen(
+                        viewModel = viewModel,
+                        goToCalendarActivity = goToCalendarActivity,
+                        { navController.navigate("memberRequestScreen") { popUpTo("memebersScreen") } }
+                    )
+                }
+                composable("memberRequestScreen") {
+                    MemberRequestScreen(
+                        viewModel = viewModel
+                    ) { navController.navigateUp() }
                 }
             }
         }
     }
+}
+
+@Composable
+fun DrawMainTopAppBar(showMemberRequestScreen: () -> Unit) {
+    DefaultTopAppbar(
+        title = {
+            Text(
+                text = "회원관리",
+                style = MaterialTheme.typography.h2,
+                fontSize = 24.sp,
+            )
+        },
+        optionComponent = {
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_show),
+                contentDescription = "회원추가",
+                modifier = Modifier
+                    .size(22.dp)
+                    .clickable { showMemberRequestScreen() }
+            )
+        })
 }
 
 @ExperimentalMaterialApi
@@ -172,6 +134,50 @@ fun expandBottomSheet(
         }
     }
 
+}
+
+@Composable
+fun BottomSheetsContents(coroutineScope: CoroutineScope, hideBottomSheet: () -> Unit) {
+    Column(Modifier.fillMaxWidth()) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(47.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "회원 구분")
+            Spacer(modifier = Modifier.weight(1F))
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
+                contentDescription = "취소",
+                modifier = Modifier.clickable(onClick = {
+                    coroutineScope.launch {
+                        hideBottomSheet()
+                    }
+                })
+            )
+        }
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(60.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "사용중", style = MaterialTheme.typography.subtitle2)
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(text = "회원권이 있는 회원", style = MaterialTheme.typography.subtitle2)
+        }
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(60.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "만료됨", style = MaterialTheme.typography.subtitle2)
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(text = "회원권이 없거나 만료된 회원")
+        }
+    }
 }
 
 

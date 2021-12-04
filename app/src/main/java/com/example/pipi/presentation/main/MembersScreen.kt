@@ -35,7 +35,11 @@ import kotlin.math.roundToInt
 
 @ExperimentalMaterialApi
 @Composable
-fun MemebersScreen(viewModel: MainViewModel, goToCalendarActivity: () -> Unit) {
+fun MembersScreen(
+    viewModel: MainViewModel,
+    goToCalendarActivity: () -> Unit,
+    showMemberRequestScreen: () -> Unit
+) {
     val members = viewModel.members
     val revealedCardIds = viewModel.revealedCardIdsList.collectAsState()
     val scope = rememberCoroutineScope()
@@ -43,66 +47,75 @@ fun MemebersScreen(viewModel: MainViewModel, goToCalendarActivity: () -> Unit) {
         initialValue = ModalBottomSheetValue.Hidden
     )
     viewModel.getMyMembers()
-    Column(modifier = Modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-                .padding(start = 16.dp, end = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(text = "나의 회원", style = MaterialTheme.typography.subtitle2, color = FONT_GRAY)
-            Text(text = "13 명", style = MaterialTheme.typography.subtitle2, color = PRIMARY_BLACK)
-            Spacer(modifier = Modifier.weight(1F))
-            Row(modifier = Modifier.clickable(onClick = { viewModel.setBottomSheetState(true) })) {
-                Text(text = "사용중")
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
-                    contentDescription = "사용중"
+    Column(Modifier.fillMaxSize()) {
+        DrawMainTopAppBar { showMemberRequestScreen() }
+        Column(modifier = Modifier.fillMaxSize()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .padding(start = 16.dp, end = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(text = "나의 회원", style = MaterialTheme.typography.subtitle2, color = FONT_GRAY)
+                Text(
+                    text = "13 명",
+                    style = MaterialTheme.typography.subtitle2,
+                    color = PRIMARY_BLACK
                 )
+                Spacer(modifier = Modifier.weight(1F))
+                Row(modifier = Modifier.clickable(onClick = { viewModel.setBottomSheetState(true) })) {
+                    Text(text = "사용중")
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
+                        contentDescription = "사용중"
+                    )
+                }
             }
-        }
-        //lazycolum
-        LazyColumn(contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
+            //lazycolum
+            LazyColumn(contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
 //            items(dummyMemebers) { item: Member ->
 //                MemberItem(member = item)
 //            }
-            members.value?.let {
-                itemsIndexed(it) { index, item ->
-                    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                        Row(
-                            Modifier
-                                .padding(4.dp)
-                                .height(86.dp)
-                                .background(Color.Red)
-                        ) {
-                            Text(
-                                text = "삭제",
+                members.value?.let {
+                    itemsIndexed(it) { index, item ->
+                        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                            Row(
                                 Modifier
-                                    .height(72.dp)
-                                    .fillMaxWidth()
-                                    .padding(23.dp)
-                                    .clip(RoundedCornerShape(10.dp)), textAlign = TextAlign.Center,
-                                color = Color.White
+                                    .padding(4.dp)
+                                    .height(86.dp)
+                                    .background(Color.Red)
+                            ) {
+                                Text(
+                                    text = "삭제",
+                                    Modifier
+                                        .height(72.dp)
+                                        .fillMaxWidth()
+                                        .padding(23.dp)
+                                        .clip(RoundedCornerShape(10.dp)),
+                                    textAlign = TextAlign.Center,
+                                    color = Color.White
+                                )
+                            }
+                            DraggableItem(
+                                member = item,
+                                isRevealed = revealedCardIds.value.contains(index),
+                                cardOffset = 100F, // 스와이프 될 너비
+                                onExpand = { viewModel.onItemExpanded(index) },
+                                onCollapse = { viewModel.onItemCollapsed(index) },
+                                onClick = {
+//                            scope.launch { modalBottomSheetState.show() }
+                                    // 달력 화면으로 이동하기
+                                    goToCalendarActivity()
+                                }
                             )
                         }
-                        DraggableItem(
-                            member = item,
-                            isRevealed = revealedCardIds.value.contains(index),
-                            cardOffset = 100F, // 스와이프 될 너비
-                            onExpand = { viewModel.onItemExpanded(index) },
-                            onCollapse = { viewModel.onItemCollapsed(index) },
-                            onClick = {
-//                            scope.launch { modalBottomSheetState.show() }
-                                // 달력 화면으로 이동하기
-                                goToCalendarActivity()
-                            }
-                        )
                     }
                 }
             }
         }
     }
+
     ModalBottomSheet(modalBottomSheetState = modalBottomSheetState, member = Member("", 0))
 }
 
@@ -219,7 +232,11 @@ fun MemberItem(
             Modifier.size(54.dp)
         )
         Spacer(modifier = Modifier.width(16.dp))
-        Text(text = member.nickname, style = MaterialTheme.typography.subtitle2, color = PRIMARY_BLACK)
+        Text(
+            text = member.nickname,
+            style = MaterialTheme.typography.subtitle2,
+            color = PRIMARY_BLACK
+        )
         Spacer(modifier = Modifier.weight(1F))
         rightEndComponent()
     }

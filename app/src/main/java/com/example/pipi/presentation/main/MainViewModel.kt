@@ -18,6 +18,12 @@ class MainViewModel(private val repository: MemberRepositoryImpl) : ViewModel() 
     fun setBottomSheetState(expandBottomSheet: Boolean) {
         isBottomSheetExpanded.postValue(expandBottomSheet)
     }
+    fun showBottomSheet(){
+        isBottomSheetExpanded.postValue(true)
+    }
+    fun hideBottomSheet(){
+        isBottomSheetExpanded.postValue(false)
+    }
 
     private val _members: MutableState<List<Member>> = mutableStateOf(listOf())
     val members: MutableState<List<Member>> get() = _members
