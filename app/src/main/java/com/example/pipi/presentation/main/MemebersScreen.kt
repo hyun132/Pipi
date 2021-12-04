@@ -28,8 +28,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.pipi.R
-import com.example.pipi.global.constants.ui.Colors.BL_USE
 import com.example.pipi.global.constants.ui.Colors.FONT_GRAY
+import com.example.pipi.global.constants.ui.Colors.PRIMARY_BLACK
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -52,7 +52,7 @@ fun MemebersScreen(viewModel: MainViewModel, goToCalendarActivity: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(text = "나의 회원", style = MaterialTheme.typography.subtitle2, color = FONT_GRAY)
-            Text(text = "13 명", style = MaterialTheme.typography.subtitle2, color = BL_USE)
+            Text(text = "13 명", style = MaterialTheme.typography.subtitle2, color = PRIMARY_BLACK)
             Spacer(modifier = Modifier.weight(1F))
             Row(modifier = Modifier.clickable(onClick = { viewModel.setBottomSheetState(true) })) {
                 Text(text = "사용중")
@@ -219,7 +219,7 @@ fun MemberItem(
             Modifier.size(54.dp)
         )
         Spacer(modifier = Modifier.width(16.dp))
-        Text(text = member.nickname, style = MaterialTheme.typography.subtitle2, color = BL_USE)
+        Text(text = member.nickname, style = MaterialTheme.typography.subtitle2, color = PRIMARY_BLACK)
         Spacer(modifier = Modifier.weight(1F))
         rightEndComponent()
     }

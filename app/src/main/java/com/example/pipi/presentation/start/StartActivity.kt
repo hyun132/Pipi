@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.sp
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Components.drawDefaultButton
 import com.example.pipi.presentation.login.LoginActivity
-import com.example.pipi.global.constants.ui.Colors.MAIN_PURPLE
+import com.example.pipi.global.constants.ui.Colors.PRIMARY_BRAND
 
 class StartActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,7 +79,7 @@ class StartActivity : AppCompatActivity() {
                         text = "쉽게 섬세하게 철저하게",
                         style = MaterialTheme.typography.h5,
                         fontSize = 20.sp,
-                        color = MAIN_PURPLE, fontWeight = FontWeight.W700
+                        color = PRIMARY_BRAND, fontWeight = FontWeight.W700
                     )
                 }
                 Spacer(modifier = Modifier.height(38.dp))

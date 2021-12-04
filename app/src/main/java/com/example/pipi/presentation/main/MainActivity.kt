@@ -19,6 +19,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pipi.R
+import com.example.pipi.global.constants.ui.Components.DefaultTopAppbar
 import com.example.pipi.global.constants.ui.Components.drawTextTitleTopAppbar
 import com.example.pipi.presentation.main.calendar.CalendarActivity
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -39,7 +40,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainScreen(viewModel,::goToCalendarActivity)
+            MainScreen(viewModel, ::goToCalendarActivity)
         }
     }
 
@@ -51,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 @ExperimentalMaterialApi
 @ExperimentalPagerApi
 @Composable
-fun MainScreen(viewModel: MainViewModel,goToCalendarActivity:()->Unit) {
+fun MainScreen(viewModel: MainViewModel, goToCalendarActivity: () -> Unit) {
     val tabs = listOf(
         "회원관리",
         "친구요청"
@@ -113,7 +114,25 @@ fun MainScreen(viewModel: MainViewModel,goToCalendarActivity:()->Unit) {
             }
         },
         sheetPeekHeight = 0.dp,
-        topBar = { drawTextTitleTopAppbar("sam트레이너", {}) }
+        topBar = {
+            DefaultTopAppbar(
+                title = {
+                    Text(
+                        text = "회원관리",
+                        style = MaterialTheme.typography.h2,
+                        fontSize = 24.sp,
+                    )
+                },
+                optionComponent = {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_show),
+                        contentDescription = "회원추가",
+                        modifier = Modifier
+                            .size(22.dp)
+                            .clickable { println("add member clicked") }
+                    )
+                })
+        },
     )
 //    Scaffold(topBar = { drawTextTitleTopAppbar("sam트레이너", {}) })
     {
@@ -134,7 +153,7 @@ fun MainScreen(viewModel: MainViewModel,goToCalendarActivity:()->Unit) {
             Tabs(tabs = tabs, state = pagerState)
             HorizontalPager(state = pagerState) { page ->
                 when (page) {
-                    0 -> MemebersScreen(viewModel = viewModel,goToCalendarActivity)
+                    0 -> MemebersScreen(viewModel = viewModel, goToCalendarActivity)
                     1 -> MemeberRequestScreen(viewModel = viewModel)
                 }
             }

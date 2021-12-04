@@ -55,6 +55,27 @@ object Components {
     }
 
     @Composable
+    fun DefaultTopAppbar(
+        title: @Composable () -> Unit = {},
+        navComponent: @Composable () -> Unit = {},
+        optionComponent: @Composable () -> Unit = {}
+    ) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(69.dp)
+                .padding(start = 16.dp, end = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            navComponent()
+            Row(Modifier.weight(1f)) {
+                title()
+            }
+            optionComponent()
+        }
+    }
+
+    @Composable
     fun drawTextTitleTopAppbar(title: String, goBack: () -> Unit) {
         TopAppBar(
             title = {
@@ -68,18 +89,18 @@ object Components {
                 )
             },
             navigationIcon = { //navigationIcon이 뒤로가기, actions는 액션메뉴
-                IconButton(
-                    onClick = {
-                        Log.d("TAG", "goBackClicked!")
-                        goBack()
-                    },
-                    content = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_back),
-                            contentDescription = "go Back",
-                        )
-                    },
-                )
+//                IconButton(
+//                    onClick = {
+//                        Log.d("TAG", "goBackClicked!")
+//                        goBack()
+//                    },
+//                    content = {
+//                        Icon(
+//                            painter = painterResource(id = R.drawable.ic_back),
+//                            contentDescription = "go Back",
+//                        )
+//                    },
+//                )
             },
             elevation = 0.dp, backgroundColor = SURFACE,
         )
@@ -117,8 +138,14 @@ object Components {
         hideInputData: Boolean,
         title: String
     ) {
-        if (!title.isNullOrEmpty()){
-            Text(text = title,style = MaterialTheme.typography.subtitle2,fontSize = 12.sp,modifier = Modifier.fillMaxWidth(),color = FONT_GRAY)
+        if (!title.isNullOrEmpty()) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.subtitle2,
+                fontSize = 12.sp,
+                modifier = Modifier.fillMaxWidth(),
+                color = FONT_GRAY
+            )
         }
         Box() {
             Row(modifier = Modifier
@@ -148,7 +175,8 @@ object Components {
             }
             Box(
                 modifier = Modifier
-                    .height(48.dp).padding(top = 4.dp), contentAlignment = Alignment.CenterStart
+                    .height(48.dp)
+                    .padding(top = 4.dp), contentAlignment = Alignment.CenterStart
             ) {
                 Text(
                     text = if (input.isEmpty()) hint else "",
@@ -164,7 +192,9 @@ object Components {
                 color = Colors.ERROR_RED,
                 style = MaterialTheme.typography.body2,
                 fontWeight = FontWeight(400),
-                modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .fillMaxWidth(),
                 textAlign = TextAlign.Start
             )
         }

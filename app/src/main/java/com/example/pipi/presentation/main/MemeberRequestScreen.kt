@@ -17,6 +17,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors
+import com.example.pipi.global.constants.ui.Colors.PRIMARY_BLACK
 
 @ExperimentalMaterialApi
 @Composable
@@ -38,7 +39,7 @@ fun MemeberRequestScreen(viewModel: MainViewModel) {
                 style = MaterialTheme.typography.subtitle2,
                 color = Colors.FONT_GRAY
             )
-            Text(text = "13 명", style = MaterialTheme.typography.subtitle2, color = Colors.BL_USE)
+            Text(text = "13 명", style = MaterialTheme.typography.subtitle2, color = PRIMARY_BLACK)
             Spacer(modifier = Modifier.weight(1F))
             Row(modifier = Modifier.clickable(onClick = { viewModel.setBottomSheetState(true) })) {
                 Text(text = "사용중")

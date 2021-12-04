@@ -36,17 +36,19 @@ object Fonts {
     val typography = Typography(
         defaultFontFamily = appFontFamily,
         h1 = TextStyle(
-            fontWeight = FontWeight.Light,
+            fontWeight = FontWeight.Bold,
             fontSize = 96.sp,
-            letterSpacing = (-1.5).sp
+            letterSpacing = (-1.5).sp,
+            lineHeight = 28.sp,
         ),
         h2 = TextStyle(
-            fontWeight = FontWeight.Light,
+            fontWeight = FontWeight.Normal,
             fontSize = 60.sp,
-            letterSpacing = (-0.5).sp
+            letterSpacing = (-0.5).sp,
+            lineHeight = 28.sp,
         ),
         h3 = TextStyle(
-            fontWeight = FontWeight.Normal,
+            fontWeight = FontWeight.Bold,
             fontSize = 48.sp,
             letterSpacing = 0.sp
         ),
@@ -56,7 +58,7 @@ object Fonts {
             letterSpacing = 0.25.sp
         ),
         h5 = TextStyle(
-            fontWeight = FontWeight.Normal,
+            fontWeight = FontWeight.Bold,
             fontSize = 24.sp,
             lineHeight = 36.sp,
             letterSpacing = 0.sp

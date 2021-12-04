@@ -97,7 +97,7 @@ fun ReSetPasswordScreen(
                     .fillMaxWidth()
                     .constrainAs(button) { bottom.linkTo(parent.bottom) }) {
                     Components.drawDefaultButton(
-                        color = if (viewModel.checkConfirmPassword()) Colors.MAIN_PURPLE else Colors.GRAY2,
+                        color = if (viewModel.checkConfirmPassword()) Colors.PRIMARY_BRAND else Colors.GRAY2,
                         text = "다음",
                         onClick = { /* 여기서 인증 성공했는지 체크하고 네비게이션 해야함*/ },
                         isEnabled = viewModel.checkConfirmPassword()

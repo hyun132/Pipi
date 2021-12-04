@@ -29,7 +29,7 @@ import com.example.pipi.global.constants.ui.Colors
 import com.example.pipi.global.constants.ui.Colors.DARK_GRAY
 import com.example.pipi.global.constants.ui.Colors.ERROR_RED
 import com.example.pipi.global.constants.ui.Colors.GRAY2
-import com.example.pipi.global.constants.ui.Colors.MAIN_PURPLE
+import com.example.pipi.global.constants.ui.Colors.PRIMARY_BRAND
 import com.example.pipi.global.constants.ui.Components
 import com.example.pipi.global.constants.ui.Components.drawDefaultButton
 import com.example.pipi.global.constants.ui.Components.drawTextTitleTopAppbar
@@ -100,7 +100,7 @@ fun PhoneAuthScreen(
                                     .height(32.dp)
                                     .width(86.dp)
                                     .padding(0.dp)
-                                    .background(MAIN_PURPLE),
+                                    .background(PRIMARY_BRAND),
                                     shape = RoundedCornerShape(2.dp),
                                     content = {
                                         Text(
@@ -132,7 +132,7 @@ fun PhoneAuthScreen(
                                 .height(32.dp)
                                 .width(86.dp)
                                 .padding(0.dp)
-                                .background(MAIN_PURPLE),
+                                .background(PRIMARY_BRAND),
                                 shape = RoundedCornerShape(2.dp),
                                 content = {
                                     Text(
@@ -154,7 +154,7 @@ fun PhoneAuthScreen(
                     .fillMaxWidth()
                     .constrainAs(button) { bottom.linkTo(parent.bottom) }) {
                     drawDefaultButton(
-                        color = if (isbuttonActive) MAIN_PURPLE else GRAY2,
+                        color = if (isbuttonActive) PRIMARY_BRAND else GRAY2,
                         text = "다음",
                         onClick = { navController.navigate("nickName") },
                         isEnabled = isbuttonActive
@@ -180,7 +180,7 @@ fun showSnackbar(message: String) {
             action = {
                 TextButton(
                     content = {
-                        Text(text = "확인", color = MAIN_PURPLE)
+                        Text(text = "확인", color = PRIMARY_BRAND)
                     },
                     onClick = { Timber.d("clicked") }
                 )
@@ -212,7 +212,7 @@ fun InputTextFeildWithButton(
             .padding(top = 8.dp)
             .drawBehind {
                 drawLine(
-                    color = if (phoneNumber.isNotEmpty()) MAIN_PURPLE else GRAY2,
+                    color = if (phoneNumber.isNotEmpty()) PRIMARY_BRAND else GRAY2,
                     start = Offset(0f, size.height),
                     end = Offset(size.width, size.height)
                 )
@@ -230,7 +230,7 @@ fun InputTextFeildWithButton(
                 .height(32.dp)
                 .width(86.dp)
                 .padding(0.dp)
-                .background(MAIN_PURPLE), content = {
+                .background(PRIMARY_BRAND), content = {
                 Text(
                     text = buttonText,
                     style = MaterialTheme.typography.subtitle2,

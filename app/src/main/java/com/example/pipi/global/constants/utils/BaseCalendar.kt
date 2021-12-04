@@ -5,14 +5,14 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import java.util.*
 import kotlin.math.ceil
-import kotlin.math.roundToInt
 
 class BaseCalendar {
 
     companion object {
         const val DAYS_OF_WEEK = 7
-        var LOW_OF_CALENDAR = 6 // 이 값을 동적으로 변환하는 것에 대한 고려 필요
     }
+
+    var ROW_OF_CALENDAR = 6 // 이 값을 동적으로 변환하는 것에 대한 고려 필요
 
     val calendar = Calendar.getInstance()
 
@@ -40,6 +40,8 @@ class BaseCalendar {
     init {
         calendar.time = Date() // 오늘로 설정?
     }
+
+    fun getRowOfCalendar() = ROW_OF_CALENDAR
 
     fun initBaseCalendar(dataChangedCallback: (Calendar) -> Unit) {
         drawMonthDate(dataChangedCallback)
@@ -106,14 +108,14 @@ class BaseCalendar {
 
         prevMonthTail = calendar.get(Calendar.DAY_OF_WEEK) - 1 //날짜가 1일로 설정되어있기 때문에 이번달 첫주의 1일이전의날
 
-        LOW_OF_CALENDAR = ceil((prevMonthTail + currentMonthMaxDate) / 7.0).toInt()
+        ROW_OF_CALENDAR = ceil((prevMonthTail + currentMonthMaxDate) / 7.0).toInt()
 
         makePrevMonthTailToShow(calendar.clone() as Calendar) //깊은복사 (Calendar class 내부에서 재정의해주었기때문)
         makeCurrentMonth(calendar)
         currentDateTime.value =
             "${calendar.get(Calendar.YEAR)}년 ${calendar.get(Calendar.MONTH) + 1}"
 
-        nextMonthHead = LOW_OF_CALENDAR * DAYS_OF_WEEK - (prevMonthTail + currentMonthMaxDate)
+        nextMonthHead = ROW_OF_CALENDAR * DAYS_OF_WEEK - (prevMonthTail + currentMonthMaxDate)
         makeNextMonthHeadToShow()
 
         dataChangedCallback(calendar)

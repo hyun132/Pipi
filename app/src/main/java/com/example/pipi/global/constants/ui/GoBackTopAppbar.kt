@@ -9,10 +9,11 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.pipi.R
-import com.example.pipi.global.constants.ui.Colors.BL_USE
+import com.example.pipi.global.constants.ui.Colors.PRIMARY_BLACK
 import com.example.pipi.global.constants.ui.Colors.SURFACE
 import timber.log.Timber
 
@@ -37,7 +38,7 @@ fun DrawGoBackTopAppbar(isNavIconVisible: Boolean) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_back),
                             contentDescription = "go Back",
-                            tint = BL_USE
+                            tint = PRIMARY_BLACK
                         )
                     },
                 )

@@ -59,7 +59,11 @@ fun DrawCalendarTitleArea(baseCalendar: BaseCalendar) {
             .padding(start = 17.dp, end = 17.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = baseCalendar.currentDateTime.value)
+        Text(
+            text = baseCalendar.currentDateTime.value,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
         Spacer(modifier = Modifier.weight(1f))
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_left_arrow),
@@ -92,28 +96,33 @@ fun DrawCalendarTitleArea(baseCalendar: BaseCalendar) {
 @ExperimentalFoundationApi
 @Composable
 fun DrawCalendar(calendar: BaseCalendar, onDayClicked: (BaseCalendar.DataModel) -> Unit) {
-    LazyVerticalGrid(
-        cells = GridCells.Fixed(7),
-        content = {
-            items(calendar.data.size) { index ->
-                DayItem(
-                    data = calendar.data[index],
-                    onClick = { onDayClicked(calendar.data[index]) })
-            }
-        },
-        modifier = Modifier
-            .fillMaxSize(),
-    )
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        LazyVerticalGrid(
+            cells = GridCells.Fixed(7),
+            content = {
+                items(calendar.data.size) { index ->
+                    DayItem(
+                        data = calendar.data[index],
+                        onClick = { onDayClicked(calendar.data[index]) },
+                        height = maxHeight / calendar.getRowOfCalendar().dp
+                    )
+                }
+            },
+            modifier = Modifier
+                .fillMaxSize(),
+        )
+    }
 }
 
 /**
  * calendar에 그려질 하나의 날짜 셀
  */
 @Composable
-fun DayItem(data: BaseCalendar.DataModel, onClick: () -> Unit) {
+fun DayItem(data: BaseCalendar.DataModel, height: Float, onClick: () -> Unit) {
     Column(
         Modifier
             .fillMaxSize()
+            .height(height.dp)
             .clickable { onClick() }) {
         Text(
             text = data.day.toString(),
@@ -139,6 +148,11 @@ fun DayItem(data: BaseCalendar.DataModel, onClick: () -> Unit) {
                 .fillMaxWidth(),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
+        )
+        Spacer(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Red)
         )
     }
 }
