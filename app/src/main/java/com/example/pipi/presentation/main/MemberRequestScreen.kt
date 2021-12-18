@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pipi.R
-import com.example.pipi.global.constants.ui.Colors.PRIMARY_BLACK
+import com.example.pipi.global.constants.ui.Colors.PRIMARY_TEXT
 import com.example.pipi.global.constants.ui.Components.DefaultTopAppbar
 
 @ExperimentalMaterialApi
@@ -85,7 +85,7 @@ fun DrawMemberItem(item: Member, onClick: () -> Unit?) {
             Spacer(Modifier.width(8.dp))
             OutlinedButton(
                 onClick = { /*거절*/ },
-                border = BorderStroke(1.dp, PRIMARY_BLACK),
+                border = BorderStroke(1.dp, PRIMARY_TEXT),
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
                     .height(25.dp)
@@ -97,7 +97,7 @@ fun DrawMemberItem(item: Member, onClick: () -> Unit?) {
             ) {
                 Text(
                     text = "거절",
-                    color = PRIMARY_BLACK,
+                    color = PRIMARY_TEXT,
                     style = MaterialTheme.typography.body2,
                     textAlign = TextAlign.Center,
                     fontSize = 10.sp
@@ -113,7 +113,7 @@ fun DrawTopAppBar(goBack: () -> Unit) {
         Text(
             text = "회원등록",
             style = MaterialTheme.typography.h1,
-            color = PRIMARY_BLACK,
+            color = PRIMARY_TEXT,
             textAlign = TextAlign.Center,
             fontSize = 16.sp,
             modifier = Modifier.fillMaxWidth()

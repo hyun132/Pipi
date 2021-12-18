@@ -1,10 +1,14 @@
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import java.io.Serializable
+import java.time.LocalDate
 import java.util.*
 import kotlin.math.ceil
 
-class BaseCalendar {
+class BaseCalendar : Serializable {
 
     companion object {
         const val DAYS_OF_WEEK = 7
@@ -16,7 +20,7 @@ class BaseCalendar {
     // 이번달 첫주와 같은 주에 있는 지난달의 일 중 첫번째날 (지난달 마지막주 일요일)
     var prevMonthTail = 0
 
-    // 이번달 마지막주와 같은 주에 있는 다음달의 일 중 마지막날(다음달 마지막주 토요일)
+    // 이번달 마지막주와 같은 주에 있는 다음달의 일 중 마지막날(다음달 마지막주 마지막날)
     var nextMonthHead = 0
 
     // 이번달 날짜갯수(마지막 날짜 28,29,30,31)
@@ -60,6 +64,15 @@ class BaseCalendar {
             calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 1)
         }
         drawMonthDate(dataChangedCallback)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getToday(): LocalDate {
+        return LocalDate.now()
+    }
+
+    fun getTodayData(){
+        //오늘날짜에 해당하는 데이터 가져올것.
     }
 
     /**

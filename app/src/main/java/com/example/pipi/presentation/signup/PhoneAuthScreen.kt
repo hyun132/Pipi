@@ -26,9 +26,9 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors
-import com.example.pipi.global.constants.ui.Colors.DARK_GRAY
-import com.example.pipi.global.constants.ui.Colors.ERROR_RED
-import com.example.pipi.global.constants.ui.Colors.GRAY2
+import com.example.pipi.global.constants.ui.Colors.PRIMARY_TEXT
+import com.example.pipi.global.constants.ui.Colors.ALERT
+import com.example.pipi.global.constants.ui.Colors.SECONDARY_TEXT_GHOST
 import com.example.pipi.global.constants.ui.Colors.PRIMARY_BRAND
 import com.example.pipi.global.constants.ui.Components
 import com.example.pipi.global.constants.ui.Components.drawDefaultButton
@@ -91,7 +91,7 @@ fun PhoneAuthScreen(
                                         text = formattedTime,
                                         style = MaterialTheme.typography.subtitle2,
                                         fontSize = 11.sp,
-                                        color = ERROR_RED
+                                        color = ALERT
                                     )
                                 }
                                 TextButton(onClick = {
@@ -154,7 +154,7 @@ fun PhoneAuthScreen(
                     .fillMaxWidth()
                     .constrainAs(button) { bottom.linkTo(parent.bottom) }) {
                     drawDefaultButton(
-                        color = if (isbuttonActive) PRIMARY_BRAND else GRAY2,
+                        color = if (isbuttonActive) PRIMARY_BRAND else SECONDARY_TEXT_GHOST,
                         text = "다음",
                         onClick = { navController.navigate("nickName") },
                         isEnabled = isbuttonActive
@@ -185,7 +185,7 @@ fun showSnackbar(message: String) {
                     onClick = { Timber.d("clicked") }
                 )
             },
-            backgroundColor = DARK_GRAY
+            backgroundColor = PRIMARY_TEXT
         ) {
             Text(
                 text = message,
@@ -212,7 +212,7 @@ fun InputTextFeildWithButton(
             .padding(top = 8.dp)
             .drawBehind {
                 drawLine(
-                    color = if (phoneNumber.isNotEmpty()) PRIMARY_BRAND else GRAY2,
+                    color = if (phoneNumber.isNotEmpty()) PRIMARY_BRAND else SECONDARY_TEXT_GHOST,
                     start = Offset(0f, size.height),
                     end = Offset(size.width, size.height)
                 )
@@ -246,7 +246,7 @@ fun InputTextFeildWithButton(
         ) {
             Text(
                 text = if (phoneNumber.isEmpty()) hint else "",
-                color = Colors.GRAY2,
+                color = Colors.SECONDARY_TEXT_GHOST,
                 style = MaterialTheme.typography.subtitle2,
             )
             Toast.LENGTH_SHORT

@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.example.pipi.R
-import com.example.pipi.global.constants.ui.Colors.GRAY2
+import com.example.pipi.global.constants.ui.Colors.SECONDARY_TEXT_GHOST
 import com.example.pipi.global.constants.ui.Components
 import com.example.pipi.global.constants.ui.Components.showLoadingDialog
 import com.example.pipi.global.constants.ui.setProjectTheme
@@ -223,7 +223,7 @@ fun MainLoginScreen(
                             Text(
                                 text = "아직 회원이 아니신가요",
                                 style = MaterialTheme.typography.subtitle2,
-                                color = GRAY2,
+                                color = SECONDARY_TEXT_GHOST,
                                 fontSize = 12.sp,
                             )
                             Spacer(modifier = Modifier.width(8.dp))

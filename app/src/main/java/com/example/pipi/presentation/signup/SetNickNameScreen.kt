@@ -93,7 +93,7 @@ fun SetNickNameScreen(
                         .fillMaxWidth()
                         .constrainAs(button) { bottom.linkTo(parent.bottom) }) {
                     Components.drawDefaultButton(
-                        color = if (viewModel.checkNickNameValid()) Colors.PRIMARY_BRAND else Colors.GRAY2,
+                        color = if (viewModel.checkNickNameValid()) Colors.PRIMARY_BRAND else Colors.SECONDARY_TEXT_GHOST,
                         text = "다음",
                         onClick = { navController.navigate("setPassword") },
                         isEnabled = viewModel.checkNickNameValid()

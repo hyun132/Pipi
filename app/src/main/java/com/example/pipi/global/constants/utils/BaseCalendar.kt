@@ -3,10 +3,11 @@ package com.example.pipi.global.constants.utils
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import java.io.Serializable
 import java.util.*
 import kotlin.math.ceil
 
-class BaseCalendar {
+class BaseCalendar : Serializable {
 
     companion object {
         const val DAYS_OF_WEEK = 7
@@ -33,9 +34,12 @@ class BaseCalendar {
      * 현재 년/월 을 텍스트로 가지고 있는 변수
      */
     val currentDateTime: MutableState<String> =
-        mutableStateOf("${calendar.get(Calendar.YEAR)}년 ${calendar.get(Calendar.MONTH)}")
+        mutableStateOf("${calendar.get(Calendar.YEAR)}년 ${calendar.get(Calendar.MONTH)}월")
 
-    data class DataModel(val day: Int = 1) // 추후 아이템 관련 api 받으면 데이터타입 수정 및 파일분리 예정.
+    data class DataModel(
+        val day: Int = 1,
+        val schedules: MutableList<String> = mutableListOf<String>()
+    ):Serializable // 추후 아이템 관련 api 받으면 데이터타입 수정 및 파일분리 예정.
 
     init {
         calendar.time = Date() // 오늘로 설정?

@@ -100,7 +100,7 @@ fun SetPasswordScreen(
                     .fillMaxWidth()
                     .constrainAs(button) { bottom.linkTo(parent.bottom) }) {
                     Components.drawDefaultButton(
-                        color = if (viewModel.checkConfirmPassword()) Colors.PRIMARY_BRAND else Colors.GRAY2,
+                        color = if (viewModel.checkConfirmPassword()) Colors.PRIMARY_BRAND else Colors.SECONDARY_TEXT_GHOST,
                         text = "다음",
                         onClick = {
                             viewModel.requestSignUp()

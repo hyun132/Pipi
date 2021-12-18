@@ -1,14 +1,11 @@
 package com.example.pipi.global.constants.ui
 
-import android.graphics.Color.BLACK
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -16,7 +13,6 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -156,8 +152,8 @@ object Components {
                     //에러일때 색깔도
                     drawLine(
                         color = if (errorMessage.isNullOrEmpty()) {
-                            Colors.GRAY2
-                        } else Colors.ERROR_RED,
+                            Colors.SECONDARY_TEXT_GHOST
+                        } else Colors.ALERT,
                         start = Offset(0f, size.height),
                         end = Offset(size.width, size.height)
                     )
@@ -180,7 +176,7 @@ object Components {
             ) {
                 Text(
                     text = if (input.isEmpty()) hint else "",
-                    color = Colors.GRAY2,
+                    color = Colors.SECONDARY_TEXT_GHOST,
                     style = MaterialTheme.typography.body2,
                     fontWeight = FontWeight(400),
                 )
@@ -189,7 +185,7 @@ object Components {
         if (errorMessage != null) {
             Text(
                 text = errorMessage,
-                color = Colors.ERROR_RED,
+                color = Colors.ALERT,
                 style = MaterialTheme.typography.body2,
                 fontWeight = FontWeight(400),
                 modifier = Modifier

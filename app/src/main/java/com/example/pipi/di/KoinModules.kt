@@ -10,6 +10,7 @@ import com.example.pipi.domain.use_case.RequestPhoneAuthMessageUseCase
 import com.example.pipi.domain.use_case.SignUpUseCase
 import com.example.pipi.presentation.login.LoginViewModel
 import com.example.pipi.presentation.main.MainViewModel
+import com.example.pipi.presentation.main.calendar.CalendarViewModel
 import com.example.pipi.presentation.signup.SignupViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -18,6 +19,7 @@ val viewmodelModules = module {
     viewModel { LoginViewModel(get()) }
     viewModel { MainViewModel(get()) }
     viewModel { SignupViewModel(get(),get(),get()) }
+    viewModel { CalendarViewModel() }
 }
 
 val repositoryModules = module {

@@ -24,9 +24,12 @@ import timber.log.Timber
 
 @ExperimentalFoundationApi
 @Composable
-fun CalendarScreen(baseCalendar: BaseCalendar, onDayClicked: (BaseCalendar.DataModel) -> Unit) {
+fun CalendarScreen(
+    viewModel: CalendarViewModel,
+    onCalendarItemClicked: (String) -> Unit
+) {
     Column(Modifier.fillMaxSize()) {
-        DrawBaseCalendar(baseCalendar, onDayClicked)
+        DrawBaseCalendar(viewModel, onCalendarItemClicked)
     }
 }
 
@@ -39,10 +42,13 @@ fun CalendarScreen(baseCalendar: BaseCalendar, onDayClicked: (BaseCalendar.DataM
  */
 @ExperimentalFoundationApi
 @Composable
-fun DrawBaseCalendar(calendar: BaseCalendar, onDayClicked: (BaseCalendar.DataModel) -> Unit = {}) {
+fun DrawBaseCalendar(viewModel: CalendarViewModel, onCalendarItemClicked: (String) -> Unit) {
     Column(modifier = Modifier.fillMaxSize()) {
-        DrawCalendarTitleArea(calendar)
-        DrawCalendar(calendar = calendar, onDayClicked = onDayClicked)
+        DrawCalendarTitleArea(viewModel.calendar)
+        DrawCalendar(calendar = viewModel.calendar) {
+            Timber.d("it: $it")
+            onCalendarItemClicked(it)
+        }
     }
 }
 
@@ -61,8 +67,7 @@ fun DrawCalendarTitleArea(baseCalendar: BaseCalendar) {
     ) {
         Text(
             text = baseCalendar.currentDateTime.value,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.weight(1f)
         )
         Spacer(modifier = Modifier.weight(1f))
         Icon(
@@ -76,6 +81,7 @@ fun DrawCalendarTitleArea(baseCalendar: BaseCalendar) {
                     }
                 }
         )
+        Spacer(modifier = Modifier.width(42.dp))
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_right_arrow),
             contentDescription = "",
@@ -95,7 +101,7 @@ fun DrawCalendarTitleArea(baseCalendar: BaseCalendar) {
  */
 @ExperimentalFoundationApi
 @Composable
-fun DrawCalendar(calendar: BaseCalendar, onDayClicked: (BaseCalendar.DataModel) -> Unit) {
+fun DrawCalendar(calendar: BaseCalendar, onItemClicked: (String) -> Unit) {
     BoxWithConstraints(Modifier.fillMaxSize()) {
         LazyVerticalGrid(
             cells = GridCells.Fixed(7),
@@ -103,7 +109,10 @@ fun DrawCalendar(calendar: BaseCalendar, onDayClicked: (BaseCalendar.DataModel) 
                 items(calendar.data.size) { index ->
                     DayItem(
                         data = calendar.data[index],
-                        onClick = { onDayClicked(calendar.data[index]) },
+                        onClick = {
+                            onItemClicked(calendar.data[index].day.toString())
+                            Timber.d("itemClicked :: dat is ${calendar.data[index].day}")
+                        },
                         height = maxHeight / calendar.getRowOfCalendar().dp
                     )
                 }

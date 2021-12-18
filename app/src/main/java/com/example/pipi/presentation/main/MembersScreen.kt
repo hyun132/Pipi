@@ -28,8 +28,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.pipi.R
+import com.example.pipi.global.constants.ui.Colors
 import com.example.pipi.global.constants.ui.Colors.FONT_GRAY
-import com.example.pipi.global.constants.ui.Colors.PRIMARY_BLACK
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -61,7 +61,7 @@ fun MembersScreen(
                 Text(
                     text = "13 명",
                     style = MaterialTheme.typography.subtitle2,
-                    color = PRIMARY_BLACK
+                    color = Colors.PRIMARY_TEXT
                 )
                 Spacer(modifier = Modifier.weight(1F))
                 Row(modifier = Modifier.clickable(onClick = { viewModel.setBottomSheetState(true) })) {
@@ -235,7 +235,7 @@ fun MemberItem(
         Text(
             text = member.nickname,
             style = MaterialTheme.typography.subtitle2,
-            color = PRIMARY_BLACK
+            color = Colors.PRIMARY_TEXT
         )
         Spacer(modifier = Modifier.weight(1F))
         rightEndComponent()

@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.example.pipi.presentation.login.labeledCheckbox
-import com.example.pipi.global.constants.ui.Colors.GRAY2
+import com.example.pipi.global.constants.ui.Colors.SECONDARY_TEXT_GHOST
 import com.example.pipi.global.constants.ui.Colors.PRIMARY_BRAND
 import com.example.pipi.global.constants.ui.Components.drawDefaultButton
 import com.example.pipi.global.constants.ui.Components.drawTextTitleTopAppbar
@@ -55,7 +55,7 @@ fun TosScreen(
                     .fillMaxWidth()
                     .constrainAs(button) { bottom.linkTo(parent.bottom) }) {
                     drawDefaultButton(
-                        color = if (true) PRIMARY_BRAND else GRAY2,
+                        color = if (true) PRIMARY_BRAND else SECONDARY_TEXT_GHOST,
                         text = "다음",
                         onClick = { navController.navigate("nickName") },
                         isEnabled = true
