@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pipi.R
+import com.example.pipi.global.constants.ui.Colors.BRAND_SECOND
 import com.example.pipi.global.constants.ui.Colors.PRIMARY_TEXT
 import com.example.pipi.global.constants.ui.Components.DefaultTopAppbar
 
@@ -72,7 +73,9 @@ fun DrawMemberItem(item: Member, onClick: () -> Unit?) {
                     .width(66.dp)
                     .clip(
                         RoundedCornerShape(8.dp)
-                    )
+                    ),
+                contentPadding = PaddingValues(0.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = BRAND_SECOND),
             ) {
                 Text(
                     text = "회원수락",
@@ -93,7 +96,9 @@ fun DrawMemberItem(item: Member, onClick: () -> Unit?) {
                     .clip(
                         RoundedCornerShape(8.dp)
                     )
-                    .background(Color.White),
+                    .background(Color.White)
+                    .absolutePadding(0.dp, 0.dp, 0.dp, 0.dp),
+                contentPadding = PaddingValues(0.dp)
             ) {
                 Text(
                     text = "거절",

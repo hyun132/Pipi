@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors
 import com.example.pipi.global.constants.ui.Colors.FONT_GRAY
+import com.example.pipi.global.constants.ui.Colors.SECONDARY_TEXT_GHOST
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -50,6 +51,16 @@ fun MembersScreen(
     Column(Modifier.fillMaxSize()) {
         DrawMainTopAppBar { showMemberRequestScreen() }
         Column(modifier = Modifier.fillMaxSize()) {
+            DrawSearchBar(
+                text = viewModel.searchQuery,
+                modifier = Modifier
+                    .height(30.dp)
+                    .fillMaxWidth()
+                    .background(SECONDARY_TEXT_GHOST)
+                    .clip(RoundedCornerShape(4.dp)),
+                hintText = "회원을 검색해 주세요.",
+                onChange = { viewModel.searchMemberByName() }
+            )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -117,6 +128,23 @@ fun MembersScreen(
     }
 
     ModalBottomSheet(modalBottomSheetState = modalBottomSheetState, member = Member("", 0))
+}
+
+@Composable
+fun DrawSearchBar(
+    text: MutableState<String>,
+    hintText: String,
+    modifier: Modifier,
+    onChange: () -> Unit
+) {
+    TextField(
+        value = text.value,
+        onValueChange = {
+            text.value = it
+            onChange()
+        },
+        modifier = modifier
+    )
 }
 
 @Composable

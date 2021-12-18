@@ -2,6 +2,7 @@ package com.example.pipi.presentation.main
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class MainViewModel(private val repository: MemberRepositoryImpl) : ViewModel() {
 
@@ -18,10 +20,12 @@ class MainViewModel(private val repository: MemberRepositoryImpl) : ViewModel() 
     fun setBottomSheetState(expandBottomSheet: Boolean) {
         isBottomSheetExpanded.postValue(expandBottomSheet)
     }
-    fun showBottomSheet(){
+
+    fun showBottomSheet() {
         isBottomSheetExpanded.postValue(true)
     }
-    fun hideBottomSheet(){
+
+    fun hideBottomSheet() {
         isBottomSheetExpanded.postValue(false)
     }
 
@@ -34,9 +38,13 @@ class MainViewModel(private val repository: MemberRepositoryImpl) : ViewModel() 
     private val _revealedCardIdsList = MutableStateFlow(listOf<Int>())
     val revealedCardIdsList: StateFlow<List<Int>> get() = _revealedCardIdsList
 
+    val searchQuery = mutableStateOf<String>("")
+
     /**
      * TODO
      * 멤버 불러오는 부분도 stateFlow로 변경할 것.
+     * 멤버는 서버에서 한번 불러오면 데이터베이스에 캐싱해둘것.
+     * 멤버리스트를 서버와 동기화하는 시점은 논의해볼 것.
      */
     fun getMyMembers() {
         viewModelScope.launch(Dispatchers.Default) {
@@ -63,6 +71,7 @@ class MainViewModel(private val repository: MemberRepositoryImpl) : ViewModel() 
             )
             _members.value = dummyMemebers
         }
+        Timber.d("loadMemberCalled>>>>>>>>")
     }
 
     private fun getMemberRequest() {
@@ -112,4 +121,18 @@ class MainViewModel(private val repository: MemberRepositoryImpl) : ViewModel() 
             repository.getMyMembers(id = "123123")
         }
     }
+
+    /**
+     * 입력된 키워드가 포함된 멤버 출력해주는 함수.
+     */
+    fun searchMemberByName() {
+        getMyMembers()
+        if (searchQuery.value.isNotEmpty() && searchQuery.value.isNotBlank()) {
+            val reg = (".*"+searchQuery.value.toList().joinToString(".*")).toRegex()
+            _members.value = _members.value.filter { member: Member ->
+                member.nickname.matches(reg)
+            }
+        }
+    }
+
 }
