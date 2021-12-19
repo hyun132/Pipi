@@ -1,13 +1,11 @@
 package com.example.pipi.presentation.login
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -40,10 +38,11 @@ fun MainLoginScreen(
     goMainActivity: () -> Unit,
     goFindPasswordActivity: () -> Unit
 ) {
-    val id: String by viewModel.id.observeAsState("")
-    val password: String by viewModel.password.observeAsState("")
-    val isLoginSuccess: Boolean by viewModel.isLoginSuccess.observeAsState(false)
-    val isLoading: Boolean by viewModel.isLoading.observeAsState(false)
+    val id: String by viewModel.id
+    val password: String by viewModel.password
+    val isLoginSuccess: Boolean by viewModel.isLoginSuccess
+    val isLoading: Boolean by viewModel.isLoading
+    val errorMessage: String by viewModel.errorMessage
     var passwordVisibility by remember { mutableStateOf(true) }
     setProjectTheme(content = {
         Scaffold() {
@@ -247,6 +246,9 @@ fun MainLoginScreen(
                     }
                 }
                 showLoadingDialog(isLoading)
+                Snackbar() {
+                    Text(text = errorMessage,modifier = Modifier.fillMaxWidth())
+                }
             }
         }
     })

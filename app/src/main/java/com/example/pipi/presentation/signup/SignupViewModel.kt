@@ -9,6 +9,7 @@ import com.example.pipi.domain.use_case.RequestPhoneAuthMessageUseCase
 import com.example.pipi.domain.use_case.SignUpUseCase
 import com.example.pipi.global.result.Result
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 import java.util.*
 
@@ -40,19 +41,23 @@ class SignupViewModel(
         // 서버에 요청한 결과가 success일 경우
         viewModelScope.launch {
             authNumber.value.let {
-                val result = checkPhoneAuthUseCase(
+                checkPhoneAuthUseCase(
                     CheckPhoneAuthUseCase.Params(
                         phoneNumber.value!!,
                         true,
                         authNumber.value!!.toInt()
                     )
-                )
-                when (result) {
-                    is Result.Success -> {
-                        _phoneAuthSuccess.postValue(true)
-                        timerTask?.cancel()
+                ).onEach { result ->
+                    when (result) {
+                        is Result.Success -> {
+                            _phoneAuthSuccess.postValue(true)
+                            timerTask?.cancel()
+                        }
+                        is Result.Error -> setDialogMessage("에러가 발생하였습니다. 다시 시도해 주세요")
+                        is Result.Loading -> {
+
+                        }
                     }
-                    is Result.Error -> setDialogMessage("에러가 발생하였습니다. 다시 시도해 주세요")
                 }
             }
         }
@@ -62,28 +67,30 @@ class SignupViewModel(
         timerStarted.value = false
         viewModelScope.launch {
             phoneNumber.value?.let {
-                val result = requestPhoneAuthMessageUseCase(
+                requestPhoneAuthMessageUseCase(
                     RequestPhoneAuthMessageUseCase.Params(
                         it,
                         true
                     )
-                )
-                timerStarted.value = true
-                when (result) {
-                    is Result.Success -> {
-                        if (result.data.success) {
-                            setDialogMessage("인증번호를 문자로 전송하였습니다.")
-                            Timber.d("success")
+                ).onEach { result ->
+                    timerStarted.value = true
+                    when (result) {
+                        is Result.Success -> {
+                            if (result.data?.success == true) {
+                                setDialogMessage("인증번호를 문자로 전송하였습니다.")
+                                Timber.d("success")
+                            }
                         }
-                    }
-                    is Result.Error -> {
-                        setDialogMessage("에러가 발생하였습니다.")
-                        Timber.d("fail")
+                        is Result.Error -> {
+                            setDialogMessage("에러가 발생하였습니다.")
+                            Timber.d("fail")
+                        }
+                        is Result.Loading -> {
+                        }
                     }
                 }
             }
         }
-
     }
 
     val nickName = MutableLiveData<String>("")
@@ -128,16 +135,19 @@ class SignupViewModel(
 
     fun requestSignUp() {
         viewModelScope.launch {
-            val result = signUpUseCase(
+            signUpUseCase(
                 SignUpUseCase.Params(
                     id = phoneNumber.value!!,
                     password.value!!,
                     nickName.value!!
                 )
-            )
-            when(result){
-                is Result.Success -> signUpSuccess.postValue(true)
-                is Result.Error -> signUpSuccess.postValue(false)
+            ).onEach { result ->
+                when (result) {
+                    is Result.Success -> signUpSuccess.postValue(true)
+                    is Result.Error -> signUpSuccess.postValue(false)
+                    is Result.Loading -> {
+                    }
+                }
             }
         }
     }

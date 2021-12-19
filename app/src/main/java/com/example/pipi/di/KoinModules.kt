@@ -4,6 +4,7 @@ import com.example.pipi.data.remote.PipiService
 import com.example.pipi.data.repository.LoginRepositoryImpl
 import com.example.pipi.data.repository.MemberRepositoryImpl
 import com.example.pipi.data.repository.SignUpRepositoryImpl
+import com.example.pipi.domain.repository.LogInRepository
 import com.example.pipi.domain.use_case.CheckPhoneAuthUseCase
 import com.example.pipi.domain.use_case.LogInUseCase
 import com.example.pipi.domain.use_case.RequestPhoneAuthMessageUseCase
@@ -16,14 +17,15 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val viewmodelModules = module {
-    viewModel { LoginViewModel(get()) }
+    viewModel { LoginViewModel(repository = get(),get()) }
     viewModel { MainViewModel(get()) }
     viewModel { SignupViewModel(get(),get(),get()) }
     viewModel { CalendarViewModel() }
 }
 
 val repositoryModules = module {
-    single { LoginRepositoryImpl(get()) }
+    factory<LogInRepository> { LoginRepositoryImpl(get()) }
+//    single { LoginRepositoryImpl(get()) }
     single { SignUpRepositoryImpl(get()) }
     single { MemberRepositoryImpl(get()) }
     single { PipiService().loginApi }

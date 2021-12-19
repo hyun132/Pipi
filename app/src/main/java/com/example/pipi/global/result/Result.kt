@@ -1,12 +1,7 @@
 package com.example.pipi.global.result
 
-import java.lang.Exception
-
-sealed class Result<out R> {
-    data class Success<out T>(val data:T) : Result<T>()
-    data class Error(val exception: Exception) : Result<Nothing>()
-    object Loading : Result<Nothing>()
+sealed class Result<T>(val data: T? = null, val message: String? = null) {
+    class Success<T>(data: T?) : Result<T>(data)
+    class Error<T>(data: T?, message: String?) : Result<T>(data, message)
+    class Loading<T>(data: T? = null) : Result<T>(data)
 }
-
-val <T> Result<T>.data:T?
-    get() = (this as? Result.Success)?.data
