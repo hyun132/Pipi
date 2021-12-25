@@ -3,16 +3,21 @@ package com.example.pipi.presentation.login
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -24,15 +29,22 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.example.pipi.R
+import com.example.pipi.global.constants.ui.Colors.BRAND_SECOND
+import com.example.pipi.global.constants.ui.Colors.PRIMARY_TEXT
 import com.example.pipi.global.constants.ui.Colors.SECONDARY_TEXT_GHOST
 import com.example.pipi.global.constants.ui.Components
+import com.example.pipi.global.constants.ui.Components.TextFieldWithErrorMessage
 import com.example.pipi.global.constants.ui.Components.showLoadingDialog
 import com.example.pipi.global.constants.ui.setProjectTheme
+import com.example.pipi.global.constants.utils.passwordErrorMessage
+import com.example.pipi.global.constants.utils.passwordValidation
+import com.example.pipi.global.constants.utils.phoneNumberErrorMessage
+import com.example.pipi.global.constants.utils.phoneNumberValidation
+import java.util.regex.Pattern
 
 @ExperimentalAnimationApi
 @Composable
 fun MainLoginScreen(
-    navController: NavController,
     viewModel: LoginViewModel,
     goSignUpActivity: () -> Unit,
     goMainActivity: () -> Unit,
@@ -43,8 +55,8 @@ fun MainLoginScreen(
     val isLoginSuccess: Boolean by viewModel.isLoginSuccess
     val isLoading: Boolean by viewModel.isLoading
     val errorMessage: String by viewModel.errorMessage
-    var passwordVisibility by remember { mutableStateOf(true) }
-    setProjectTheme(content = {
+    val snackbarHostState = remember { SnackbarHostState() }
+    setProjectTheme {
         Scaffold() {
             ConstraintLayout(
                 modifier = Modifier
@@ -52,7 +64,7 @@ fun MainLoginScreen(
                     .fillMaxHeight()
                     .padding(24.dp)
             ) {
-                val (icon, button, titlebox, textfeildbox, checkbox, signupLoginBox) = createRefs()
+                val (icon, button, titlebox, textfeildbox, checkbox, signupLoginBox, snackbar) = createRefs()
 
                 Box(modifier = Modifier
                     .fillMaxWidth()
@@ -60,15 +72,7 @@ fun MainLoginScreen(
                     .constrainAs(icon) {
                         top.linkTo(parent.top)
                     }) {
-                    Column(Modifier.padding(top = 10.dp, bottom = 51.dp)) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_pipi),
-                            contentDescription = "pipi",
-                            modifier = Modifier
-                                .height(22.dp)
-                                .width(42.dp)
-                        )
-                    }
+                    DrawLoginTopAppbar()
                 }
 
                 Box(modifier = Modifier
@@ -85,73 +89,7 @@ fun MainLoginScreen(
                     .constrainAs(textfeildbox) {
                         top.linkTo(titlebox.bottom)
                     }) {
-                    Column(
-                        Modifier
-                            .fillMaxWidth()
-                    ) {
-                        Components.InputTextField(
-                            input = id,
-                            onChanged = { input -> viewModel.id.value = input },
-                            hint = "휴대전화 번호를 입력해 주세요(-제외)",
-                            errorMessage = null,
-                            rightComponent = {
-                                if (id.isNotEmpty()) {
-                                    Icon(
-                                        modifier = Modifier
-                                            .size(24.dp)
-                                            .clickable(
-                                                onClick = { viewModel.id.value = "" }
-                                            ),
-                                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
-                                        contentDescription = null
-                                    )
-                                } else {
-                                }
-                            },
-                            hideInputData = false,
-                            title = ""
-                        )
-                        Spacer(modifier = Modifier.height(24.dp))
-                        Components.InputTextField(
-                            input = password,
-                            onChanged = { input -> viewModel.password.value = input },
-                            hint = "비밀번호를 입력해 주세요",
-                            errorMessage = null,
-                            rightComponent = {
-                                Row(verticalAlignment = CenterVertically) {
-                                    Icon(
-                                        modifier = Modifier
-//                                            .size(48.dp)
-//                                            .padding(12.dp)
-                                            .clickable(
-                                                onClick = {
-                                                    passwordVisibility = !passwordVisibility
-                                                }
-                                            ),
-//                                        .align(CenterVertically),
-                                        imageVector = if (passwordVisibility) ImageVector.vectorResource(
-                                            id = R.drawable.ic_unshow
-                                        ) else ImageVector.vectorResource(id = R.drawable.ic_show),
-                                        contentDescription = null
-                                    )
-                                    if (id.isNotEmpty()) {
-                                        Icon(
-                                            modifier = Modifier
-//                                                .size(24.dp)
-                                                .clickable(
-                                                    onClick = { viewModel.password.value = "" }
-                                                ),
-                                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
-                                            contentDescription = null
-                                        )
-                                    } else {
-                                    }
-                                }
-                            },
-                            hideInputData = passwordVisibility,
-                            title = ""
-                        )
-                    }
+                    DrawLoginContents(id, password, errorMessage, viewModel)
                 }
                 //자동로그인 체크박스 넣어야하는데, 체크되면 로그인성공시 sharedpreference에 저장하고 체크 해제하는 즉시 저장된 내용 삭제하는걸로.
                 Row(
@@ -184,7 +122,7 @@ fun MainLoginScreen(
                     Components.drawDefaultButton(
                         color = colorResource(id = R.color.main_purple),
                         text = "로그인",
-                        isEnabled = (viewModel.password.value?.length ?: 0) >= 6,
+                        isEnabled = phoneNumberValidation(id) && passwordValidation(password),
                         onClick = {
                             viewModel.login()
                         }
@@ -246,13 +184,108 @@ fun MainLoginScreen(
                     }
                 }
                 showLoadingDialog(isLoading)
-                Snackbar() {
-                    Text(text = errorMessage,modifier = Modifier.fillMaxWidth())
-                }
+                SnackbarHost(hostState = snackbarHostState, snackbar = { snackbarData ->
+                    if (snackbarData.message.isNotEmpty()) {
+                        Text(
+                            text = snackbarData.message,
+                            modifier = Modifier.fillMaxWidth(),
+                            color = MaterialTheme.colors.onBackground,
+                            style = MaterialTheme.typography.body2
+                        )
+                    }
+                })
             }
         }
-    })
+    }
 
+}
+
+@Composable
+fun DrawLoginContents(
+    id: String,
+    password: String,
+    errorMessage: String,
+    viewModel: LoginViewModel
+) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+    ) {
+        var passwordVisibility by remember { mutableStateOf(true) }
+        Components.TextFieldWithErrorMessage(
+            value = id,
+            onValueChange = { input -> viewModel.id.value = input },
+            placeholder = "휴대전화 번호를 입력해 주세요(-제외)",
+            errorMessage = phoneNumberErrorMessage(id).let { if (it.isEmpty()) errorMessage else it },
+            rightComponent = {
+                if (id.isNotEmpty()) {
+                    Icon(
+                        modifier = Modifier
+                            .clickable(
+                                onClick = { viewModel.id.value = "" },
+                            ),
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
+                        contentDescription = null,
+                        tint = Color.Unspecified
+                    )
+                } else {
+                }
+            },
+            hideInputData = false,
+            title = "",
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        TextFieldWithErrorMessage(
+            value = password,
+            onValueChange = { input -> viewModel.password.value = input },
+            placeholder = "비밀번호를 입력해 주세요",
+            errorMessage = passwordErrorMessage(password),
+            rightComponent =
+            {
+                Row(modifier = Modifier.wrapContentSize()) {
+                    Icon(
+                        modifier = Modifier
+                            .clickable(
+                                onClick = {
+                                    passwordVisibility = !passwordVisibility
+                                }
+                            ),
+                        imageVector = if (passwordVisibility) ImageVector.vectorResource(
+                            id = R.drawable.ic_unshow
+                        ) else ImageVector.vectorResource(id = R.drawable.ic_show),
+                        contentDescription = "비밀번호 숨기기"
+                    )
+                    if (password.isNotEmpty()) {
+                        Icon(
+                            modifier = Modifier
+                                .clickable(
+                                    onClick = { viewModel.password.value = "" }
+                                ),
+                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
+                            contentDescription = "지우기",
+                            tint = Color.Unspecified
+                        )
+                    } else {
+                    }
+                }
+            },
+            hideInputData = passwordVisibility
+        )
+    }
+}
+
+@Composable
+fun DrawLoginTopAppbar() {
+    Column(Modifier.padding(top = 10.dp, bottom = 51.dp)) {
+        Icon(
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_pipi),
+            contentDescription = "pipi",
+            modifier = Modifier
+                .height(22.dp)
+                .width(42.dp),
+            tint = BRAND_SECOND
+        )
+    }
 }
 
 @Composable
@@ -264,13 +297,15 @@ fun labeledCheckbox(label: String, checked: Boolean, onChecked: (Boolean) -> Uni
         verticalAlignment = CenterVertically
     ) {
         Icon(
-            imageVector = if (checked) ImageVector.vectorResource(id = R.drawable.ic_success)
-            else ImageVector.vectorResource(id = R.drawable.ic_unchecked),
+            imageVector = ImageVector.vectorResource(id = if (checked) R.drawable.ic_checked else R.drawable.ic_unchecked),
             contentDescription = "checkbox",
-            modifier = Modifier.size(18.dp)
+            tint = Color.Unspecified,
+            modifier = Modifier
+                .size(20.dp)
+                .clip(CircleShape)
         )
         Spacer(modifier = Modifier.width(4.dp))
-        Text(text = label, style = MaterialTheme.typography.body2, color = Color.Black)
+        Text(text = label, style = MaterialTheme.typography.body2, color = PRIMARY_TEXT)
     }
 }
 

@@ -1,6 +1,8 @@
 package com.example.pipi.global.constants.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -23,8 +25,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.example.pipi.R
 import com.example.pipi.global.constants.Fonts
+import com.example.pipi.global.constants.ui.Colors.ALERT
 import com.example.pipi.global.constants.ui.Colors.FONT_GRAY
+import com.example.pipi.global.constants.ui.Colors.SECONDARY_TEXT_GHOST
 import com.example.pipi.global.constants.ui.Colors.SURFACE
+import com.example.pipi.presentation.main.ui.theme.Purple200
 
 object Components {
     @Composable
@@ -123,16 +128,87 @@ object Components {
 
     }
 
+    @Composable
+    fun TextFieldWithErrorMessage(
+        value: String,
+        onValueChange: (String) -> Unit,
+        placeholder: String = "",
+        errorMessage: String = "",
+        rightComponent: @Composable () -> Unit = {},
+        leftComponent: @Composable () -> Unit = {},
+        hideInputData: Boolean = false,
+        title: String = "",
+    ) {
+        Column(Modifier.fillMaxWidth()) {
+            if (title.isNotEmpty()) Text(
+                text = title,
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.subtitle2,
+                fontSize = 12.sp,
+                color = SECONDARY_TEXT_GHOST
+            )
+            BasicTextField(
+                value = value,
+                onValueChange = onValueChange,
+                modifier = Modifier
+                    .drawBehind {
+                        val y = size.height
+                        drawLine(
+                            if (errorMessage.isEmpty()) SECONDARY_TEXT_GHOST else ALERT,
+                            Offset(0f, y),
+                            Offset(size.width, y),
+                            3F
+                        )
+                    }
+                    .fillMaxWidth(),
+                decorationBox = { innerTextField ->
+                    if (value.isEmpty() && value.isBlank()) Box(
+                        Modifier
+                            .padding(8.dp)
+                    ) {
+                        Text(
+                            text = placeholder,
+                            color = SECONDARY_TEXT_GHOST,
+                            style = MaterialTheme.typography.subtitle1
+                        )
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        leftComponent()
+                        Box(
+                            Modifier
+                                .weight(1f)
+                                .padding(8.dp)
+                        ) {
+                            innerTextField()
+                        }
+                        if (value.isNotEmpty()) rightComponent()
+                    }
+                },
+                visualTransformation = if (hideInputData) PasswordVisualTransformation() else VisualTransformation.None,
+                maxLines = 1
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            if (errorMessage.isNotEmpty()) Text(
+                text = errorMessage,
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.subtitle2,
+                fontSize = 12.sp,
+                color = ALERT
+            )
+        }
+    }
 
     @Composable
     fun InputTextField(
         input: String,
         onChanged: (String) -> Unit,
-        hint: String,
+        hint: String = "",
         errorMessage: String?,
-        rightComponent: @Composable () -> Unit,
+        rightComponent: @Composable () -> Unit = {},
         hideInputData: Boolean,
-        title: String
+        title: String? = null
     ) {
         if (!title.isNullOrEmpty()) {
             Text(

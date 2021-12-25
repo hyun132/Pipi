@@ -20,6 +20,7 @@ import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors
 import com.example.pipi.global.constants.ui.Components
 import com.example.pipi.global.constants.ui.Components.InputTextField
+import com.example.pipi.global.constants.ui.Components.TextFieldWithErrorMessage
 import com.example.pipi.global.constants.ui.Components.drawTextTitleTopAppbar
 import com.example.pipi.global.constants.ui.setProjectTheme
 
@@ -57,10 +58,10 @@ fun ReSetPasswordScreen(
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(36.dp))
-                    InputTextField(
-                        input = password,
-                        onChanged = { input -> viewModel.password.value = input },
-                        hint = "비밀번호 (6자 - 12자) 를 입력해 주세요",
+                    TextFieldWithErrorMessage(
+                        value = password,
+                        onValueChange = { input -> viewModel.password.value = input },
+                        placeholder = "비밀번호 (6자 - 12자) 를 입력해 주세요",
                         errorMessage = if (viewModel.checkPasswordValid()) "" else "비밀번호는 6자-12자로 설정해 주세요",
                         rightComponent = {
                             if (viewModel.checkPasswordValid()) {
@@ -75,10 +76,10 @@ fun ReSetPasswordScreen(
                         title = "비밀번호"
                     )
                     Spacer(modifier = Modifier.height(50.dp))
-                    InputTextField(
-                        input = confirmPassword,
-                        onChanged = { input -> viewModel.confirmPassword.value = input },
-                        hint = "비밀번호를 다시 입력해 주세요",
+                    TextFieldWithErrorMessage(
+                        value = confirmPassword,
+                        onValueChange = { input -> viewModel.confirmPassword.value = input },
+                        placeholder = "비밀번호를 다시 입력해 주세요",
                         errorMessage = if (viewModel.checkConfirmPassword()) "" else "비밀번호가 일치하지 않습니다.",
                         rightComponent = {
                             if (viewModel.checkConfirmPassword()) Icon(

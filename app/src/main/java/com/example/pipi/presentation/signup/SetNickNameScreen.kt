@@ -23,6 +23,7 @@ import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors
 import com.example.pipi.global.constants.ui.Components
 import com.example.pipi.global.constants.ui.Components.InputTextField
+import com.example.pipi.global.constants.ui.Components.TextFieldWithErrorMessage
 import com.example.pipi.global.constants.ui.setProjectTheme
 
 @ExperimentalComposeUiApi
@@ -62,10 +63,10 @@ fun SetNickNameScreen(
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(36.dp))
-                    InputTextField(
-                        input = nickName,
-                        onChanged = { viewModel.nickName.value = it },
-                        hint = "닉네임 (6자 - 12자) 을 입력해 주세요",
+                    TextFieldWithErrorMessage(
+                        value = nickName,
+                        onValueChange = { viewModel.nickName.value = it },
+                        placeholder = "닉네임 (6자 - 12자) 을 입력해 주세요",
                         // 에러메시지 여러가지일때 어떻게 처리할지 생각해볼 것! 컴포넌트 내에 state로 둘지.. viewModel에 둘지..?
                         errorMessage = "닉네임 (6자 - 12자) 을 입력해 주세요",
                         rightComponent = {

@@ -28,13 +28,18 @@ import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors
 import com.example.pipi.global.constants.ui.Colors.PRIMARY_TEXT
 import com.example.pipi.global.constants.ui.Colors.ALERT
+import com.example.pipi.global.constants.ui.Colors.BRAND_SECOND
 import com.example.pipi.global.constants.ui.Colors.SECONDARY_TEXT_GHOST
 import com.example.pipi.global.constants.ui.Colors.PRIMARY_BRAND
 import com.example.pipi.global.constants.ui.Components
+import com.example.pipi.global.constants.ui.Components.TextFieldWithErrorMessage
 import com.example.pipi.global.constants.ui.Components.drawDefaultButton
 import com.example.pipi.global.constants.ui.Components.drawTextTitleTopAppbar
 import com.example.pipi.global.constants.ui.setProjectTheme
+import com.example.pipi.global.constants.utils.phoneNumberErrorMessage
+import com.example.pipi.global.constants.utils.phoneNumberValidation
 import timber.log.Timber
+import java.util.regex.Pattern
 
 @ExperimentalAnimationApi
 @Composable
@@ -65,6 +70,9 @@ fun PhoneAuthScreen(
                         .constrainAs(contentx) { top.linkTo(parent.top) },
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    /**
+                     * TODO : step 이미지 컴포넌트로 만들어서 적용하기
+                     */
                     Image(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_step_1),
                         contentDescription = "step1",
@@ -79,11 +87,11 @@ fun PhoneAuthScreen(
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(36.dp))
-                    Components.InputTextField(
-                        input = phoneNumber,
-                        onChanged = { input -> viewModel.setPhoneNumber(input) },
-                        hint = "휴대전화 번호(-제외)",
-                        errorMessage = phoneNumberCheck(phoneNumber),
+                    TextFieldWithErrorMessage(
+                        value = phoneNumber,
+                        onValueChange = { input -> viewModel.setPhoneNumber(input) },
+                        placeholder = "휴대전화 번호(-제외)",
+                        errorMessage = phoneNumberErrorMessage(phoneNumber),
                         rightComponent = {
                             Row(verticalAlignment = CenterVertically) {
                                 if (timerStarted) {
@@ -100,7 +108,7 @@ fun PhoneAuthScreen(
                                     .height(32.dp)
                                     .width(86.dp)
                                     .padding(0.dp)
-                                    .background(PRIMARY_BRAND),
+                                    .background(if(phoneNumberValidation(phoneNumber)) BRAND_SECOND else SECONDARY_TEXT_GHOST),
                                     shape = RoundedCornerShape(2.dp),
                                     content = {
                                         Text(
@@ -120,10 +128,10 @@ fun PhoneAuthScreen(
                         title = "휴대전화 번호"
                     )
                     Spacer(modifier = Modifier.height(24.dp))
-                    Components.InputTextField(
-                        input = authNumber,
-                        onChanged = { input -> viewModel.setAuthNumber(input) },
-                        hint = "인증번호 6자리",
+                    TextFieldWithErrorMessage(
+                        value = authNumber,
+                        onValueChange = { input -> viewModel.setAuthNumber(input) },
+                        placeholder = "인증번호 6자리",
                         errorMessage = "",
                         rightComponent = {
                             TextButton(onClick = {
@@ -132,7 +140,10 @@ fun PhoneAuthScreen(
                                 .height(32.dp)
                                 .width(86.dp)
                                 .padding(0.dp)
-                                .background(PRIMARY_BRAND),
+                                /**
+                                 * TODO : 여기 처리하는 로직필요함.
+                                 */
+                                .background(BRAND_SECOND),
                                 shape = RoundedCornerShape(2.dp),
                                 content = {
                                     Text(
@@ -154,7 +165,7 @@ fun PhoneAuthScreen(
                     .fillMaxWidth()
                     .constrainAs(button) { bottom.linkTo(parent.bottom) }) {
                     drawDefaultButton(
-                        color = if (isbuttonActive) PRIMARY_BRAND else SECONDARY_TEXT_GHOST,
+                        color = if (isbuttonActive) BRAND_SECOND else SECONDARY_TEXT_GHOST,
                         text = "다음",
                         onClick = { navController.navigate("nickName") },
                         isEnabled = isbuttonActive
@@ -165,12 +176,6 @@ fun PhoneAuthScreen(
         }
         showSnackbar(errorMessage)
     }
-}
-
-fun phoneNumberCheck(phone: String): String {
-    return if (!phone.startsWith("010")) "올바른 형식이 아닙니다"
-    else if (phone.length < 11) "휴대전화 번호는 11자로 설정해 주세요"
-    else "이미 가입된 번호입니다." //이미 있는 번호 api요청
 }
 
 @Composable

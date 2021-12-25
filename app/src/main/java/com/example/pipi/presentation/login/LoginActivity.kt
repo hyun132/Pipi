@@ -20,26 +20,25 @@ class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val navController = rememberNavController()
-            NavHost(navController = navController, startDestination = "mainlogin") {
-                composable("mainlogin") {
-                    MainLoginScreen(navController = navController, viewModel = viewModel,goSignUpActivity = { goSignUpActivity() },goMainActivity = { goMainActivity() },goFindPasswordActivity = {goFindPasswordActivity()})
-                }
-            }
+            MainLoginScreen(
+                viewModel = viewModel,
+                goSignUpActivity = { goSignUpActivity() },
+                goMainActivity = { goMainActivity() },
+                goFindPasswordActivity = { goFindPasswordActivity() })
         }
     }
 
-    fun goMainActivity() {
+    private fun goMainActivity() {
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 
-    private fun goSignUpActivity(){
+    private fun goSignUpActivity() {
         startActivity(Intent(this, SignUpActivity::class.java))
     }
 
     //이걸 액티비티로 두는게 맞나?
-    fun goFindPasswordActivity(){
+    private fun goFindPasswordActivity() {
         startActivity(Intent(this, SignUpActivity::class.java))
     }
 }

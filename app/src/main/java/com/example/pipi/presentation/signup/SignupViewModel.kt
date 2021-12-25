@@ -146,6 +146,7 @@ class SignupViewModel(
                     is Result.Success -> signUpSuccess.postValue(true)
                     is Result.Error -> signUpSuccess.postValue(false)
                     is Result.Loading -> {
+
                     }
                 }
             }

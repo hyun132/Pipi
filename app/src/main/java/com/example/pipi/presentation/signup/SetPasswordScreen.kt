@@ -2,6 +2,7 @@ package com.example.pipi.presentation.signup
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -19,7 +20,9 @@ import androidx.navigation.NavController
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors
 import com.example.pipi.global.constants.ui.Components
+import com.example.pipi.global.constants.ui.Components.DefaultTopAppbar
 import com.example.pipi.global.constants.ui.Components.InputTextField
+import com.example.pipi.global.constants.ui.Components.TextFieldWithErrorMessage
 import com.example.pipi.global.constants.ui.Components.drawTextTitleTopAppbar
 import com.example.pipi.global.constants.ui.setProjectTheme
 
@@ -35,7 +38,20 @@ fun SetPasswordScreen(
     val signUpSuccess: Boolean by viewModel.signUpSuccess.observeAsState(false)
     if (signUpSuccess) goToMainActivity()
     setProjectTheme {
-        Scaffold(topBar = { drawTextTitleTopAppbar("회원가입") { navController.navigateUp() } }) {
+        Scaffold(topBar = {
+            DefaultTopAppbar(title = {
+                Text(
+                    text = "회원가입",
+                    style = MaterialTheme.typography.subtitle2
+                )
+            }, navComponent = {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_back),
+                    modifier = Modifier.clickable { navController.navigateUp() },
+                    contentDescription = "뒤로가기"
+                )
+            })
+        }) {
             ConstraintLayout(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -60,10 +76,10 @@ fun SetPasswordScreen(
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(36.dp))
-                    InputTextField(
-                        input = password,
-                        onChanged = { input -> viewModel.password.value = input },
-                        hint = "비밀번호 (6자 - 12자) 를 입력해 주세요",
+                    TextFieldWithErrorMessage(
+                        value = password,
+                        onValueChange = { input -> viewModel.password.value = input },
+                        placeholder = "비밀번호 (6자 - 12자) 를 입력해 주세요",
                         errorMessage = if (viewModel.checkPasswordValid()) "" else "비밀번호는 6자-12자로 설정해 주세요",
                         rightComponent = {
                             if (viewModel.checkPasswordValid()) {
@@ -78,10 +94,10 @@ fun SetPasswordScreen(
                         title = "비밀번호"
                     )
                     Spacer(modifier = Modifier.height(50.dp))
-                    InputTextField(
-                        input = confirmPassword,
-                        onChanged = { input -> viewModel.confirmPassword.value = input },
-                        hint = "비밀번호를 다시 입력해 주세요",
+                    TextFieldWithErrorMessage(
+                        value = confirmPassword,
+                        onValueChange = { input -> viewModel.confirmPassword.value = input },
+                        placeholder = "비밀번호를 다시 입력해 주세요",
                         errorMessage = if (viewModel.checkConfirmPassword()) "" else "비밀번호가 일치하지 않습니다.",
                         rightComponent = {
                             if (viewModel.checkConfirmPassword()) Icon(

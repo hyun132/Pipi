@@ -69,6 +69,7 @@ object Fonts {
             lineHeight = 28.sp,
             letterSpacing = 0.15.sp
         ),
+        //size:16 , weight:400 , lineHight:24
         subtitle1 = TextStyle(
             fontWeight = FontWeight.Normal,
             lineHeight = 24.sp,
