@@ -1,14 +1,16 @@
-package com.example.pipi.presentation.signup
+package com.example.pipi.presentation.duplicated
 
 import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -23,40 +25,58 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.navigation.NavController
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors
-import com.example.pipi.global.constants.ui.Colors.PRIMARY_TEXT
 import com.example.pipi.global.constants.ui.Colors.ALERT
 import com.example.pipi.global.constants.ui.Colors.BRAND_SECOND
-import com.example.pipi.global.constants.ui.Colors.SECONDARY_TEXT_GHOST
 import com.example.pipi.global.constants.ui.Colors.PRIMARY_BRAND
+import com.example.pipi.global.constants.ui.Colors.PRIMARY_TEXT
+import com.example.pipi.global.constants.ui.Colors.SECONDARY_TEXT_GHOST
 import com.example.pipi.global.constants.ui.Components
 import com.example.pipi.global.constants.ui.Components.TextFieldWithErrorMessage
 import com.example.pipi.global.constants.ui.Components.drawDefaultButton
-import com.example.pipi.global.constants.ui.Components.drawTextTitleTopAppbar
 import com.example.pipi.global.constants.ui.setProjectTheme
 import com.example.pipi.global.constants.utils.phoneNumberErrorMessage
 import com.example.pipi.global.constants.utils.phoneNumberValidation
 import timber.log.Timber
-import java.util.regex.Pattern
 
 @ExperimentalAnimationApi
 @Composable
 fun PhoneAuthScreen(
-    navController: NavController,
-    viewModel: SignupViewModel,
-    backToMain: () -> Unit
+    navigate: () -> Unit,
+    backToMain: () -> Unit,
+    title: String,
+    viewModel: PhoneAuthViewModel
 ) {
-    val phoneNumber: String by viewModel.phoneNumber.observeAsState("")
+    val phoneNumber: String by viewModel.phoneNumber
     val authNumber: String by viewModel.authNumber.observeAsState("")
-    val errorMessage: String by viewModel.dialogMessage.observeAsState("")
-    val timerStarted by viewModel.timerStarted.observeAsState(false)
+    val errorMessage: String by viewModel.errorMessage
+    val timerStarted by viewModel.timerStarted
     val formattedTime by viewModel.formattedTime.observeAsState("")
     val isbuttonActive by viewModel.phoneAuthSuccess.observeAsState(false)
 
     setProjectTheme {
-        Scaffold(topBar = { drawTextTitleTopAppbar("회원가입") { backToMain() } }) {
+        Scaffold(topBar = {
+            Components.DefaultTopAppbar(
+                title = {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.subtitle1,
+                        color = PRIMARY_TEXT,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+                },
+                navComponent = {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_cancel),
+                        tint = Color.Unspecified,
+                        modifier = Modifier.clickable { viewModel.stopCount(); backToMain() },
+                        contentDescription = "뒤로가기"
+                    )
+                })
+        }) {
             ConstraintLayout(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -108,7 +128,7 @@ fun PhoneAuthScreen(
                                     .height(32.dp)
                                     .width(86.dp)
                                     .padding(0.dp)
-                                    .background(if(phoneNumberValidation(phoneNumber)) BRAND_SECOND else SECONDARY_TEXT_GHOST),
+                                    .background(if (phoneNumberValidation(phoneNumber)) BRAND_SECOND else SECONDARY_TEXT_GHOST),
                                     shape = RoundedCornerShape(2.dp),
                                     content = {
                                         Text(
@@ -167,7 +187,10 @@ fun PhoneAuthScreen(
                     drawDefaultButton(
                         color = if (isbuttonActive) BRAND_SECOND else SECONDARY_TEXT_GHOST,
                         text = "다음",
-                        onClick = { navController.navigate("nickName") },
+                        onClick = {
+                            navigate()
+                            viewModel.stopCount()
+                        },
                         isEnabled = isbuttonActive
                     )
                 }

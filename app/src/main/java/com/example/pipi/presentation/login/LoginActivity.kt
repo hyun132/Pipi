@@ -5,10 +5,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.pipi.presentation.main.MainActivity
+import com.example.pipi.presentation.setting.ResetPasswordActivity
 import com.example.pipi.presentation.signup.SignUpActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -39,6 +37,6 @@ class LoginActivity : ComponentActivity() {
 
     //이걸 액티비티로 두는게 맞나?
     private fun goFindPasswordActivity() {
-        startActivity(Intent(this, SignUpActivity::class.java))
+        startActivity(Intent(this, ResetPasswordActivity::class.java))
     }
 }

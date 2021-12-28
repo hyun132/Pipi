@@ -30,6 +30,7 @@ import com.google.accompanist.pager.PagerState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import timber.log.Timber
 
 //https://levelup.gitconnected.com/implement-android-tablayout-in-jetpack-compose-e61c113add79
 class MainActivity : AppCompatActivity() {
@@ -108,8 +109,8 @@ fun DrawMainTopAppBar(showMemberRequestScreen: () -> Unit) {
         title = {
             Text(
                 text = "회원관리",
-                style = MaterialTheme.typography.h2,
-                fontSize = 24.sp,
+                style = MaterialTheme.typography.h1,
+                fontSize = 24.sp
             )
         },
         optionComponent = {
@@ -119,6 +120,16 @@ fun DrawMainTopAppBar(showMemberRequestScreen: () -> Unit) {
                 modifier = Modifier
                     .size(22.dp)
                     .clickable { showMemberRequestScreen() }
+            )
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_show),
+                contentDescription = "회원추가",
+                modifier = Modifier
+                    .size(22.dp)
+                    /**
+                     * TODO : 회원정보 화면 만들어서 보여주기
+                     */
+                    .clickable { Timber.d("회원정보 화면 보여주기.") }
             )
         })
 }
@@ -177,36 +188,5 @@ fun BottomSheetsContents(coroutineScope: CoroutineScope, hideBottomSheet: () -> 
             Spacer(modifier = Modifier.width(16.dp))
             Text(text = "회원권이 없거나 만료된 회원")
         }
-    }
-}
-
-
-@ExperimentalPagerApi
-@Composable
-fun Tabs(tabs: List<String>, state: PagerState) {
-//    var currentTabId by remember { mutableStateOf(0) }
-    val scope = rememberCoroutineScope()
-    Column() {
-        TabRow(selectedTabIndex = state.currentPage, backgroundColor = Color.White) {
-            tabs.forEachIndexed() { index, tab ->
-                Tab(
-                    selected = state.currentPage == index,
-                    text = {
-                        Text(
-                            text = tab,
-                            style = MaterialTheme.typography.subtitle2,
-                            fontSize = 14.sp,
-                            color = MaterialTheme.colors.primary
-                        )
-                    },
-                    onClick = {
-                        scope.launch {
-                            state.animateScrollToPage(index)
-                        }
-                    },
-                )
-            }
-        }
-//        tabs[state.currentPage].screen
     }
 }

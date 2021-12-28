@@ -1,19 +1,21 @@
 package com.example.pipi.presentation.signup
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.pipi.presentation.main.MainActivity
+import com.example.pipi.presentation.duplicated.PhoneAuthScreen
+import com.example.pipi.presentation.duplicated.PhoneAuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SignUpActivity : AppCompatActivity() {
     private val viewModel: SignupViewModel by viewModel()
+    private val phoneAuthViewModel: PhoneAuthViewModel by viewModel()
 
     @ExperimentalComposeUiApi
     @ExperimentalAnimationApi
@@ -21,27 +23,49 @@ class SignUpActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-            NavHost(navController = navController, startDestination = "phoneAuth") {
+            NavHost(navController = navController, startDestination = "tos") {
+                composable("tos") {
+                    TosScreen(
+                        navigate = { goPhoneAuthScreen(navController) },
+                        viewModel = viewModel,
+                        backToMain = { goBackToMainActivity() })
+                }
                 composable("phoneAuth") {
-                    PhoneAuthScreen(navController = navController, viewModel = viewModel,backToMain = { goBackToMainActivity() })
+                    PhoneAuthScreen(
+                        navigate = { goNickNameScreen(navController) },
+                        backToMain = { goBackToMainActivity() },
+                        title = "회원가입",
+                        viewModel = phoneAuthViewModel
+                    )
                 }
                 composable("nickName") {
-                    SetNickNameScreen(navController = navController, viewModel = viewModel)
+                    SetNickNameScreen(
+                        navigate = { goNickNameScreen(navController) },
+                        goBack = { navController.popBackStack() },
+                        viewModel = viewModel,
+                        title = "회원가입"
+                    )
                 }
-                composable("setPassword"){
-                    SetPasswordScreen(navController = navController, viewModel = viewModel,goToMainActivity = { goToMainActivity() })
+                composable("setPassword") {
+                    SetPasswordScreen(
+                        navController = navController,
+                        viewModel = viewModel,
+                        goToMainActivity = { goBackToMainActivity() })
                 }
             }
         }
 
     }
 
-    fun goBackToMainActivity(){
-        finish()
+    private fun goPhoneAuthScreen(navController: NavController) {
+        navController.navigate("phoneAuth")
     }
 
-    fun goToMainActivity(){
-        startActivity(Intent(this, MainActivity::class.java))
+    private fun goNickNameScreen(navController: NavController) {
+        navController.navigate("nickName")
+    }
+
+    private fun goBackToMainActivity() {
         finish()
     }
 }

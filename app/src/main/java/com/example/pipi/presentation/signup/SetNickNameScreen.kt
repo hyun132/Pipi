@@ -1,6 +1,7 @@
 package com.example.pipi.presentation.signup
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -12,32 +13,50 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.navigation.NavController
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors
 import com.example.pipi.global.constants.ui.Components
-import com.example.pipi.global.constants.ui.Components.InputTextField
+import com.example.pipi.global.constants.ui.Components.DefaultTopAppbar
 import com.example.pipi.global.constants.ui.Components.TextFieldWithErrorMessage
 import com.example.pipi.global.constants.ui.setProjectTheme
 
 @ExperimentalComposeUiApi
 @Composable
 fun SetNickNameScreen(
-    navController: NavController,
-    viewModel: SignupViewModel
+    navigate: () -> Unit,
+    goBack: () -> Unit,
+    viewModel: SignupViewModel,
+    title:String
 ) {
     val nickName: String by viewModel.nickName.observeAsState("")
     setProjectTheme {
         Scaffold(topBar = {
-            Components.drawTextTitleTopAppbar(
-                "회원가입"
-            ) { navController.navigateUp() }
+            DefaultTopAppbar(
+                title = {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.subtitle1,
+                        color = Colors.PRIMARY_TEXT,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+                },
+                navComponent = {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_cancel),
+                        tint = Color.Unspecified,
+                        modifier = Modifier.clickable { goBack() },
+                        contentDescription = "뒤로가기"
+                    )
+                })
         }) {
             ConstraintLayout(
                 modifier = Modifier
@@ -96,7 +115,7 @@ fun SetNickNameScreen(
                     Components.drawDefaultButton(
                         color = if (viewModel.checkNickNameValid()) Colors.PRIMARY_BRAND else Colors.SECONDARY_TEXT_GHOST,
                         text = "다음",
-                        onClick = { navController.navigate("setPassword") },
+                        onClick = { navigate() },
                         isEnabled = viewModel.checkNickNameValid()
                     )
                 }

@@ -27,10 +27,13 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors
 import com.example.pipi.global.constants.ui.Colors.FONT_GRAY
+import com.example.pipi.global.constants.ui.Colors.PRIMARY_TEXT
 import com.example.pipi.global.constants.ui.Colors.SECONDARY_TEXT_GHOST
+import com.example.pipi.global.constants.ui.Colors.SIDE_BAR_BACKGROUND
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -48,24 +51,25 @@ fun MembersScreen(
         initialValue = ModalBottomSheetValue.Hidden
     )
     viewModel.getMyMembers()
-    Column(Modifier.fillMaxSize()) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .height(69.dp)
+    ) {
         DrawMainTopAppBar { showMemberRequestScreen() }
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize().padding(16.dp)
+        ) {
             DrawSearchBar(
                 text = viewModel.searchQuery,
-                modifier = Modifier
-                    .height(30.dp)
-                    .fillMaxWidth()
-                    .background(SECONDARY_TEXT_GHOST)
-                    .clip(RoundedCornerShape(4.dp)),
-                hintText = "회원을 검색해 주세요.",
+                placeholder = "회원을 검색해 주세요.",
                 onChange = { viewModel.searchMemberByName() }
             )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp)
-                    .padding(start = 16.dp, end = 16.dp),
+                    .height(48.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(text = "나의 회원", style = MaterialTheme.typography.subtitle2, color = FONT_GRAY)
@@ -78,49 +82,43 @@ fun MembersScreen(
                 Row(modifier = Modifier.clickable(onClick = { viewModel.setBottomSheetState(true) })) {
                     Text(text = "사용중")
                     Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
-                        contentDescription = "사용중"
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_list_setting),
+                        contentDescription = "사용중",
+                        tint = Color.Unspecified
                     )
                 }
             }
-            //lazycolum
-            LazyColumn(contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
-//            items(dummyMemebers) { item: Member ->
-//                MemberItem(member = item)
-//            }
-                members.value?.let {
-                    itemsIndexed(it) { index, item ->
-                        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                            Row(
+            LazyColumn(Modifier.fillMaxWidth()) {
+                itemsIndexed(members.value) { index, item ->
+                    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                        Row(
+                            Modifier
+                                .padding(4.dp)
+                                .height(68.dp)
+                                .background(Color.Red)
+                        ) {
+                            Text(
+                                text = "삭제",
                                 Modifier
-                                    .padding(4.dp)
-                                    .height(86.dp)
-                                    .background(Color.Red)
-                            ) {
-                                Text(
-                                    text = "삭제",
-                                    Modifier
-                                        .height(72.dp)
-                                        .fillMaxWidth()
-                                        .padding(23.dp)
-                                        .clip(RoundedCornerShape(10.dp)),
-                                    textAlign = TextAlign.Center,
-                                    color = Color.White
-                                )
-                            }
-                            DraggableItem(
-                                member = item,
-                                isRevealed = revealedCardIds.value.contains(index),
-                                cardOffset = 100F, // 스와이프 될 너비
-                                onExpand = { viewModel.onItemExpanded(index) },
-                                onCollapse = { viewModel.onItemCollapsed(index) },
-                                onClick = {
-//                            scope.launch { modalBottomSheetState.show() }
-                                    // 달력 화면으로 이동하기
-                                    goToCalendarActivity()
-                                }
+                                    .height(60.dp)
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(10.dp)),
+                                textAlign = TextAlign.End,
+                                color = Color.White
                             )
                         }
+                        DraggableItem(
+                            member = item,
+                            isRevealed = revealedCardIds.value.contains(index),
+                            cardOffset = 200F, // 스와이프 될 너비
+                            onExpand = { viewModel.onItemExpanded(index) },
+                            onCollapse = { viewModel.onItemCollapsed(index) },
+                            onClick = {
+        //                            scope.launch { modalBottomSheetState.show() }
+                                // 달력 화면으로 이동하기
+                                goToCalendarActivity()
+                            }
+                        )
                     }
                 }
             }
@@ -133,8 +131,7 @@ fun MembersScreen(
 @Composable
 fun DrawSearchBar(
     text: MutableState<String>,
-    hintText: String,
-    modifier: Modifier,
+    placeholder: String = "",
     onChange: () -> Unit
 ) {
     TextField(
@@ -143,7 +140,34 @@ fun DrawSearchBar(
             text.value = it
             onChange()
         },
-        modifier = modifier
+        placeholder = {
+            Text(
+                text = placeholder,
+                style = MaterialTheme.typography.subtitle1,
+                fontSize = 12.sp,
+                color = SECONDARY_TEXT_GHOST
+            )
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_search),
+                contentDescription = "검색",
+                Modifier.size(14.dp)
+            )
+        },
+        modifier = Modifier
+            .height(30.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .fillMaxWidth()
+            .height(30.dp),
+        colors = TextFieldDefaults.textFieldColors(
+            textColor = PRIMARY_TEXT,
+            disabledTextColor = Color.Transparent,
+            backgroundColor = SIDE_BAR_BACKGROUND,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent
+        )
     )
 }
 
@@ -212,11 +236,11 @@ fun DraggableItem(
     val offsetTransition by transition.animateFloat(
         label = "cardOffsetTransition",
 //        transitionSpec = { tween(durationMillis = ANIMATION_DURATION) },
-        transitionSpec = { tween(durationMillis = 1000) },
+        transitionSpec = { tween(durationMillis = 600) },
         targetValueByState = { if (isRevealed) -cardOffset else 0F },
     )
 
-    Card(
+    Box(
         modifier = Modifier
             .offset { IntOffset((offsetX.value + offsetTransition).roundToInt(), 0) }
             .pointerInput(Unit) {
@@ -234,7 +258,8 @@ fun DraggableItem(
                     change.consumePositionChange()
                     offsetX.value = newValue.x
                 }
-            },
+            }
+            .background(Color.White),
         content = { MemberItem(member, onClick) }
     )
 }
@@ -248,7 +273,7 @@ fun MemberItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(86.dp)
+            .height(68.dp)
             .clickable {
                 onClick()
             },
@@ -257,13 +282,16 @@ fun MemberItem(
         Image(
             imageVector = ImageVector.vectorResource(id = member.profileImage),
             contentDescription = "프로필사진",
-            Modifier.size(54.dp)
+            Modifier
+                .size(54.dp)
+                .clip(RoundedCornerShape(16.dp))
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = member.nickname,
             style = MaterialTheme.typography.subtitle2,
-            color = Colors.PRIMARY_TEXT
+            color = Colors.PRIMARY_TEXT,
+            fontSize = 14.sp
         )
         Spacer(modifier = Modifier.weight(1F))
         rightEndComponent()

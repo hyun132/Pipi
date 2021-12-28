@@ -2,38 +2,59 @@ package com.example.pipi.presentation.setting
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.navigation.NavController
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors
 import com.example.pipi.global.constants.ui.Components
-import com.example.pipi.global.constants.ui.Components.InputTextField
+import com.example.pipi.global.constants.ui.Components.DefaultTopAppbar
 import com.example.pipi.global.constants.ui.Components.TextFieldWithErrorMessage
-import com.example.pipi.global.constants.ui.Components.drawTextTitleTopAppbar
 import com.example.pipi.global.constants.ui.setProjectTheme
+import com.example.pipi.global.constants.utils.passwordErrorMessage
 
 @ExperimentalAnimationApi
 @Composable
 fun ReSetPasswordScreen(
-    navController: NavController,
-    viewModel: ResetUserInfoViewModel
+    navigate: () -> Unit,
+    viewModel: ResetUserPasswordViewModel,
+    goBack: () -> Unit
 ) {
-    val password: String by viewModel.password.observeAsState("")
-    val confirmPassword: String by viewModel.confirmPassword.observeAsState("")
+    val password = viewModel.password
+    val confirmPassword = viewModel.confirmPassword
     setProjectTheme {
-        Scaffold(topBar = { drawTextTitleTopAppbar("회원가입") { navController.navigateUp() } }) {
+        Scaffold(topBar = {
+            DefaultTopAppbar(title = {
+                Text(
+                    text = "비밀번호 재설정",
+                    style = MaterialTheme.typography.subtitle1,
+                    color = Colors.PRIMARY_TEXT,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }, navComponent = {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_cancel),
+                    contentDescription = "뒤로가기",
+                    modifier = Modifier.clickable { goBack() }
+                )
+            })
+        }) {
             ConstraintLayout(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -59,15 +80,16 @@ fun ReSetPasswordScreen(
                     )
                     Spacer(modifier = Modifier.height(36.dp))
                     TextFieldWithErrorMessage(
-                        value = password,
+                        value = password.value,
                         onValueChange = { input -> viewModel.password.value = input },
                         placeholder = "비밀번호 (6자 - 12자) 를 입력해 주세요",
-                        errorMessage = if (viewModel.checkPasswordValid()) "" else "비밀번호는 6자-12자로 설정해 주세요",
+                        errorMessage = passwordErrorMessage(password.value),
                         rightComponent = {
                             if (viewModel.checkPasswordValid()) {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_success),
-                                    contentDescription = "success"
+                                    contentDescription = "success",
+                                    tint = Color.Unspecified
                                 )
                             } else {
                             }
@@ -77,14 +99,15 @@ fun ReSetPasswordScreen(
                     )
                     Spacer(modifier = Modifier.height(50.dp))
                     TextFieldWithErrorMessage(
-                        value = confirmPassword,
+                        value = confirmPassword.value,
                         onValueChange = { input -> viewModel.confirmPassword.value = input },
                         placeholder = "비밀번호를 다시 입력해 주세요",
                         errorMessage = if (viewModel.checkConfirmPassword()) "" else "비밀번호가 일치하지 않습니다.",
                         rightComponent = {
                             if (viewModel.checkConfirmPassword()) Icon(
                                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_success),
-                                contentDescription = "success"
+                                contentDescription = "success",
+                                tint = Color.Unspecified
                             ) else {
                             }
 
@@ -100,7 +123,7 @@ fun ReSetPasswordScreen(
                     Components.drawDefaultButton(
                         color = if (viewModel.checkConfirmPassword()) Colors.PRIMARY_BRAND else Colors.SECONDARY_TEXT_GHOST,
                         text = "다음",
-                        onClick = { /* 여기서 인증 성공했는지 체크하고 네비게이션 해야함*/ },
+                        onClick = { viewModel.requestSetNewPassword() },
                         isEnabled = viewModel.checkConfirmPassword()
                     )
                 }
@@ -108,4 +131,6 @@ fun ReSetPasswordScreen(
 
         }
     }
+
+    if (viewModel.isResetPasswordSuccess.value) navigate()
 }

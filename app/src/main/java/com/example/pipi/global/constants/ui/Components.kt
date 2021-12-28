@@ -69,42 +69,9 @@ object Components {
             verticalAlignment = Alignment.CenterVertically
         ) {
             navComponent()
-            Row(Modifier.weight(1f)) {
-                title()
-            }
+            title()
             optionComponent()
         }
-    }
-
-    @Composable
-    fun drawTextTitleTopAppbar(title: String, goBack: () -> Unit) {
-        TopAppBar(
-            title = {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.subtitle1,
-                    modifier = Modifier
-                        .padding(end = 76.dp)
-                        .fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-            },
-            navigationIcon = { //navigationIcon이 뒤로가기, actions는 액션메뉴
-//                IconButton(
-//                    onClick = {
-//                        Log.d("TAG", "goBackClicked!")
-//                        goBack()
-//                    },
-//                    content = {
-//                        Icon(
-//                            painter = painterResource(id = R.drawable.ic_back),
-//                            contentDescription = "go Back",
-//                        )
-//                    },
-//                )
-            },
-            elevation = 0.dp, backgroundColor = SURFACE,
-        )
     }
 
     @Composable

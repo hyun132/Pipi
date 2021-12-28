@@ -1,23 +1,17 @@
 package com.example.pipi.presentation.login
 
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -27,7 +21,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.navigation.NavController
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors.BRAND_SECOND
 import com.example.pipi.global.constants.ui.Colors.PRIMARY_TEXT
@@ -40,7 +33,7 @@ import com.example.pipi.global.constants.utils.passwordErrorMessage
 import com.example.pipi.global.constants.utils.passwordValidation
 import com.example.pipi.global.constants.utils.phoneNumberErrorMessage
 import com.example.pipi.global.constants.utils.phoneNumberValidation
-import java.util.regex.Pattern
+import timber.log.Timber
 
 @ExperimentalAnimationApi
 @Composable
@@ -98,19 +91,7 @@ fun MainLoginScreen(
                         .constrainAs(checkbox) { top.linkTo(textfeildbox.bottom) }
                         .padding(top = 24.dp)
                 ) {
-
-                    labeledCheckbox(
-                        label = "자동로그인",
-                        onChecked = { ischecked -> viewModel.autoLogin.value = ischecked },
-                        checked = viewModel.autoLogin.value
-                    )
-                    Spacer(modifier = Modifier.width(17.dp))
-                    labeledCheckbox(
-                        label = "휴대전화 번호 저장",
-                        checked = viewModel.rememberPhoneNumber.value
-                    ) { ischecked ->
-                        viewModel.rememberPhoneNumber.value = ischecked
-                    }
+                    DrawCheckBoxArea(viewModel)
                 }
 
                 Box(modifier = Modifier
@@ -142,7 +123,7 @@ fun MainLoginScreen(
                             text = "비밀번호찾기",
                             Modifier
                                 .clickable(onClick = {
-                                    Log.d("TAG", "비밀번호 찾기")
+                                    Timber.d("비밀번호 찾기")
                                     goFindPasswordActivity()
                                 })
                                 .fillMaxWidth()
@@ -171,7 +152,7 @@ fun MainLoginScreen(
                                 fontSize = 12.sp,
                                 modifier = Modifier
                                     .clickable(onClick = {
-                                        Log.d("TAG", "회원가입하기")
+                                        Timber.d("회원가입하기")
                                         goSignUpActivity()
                                     })
                             )
@@ -198,6 +179,54 @@ fun MainLoginScreen(
         }
     }
 
+}
+
+@Composable
+fun DrawCheckBoxArea(viewModel: LoginViewModel) {
+    labeledCheckbox(
+        label = {
+            Text(
+                text = "자동로그인",
+                style = MaterialTheme.typography.body2,
+                color = PRIMARY_TEXT
+            )
+        },
+        onChecked = { ischecked -> viewModel.autoLogin.value = ischecked },
+        checked = viewModel.autoLogin.value,
+        icon = { checked ->
+            Icon(
+                imageVector = ImageVector.vectorResource(id = if (checked) R.drawable.ic_checked else R.drawable.ic_unchecked),
+                contentDescription = "checkbox",
+                tint = Color.Unspecified,
+                modifier = Modifier
+                    .size(20.dp)
+                    .clip(CircleShape)
+            )
+        }
+    )
+    Spacer(modifier = Modifier.width(17.dp))
+    labeledCheckbox(
+        label = {
+            Text(
+                text = "휴대전화 번호 저장",
+                style = MaterialTheme.typography.body2,
+                color = PRIMARY_TEXT
+            )
+        },
+        checked = viewModel.rememberPhoneNumber.value,
+        icon = { checked ->
+            Icon(
+                imageVector = ImageVector.vectorResource(id = if (checked) R.drawable.ic_checked else R.drawable.ic_unchecked),
+                contentDescription = "checkbox",
+                tint = Color.Unspecified,
+                modifier = Modifier
+                    .size(20.dp)
+                    .clip(CircleShape)
+            )
+        }
+    ) { ischecked ->
+        viewModel.rememberPhoneNumber.value = ischecked
+    }
 }
 
 @Composable
@@ -289,23 +318,21 @@ fun DrawLoginTopAppbar() {
 }
 
 @Composable
-fun labeledCheckbox(label: String, checked: Boolean, onChecked: (Boolean) -> Unit) {
+fun labeledCheckbox(
+    label: @Composable () -> Unit,
+    checked: Boolean,
+    icon: @Composable (Boolean) -> Unit,
+    onChecked: (Boolean) -> Unit
+) {
     Row(
         Modifier
             .height(24.dp)
             .clickable(onClick = { onChecked(!(checked)) }),
         verticalAlignment = CenterVertically
     ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(id = if (checked) R.drawable.ic_checked else R.drawable.ic_unchecked),
-            contentDescription = "checkbox",
-            tint = Color.Unspecified,
-            modifier = Modifier
-                .size(20.dp)
-                .clip(CircleShape)
-        )
+        icon(checked)
         Spacer(modifier = Modifier.width(4.dp))
-        Text(text = label, style = MaterialTheme.typography.body2, color = PRIMARY_TEXT)
+        label()
     }
 }
 
