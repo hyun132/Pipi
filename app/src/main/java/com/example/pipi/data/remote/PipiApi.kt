@@ -35,6 +35,9 @@ interface PipiApi {
         @Body loginDto: LoginDto,
     ): LoginResponse
 
+    @POST("trainers/login")
+    suspend fun autoLogIn(): LoginResponse
+
     @GET("trainers/logout")
     suspend fun logOut(
         @Path("trainerPhonNumber") id: String,

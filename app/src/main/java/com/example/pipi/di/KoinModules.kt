@@ -17,12 +17,12 @@ import com.example.pipi.presentation.signup.SignupViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-val viewmodelModules = module {
-    viewModel { LoginViewModel(get()) }
+val viewModelModules = module {
+    viewModel { LoginViewModel(get(), get()) }
     viewModel { MainViewModel(get()) }
     viewModel { SignupViewModel(get()) }
     viewModel { CalendarViewModel() }
-    viewModel { PhoneAuthViewModel(get(),get()) }
+    viewModel { PhoneAuthViewModel(get(), get()) }
     viewModel { ResetUserPasswordViewModel(get()) }
 }
 
@@ -37,10 +37,11 @@ val repositoryModules = module {
 
 val useCaseModules = module {
     single { LogInUseCase(get()) }
+    single { AutoLogInUseCase(get()) }
     single { SignUpUseCase(get()) }
     single { RequestPhoneAuthMessageUseCase(get()) }
     single { CheckPhoneAuthUseCase(get()) }
     single { ResetPasswordUseCase(get()) }
 }
 
-val pipiModules = listOf(viewmodelModules, repositoryModules,useCaseModules)
+val pipiModules = listOf(viewModelModules, repositoryModules, useCaseModules)

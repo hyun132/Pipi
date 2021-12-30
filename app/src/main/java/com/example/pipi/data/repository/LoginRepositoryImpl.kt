@@ -21,8 +21,6 @@ class LoginRepositoryImpl(private val api: PipiApi) : LogInRepository {
 //        emit(Result.Success(data))
 //    }
 
-    override suspend fun autoLogin(token: String): LoginResponse {
-        TODO("Not yet implemented")
-    }
+    override suspend fun autoLogin() = api.autoLogIn()
 
 }
