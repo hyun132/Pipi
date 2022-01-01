@@ -9,8 +9,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +22,7 @@ import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors
 import com.example.pipi.global.constants.ui.Components
 import com.example.pipi.global.constants.ui.Components.DefaultTopAppbar
+import com.example.pipi.global.constants.ui.Components.DrawStep
 import com.example.pipi.global.constants.ui.Components.TextFieldWithErrorMessage
 import com.example.pipi.global.constants.ui.setProjectTheme
 import com.example.pipi.global.constants.utils.passwordErrorMessage
@@ -33,6 +32,7 @@ import com.example.pipi.global.constants.utils.passwordErrorMessage
 fun ReSetPasswordScreen(
     navigate: () -> Unit,
     viewModel: ResetUserPasswordViewModel,
+    step: Pair<Int, Int> = Pair(3, 1),
     goBack: () -> Unit
 ) {
     val password = viewModel.password
@@ -65,11 +65,7 @@ fun ReSetPasswordScreen(
                 Column(verticalArrangement = Arrangement.Center, modifier = Modifier
                     .fillMaxWidth()
                     .constrainAs(contentx) { top.linkTo(parent.top) }) {
-                    Image(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_step_3),
-                        contentDescription = "step1",
-                        alignment = Alignment.Center
-                    )
+                    DrawStep(step.first, step.second)
                     Spacer(modifier = Modifier.height(22.dp))
                     Text(
                         text = "휴대전화 번호 인증을 해주세요.",

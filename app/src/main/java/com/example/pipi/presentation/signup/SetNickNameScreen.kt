@@ -24,6 +24,7 @@ import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors
 import com.example.pipi.global.constants.ui.Components
 import com.example.pipi.global.constants.ui.Components.DefaultTopAppbar
+import com.example.pipi.global.constants.ui.Components.DrawStep
 import com.example.pipi.global.constants.ui.Components.TextFieldWithErrorMessage
 import com.example.pipi.global.constants.ui.setProjectTheme
 
@@ -33,7 +34,8 @@ fun SetNickNameScreen(
     navigate: () -> Unit,
     goBack: () -> Unit,
     viewModel: SignupViewModel,
-    title:String
+    title:String,
+    step: Pair<Int, Int> = Pair(3,1)
 ) {
     val nickName: String by viewModel.nickName.observeAsState("")
     setProjectTheme {
@@ -68,12 +70,7 @@ fun SetNickNameScreen(
                 Column(modifier = Modifier
                     .fillMaxWidth()
                     .constrainAs(content) { top.linkTo(parent.top) }) {
-                    Image(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_step_2),
-                        contentDescription = "step2",
-                        alignment = Alignment.Center,
-                        modifier = Modifier.height(24.dp)
-                    )
+                    DrawStep(step.first, step.second)
                     Spacer(modifier = Modifier.height(22.dp))
                     Text(
                         text = "닉네임을 설정해 주세요.", style = MaterialTheme.typography.body2,

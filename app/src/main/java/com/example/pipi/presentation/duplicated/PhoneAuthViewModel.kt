@@ -20,40 +20,40 @@ class PhoneAuthViewModel(
 ) : ViewModel() {
 
     val phoneNumber = mutableStateOf<String>("")
-    fun setPhoneNumber(phone: String) {
-        phoneNumber.value = phone
-    }
-
-    var time = 180
-    var timerTask: Timer? = null
-    val authNumber = MutableLiveData<String>("")
-    fun setAuthNumber(number: String) {
-        authNumber.value = number
-    }
-
     val errorMessage = mutableStateOf("")
     val formattedTime = MutableLiveData<String>("")
     val timerStarted = mutableStateOf(false)
     private val _phoneAuthSuccess = MutableLiveData(false)
     val phoneAuthSuccess: LiveData<Boolean> = _phoneAuthSuccess
+    var time = 180
+    var timerTask: Timer? = null
+    val authNumber = MutableLiveData<String>("")
+
+    fun setPhoneNumber(phone: String) {
+        phoneNumber.value = phone
+    }
+
+    fun setAuthNumber(number: String) {
+        authNumber.value = number
+    }
 
     fun checkAuthSuccess() {
         viewModelScope.launch {
             authNumber.value.let {
                 checkPhoneAuthUseCase(
                     CheckPhoneAuthUseCase.Params(
-                        phoneNumber.value,
-                        true,
                         authNumber.value!!.toInt()
                     )
                 ).onEach { result ->
                     when (result) {
                         is Result.Success -> {
                             errorMessage.value = ""
-                            stopCount()
+                            stopCount();
                             _phoneAuthSuccess.postValue(true)
                         }
-                        is Result.Error -> errorMessage.value = "에러가 발생하였습니다. 다시 시도해 주세요"
+                        is Result.Error -> {
+                            errorMessage.value = "에러가 발생하였습니다. 다시 시도해 주세요"
+                        }
                         is Result.Loading -> {
                             errorMessage.value = ""
                         }
@@ -64,18 +64,15 @@ class PhoneAuthViewModel(
     }
 
     fun requestSendAuthMessage() {
-        timerStarted.value = false
+        if (timerStarted.value) timerStarted.value = false
         viewModelScope.launch {
             phoneNumber.value.let {
                 requestPhoneAuthMessageUseCase(
-                    RequestPhoneAuthMessageUseCase.Params(
-                        it,
-                        true
-                    )
+                    RequestPhoneAuthMessageUseCase.Params()
                 ).onEach { result ->
-                    timerStarted.value = true
                     when (result) {
                         is Result.Success -> {
+                            timerStarted.value = true
                             if (result.data?.success == true) {
                                 errorMessage.value = "인증번호를 문자로 전송하였습니다."
                                 Timber.d("success")
@@ -84,6 +81,7 @@ class PhoneAuthViewModel(
                         is Result.Error -> {
                             errorMessage.value = result.message.toString()
                             Timber.d("fail")
+                            stopCount();
                         }
                         is Result.Loading -> {
                         }
@@ -100,13 +98,14 @@ class PhoneAuthViewModel(
                 formattedTime.postValue("${time / 60} : ${time % 60}")
                 time -= 1
                 Timber.d(time.toString())
-                if (time <= 0) stopCount()
+                if (time <= 0 || !timerStarted.value) stopCount()
             }
-        } else stopCount()
+        }
     }
 
-    fun stopCount(){
+    fun stopCount() {
         Timber.d("stopCount!!")
+        timerStarted.value = false
         timerTask?.cancel()
     }
 }

@@ -43,7 +43,7 @@ fun MainLoginScreen(
     goMainActivity: () -> Unit,
     goFindPasswordActivity: () -> Unit
 ) {
-    viewModel.autoLogin()
+//    viewModel.autoLogin()
     val id: String by viewModel.id
     val password: String by viewModel.password
     val isLoginSuccess: Boolean by viewModel.isLoginSuccess

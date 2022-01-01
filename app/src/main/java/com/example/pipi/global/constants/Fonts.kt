@@ -64,7 +64,7 @@ object Fonts {
             letterSpacing = 0.sp
         ),
         h6 = TextStyle(
-            fontWeight = FontWeight.W700,
+            fontWeight = FontWeight.Bold,
             fontSize = 18.sp,
             lineHeight = 28.sp,
             letterSpacing = 0.15.sp
@@ -78,7 +78,7 @@ object Fonts {
         ),
         //16 / bold
         subtitle2 = TextStyle(
-            fontWeight = FontWeight.W700,
+            fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
             lineHeight = 24.sp,
             letterSpacing = 0.15.sp

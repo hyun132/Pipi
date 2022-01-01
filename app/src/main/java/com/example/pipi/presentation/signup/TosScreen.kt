@@ -134,9 +134,7 @@ fun DrawTosTopAppbar(navigate: () -> Unit) {
                 text = "피피 약관 동의",
                 style = MaterialTheme.typography.subtitle1,
                 color = PRIMARY_TEXT,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
+                textAlign = TextAlign.Center
             )
         },
         navComponent = {

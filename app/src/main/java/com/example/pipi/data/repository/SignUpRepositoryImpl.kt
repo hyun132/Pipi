@@ -10,17 +10,11 @@ class SignUpRepositoryImpl(private val api: PipiApi) : SignUpRepository {
     override suspend fun signUp(id: String, password: String, name: String) =
         api.signUp(signUpDto = SignUpDto(id, password, name))
 
-    override suspend fun requestPhoneAuthMessage(
-        phone: String,
-        isTrainer: Boolean
-    ) = api.requestAuthMessage(PhoneAuthRequestDto(phone, isTrainer))
+    override suspend fun requestPhoneAuthMessage() = api.requestAuthMessage()
 
 
-    override suspend fun checkPhoneAuth(
-        phone: String,
-        isTrainer: Boolean,
-        key: Int
-    ) = api.checkAuthMessage(phoneAuthMessageRequestDto = PhoneAuthMessageRequestDto(phone, isTrainer, key))
+    override suspend fun checkPhoneAuth(key: Int) =
+        api.checkAuthMessage(key)
 
 
 }

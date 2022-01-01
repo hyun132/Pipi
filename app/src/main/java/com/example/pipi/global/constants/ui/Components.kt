@@ -1,14 +1,17 @@
 package com.example.pipi.global.constants.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
@@ -23,13 +26,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.pipi.R
 import com.example.pipi.global.constants.Fonts
 import com.example.pipi.global.constants.ui.Colors.ALERT
 import com.example.pipi.global.constants.ui.Colors.FONT_GRAY
 import com.example.pipi.global.constants.ui.Colors.SECONDARY_TEXT_GHOST
-import com.example.pipi.global.constants.ui.Colors.SURFACE
-import com.example.pipi.presentation.main.ui.theme.Purple200
 
 object Components {
     @Composable
@@ -61,16 +63,40 @@ object Components {
         navComponent: @Composable () -> Unit = {},
         optionComponent: @Composable () -> Unit = {}
     ) {
-        Row(
+        ConstraintLayout(
             Modifier
                 .fillMaxWidth()
                 .height(69.dp)
                 .padding(start = 16.dp, end = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
         ) {
-            navComponent()
-            title()
-            optionComponent()
+            val (nav, title, option) = createRefs()
+
+            Box(modifier = Modifier
+                .constrainAs(nav) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                }) { navComponent() }
+            Box(modifier = Modifier
+                .constrainAs(title) {
+                    linkTo(
+                        parent.start,
+                        parent.top,
+                        parent.end,
+                        parent.bottom,
+                        horizontalBias = 0.5F
+                    )
+                }
+                .widthIn(max = 250.dp, min = 100.dp), contentAlignment = Center) {
+                title()
+            }
+            Box(modifier = Modifier
+                .constrainAs(option) {
+                    end.linkTo(parent.end)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                }) { optionComponent() }
+
         }
     }
 
@@ -150,7 +176,7 @@ object Components {
                         ) {
                             innerTextField()
                         }
-                        if (value.isNotEmpty()) rightComponent()
+                        rightComponent()
                     }
                 },
                 visualTransformation = if (hideInputData) PasswordVisualTransformation() else VisualTransformation.None,
@@ -236,6 +262,46 @@ object Components {
                     .fillMaxWidth(),
                 textAlign = TextAlign.Start
             )
+        }
+    }
+
+    /**
+     * [total]전체 step수 [current]현재 단계
+     * 단계는 1부터 시작
+     */
+    @Composable
+    fun DrawStep(total: Int = 3, current: Int = 1) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            LazyRow(content = {
+                items(total) { i ->
+                    if (i != 0) Spacer(
+                        modifier = Modifier
+                            .width(23.dp)
+                            .background(FONT_GRAY)
+                            .height(1.dp)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(24.dp)
+                            .background(if (i == current) Colors.BRAND_SECOND else FONT_GRAY)
+                            .align(CenterVertically),
+                        contentAlignment = Center
+                    ) {
+                        Text(
+                            text = (i + 1).toString(),
+                            textAlign = TextAlign.Center,
+                            fontSize = 14.sp,
+                            color = Color.White,
+                            style = MaterialTheme.typography.subtitle1
+                        )
+                    }
+                }
+            }, verticalAlignment = Alignment.CenterVertically)
         }
     }
 }

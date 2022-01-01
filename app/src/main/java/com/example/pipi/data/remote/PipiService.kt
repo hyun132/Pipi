@@ -41,10 +41,14 @@ class HeaderRequestInterceptor : Interceptor {
             //refreshToken=AS21\d321ASdsda, accessToken=AS213add\d23eaa; Path=/; HttpOnly
             response.header("Set-Cookie").let { header ->
                 if (header != null) {
-                    // accessToken이 들어있는 쿠키이면 이 쿠키에서 accessToken을 가져온다.
-                    if ("accessToken" in header) {
-                        Pipi.prefs.token = header.split(' ')[1].split('=')[1].removeSuffix(";")
+                    ".*accessToken=([^;]*).*".toRegex()
+                        .matchEntire(header)?.groups?.get(1)?.value.let { token ->
+                        Pipi.prefs.token = token
                     }
+//                    // accessToken이 들어있는 쿠키이면 이 쿠키에서 accessToken을 가져온다.
+//                    if ("accessToken" in header) {
+//                        Pipi.prefs.token = header.split(' ')[1].split('=')[1].removeSuffix(";")
+//                    }
                 }
             }
         }

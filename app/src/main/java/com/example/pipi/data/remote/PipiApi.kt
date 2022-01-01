@@ -5,8 +5,6 @@ import com.example.pipi.data.response.PhoneAuthResponse
 import com.example.pipi.data.response.ResetPasswordResponse
 import com.example.pipi.data.response.SignUpResponse
 import com.example.pipi.domain.model.dto.LoginDto
-import com.example.pipi.domain.model.dto.PhoneAuthMessageRequestDto
-import com.example.pipi.domain.model.dto.PhoneAuthRequestDto
 import com.example.pipi.domain.model.dto.SignUpDto
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -15,14 +13,12 @@ import retrofit2.http.Path
 
 interface PipiApi {
 
-    @POST("auth/sms/message")
-    suspend fun requestAuthMessage(
-        @Body phoneAuthRequestDto: PhoneAuthRequestDto,
-    ): PhoneAuthResponse
+    @GET("auth/sms/message")
+    suspend fun requestAuthMessage(): PhoneAuthResponse
 
     @POST("auth/sms/compare")
     suspend fun checkAuthMessage(
-        @Body phoneAuthMessageRequestDto: PhoneAuthMessageRequestDto
+        @Body key: Int
     ): PhoneAuthResponse
 
     @POST("trainers/register")
@@ -47,6 +43,6 @@ interface PipiApi {
     suspend fun changePassword(
         @Body trainerPhoneNumber: String,
         @Body trainerPassword: String
-    ):ResetPasswordResponse
+    ): ResetPasswordResponse
 
 }

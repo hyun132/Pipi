@@ -7,8 +7,8 @@ import kotlinx.coroutines.Dispatchers
 
 class RequestPhoneAuthMessageUseCase(private val repository: SignUpRepositoryImpl) :
     CoroutineUseCase<RequestPhoneAuthMessageUseCase.Params, PhoneAuthResponse>(Dispatchers.IO) {
-    data class Params(val phone: String, val isTrainer: Boolean)
+    class Params()
 
     override suspend fun execute(parameters: Params): PhoneAuthResponse =
-        repository.requestPhoneAuthMessage(parameters.phone, parameters.isTrainer)
+        repository.requestPhoneAuthMessage()
 }
