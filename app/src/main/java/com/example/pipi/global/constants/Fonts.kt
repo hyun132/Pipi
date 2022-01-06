@@ -76,7 +76,7 @@ object Fonts {
             fontSize = 16.sp,
             letterSpacing = 0.15.sp
         ),
-        //16 / bold
+        // p2
         subtitle2 = TextStyle(
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,

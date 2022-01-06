@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors
 import com.example.pipi.global.constants.ui.Colors.FONT_GRAY
@@ -48,10 +49,17 @@ fun MembersScreen(
     val members = viewModel.searchMemberByName()
     val searchQuery = viewModel.searchQuery
     val revealedCardIds = viewModel.revealedCardIdsList.collectAsState()
+
     val scope = rememberCoroutineScope()
     val modalBottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
     )
+
+    val modalContents: MutableState<@Composable (() -> Unit) -> Unit> =
+        remember {
+            mutableStateOf({ toggle -> MemberFilterModalContent(toggle) })
+        }
+
     viewModel.getMyMembers()
     Column(
         Modifier
@@ -83,10 +91,12 @@ fun MembersScreen(
                 )
                 Spacer(modifier = Modifier.weight(1F))
                 Row(modifier = Modifier.clickable(onClick = {
-                    scope.launch {
-                        if (modalBottomSheetState.isVisible) modalBottomSheetState.hide()
-                        else modalBottomSheetState.show()
-                    }
+                    modalContents.value =
+                        { toggle ->
+                            MemberFilterModalContent(
+                                toggle
+                            ).run { toggle() }
+                        }
                 })) {
                     Text(text = "사용중")
                     Icon(
@@ -96,7 +106,10 @@ fun MembersScreen(
                     )
                 }
             }
-            LazyColumn(Modifier.fillMaxWidth()) {
+            LazyColumn(
+                Modifier
+                    .fillMaxWidth()
+            ) {
                 itemsIndexed(members.value) { index, item ->
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                         Row(
@@ -122,18 +135,36 @@ fun MembersScreen(
                             onExpand = { viewModel.onItemExpanded(index) },
                             onCollapse = { viewModel.onItemCollapsed(index) },
                             onClick = {
-                                //                            scope.launch { modalBottomSheetState.show() }
                                 // 달력 화면으로 이동하기
-                                goToCalendarActivity()
+//                              goToCalendarActivity()
+                                modalContents.value =
+                                    { toggle ->
+                                        MyInfoModalContent(
+                                            toggle,
+                                            item
+                                        ).run { toggle() }
+                                    }
                             }
                         )
                     }
                 }
             }
-        }
-    }
+            if (members.value.isEmpty()) Box(
+                Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "검색된 회원이 없네요!\n회원을 추가해 주세요!",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.subtitle2,
+                    color = SECONDARY_TEXT_GHOST
+                )
+            }
 
-    ModalBottomSheet(modalBottomSheetState = modalBottomSheetState, scope)
+        }
+
+    }
+    ModalBottomSheet(modalBottomSheetState, scope, modalContents.value)
 }
 
 @Composable
@@ -156,9 +187,6 @@ fun DrawSearchBar(
             .height(30.dp)
             .background(SIDE_BAR_BACKGROUND),
         decorationBox = { innerTextField ->
-            /**
-             * TODO : searchbox 제대로 만들기
-             */
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(start = 12.dp, end = 12.dp)
@@ -192,91 +220,143 @@ fun DrawSearchBar(
     )
 }
 
+@ExperimentalMaterialApi
+@Composable
+fun MyInfoModalContent(
+    toggle: () -> Unit,
+    member: Member
+) {
+    Column(
+        Modifier
+            .height(252.dp)
+            .padding(start = 16.dp, end = 16.dp)
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 1.dp)
+    ) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(47.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "${member.nickname} 회원님", style = MaterialTheme.typography.subtitle2)
+            Spacer(modifier = Modifier.weight(1F))
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
+                contentDescription = "취소",
+                modifier = Modifier.clickable(onClick = {
+                    toggle()
+                }),
+                tint = Color.Unspecified
+            )
+        }
+        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+            Image(
+                imageVector = ImageVector.vectorResource(id = member.profileImage),
+                contentDescription = "회원 프로필"
+            )
+        }
+    }
+}
+
+@ExperimentalMaterialApi
+@Composable
+fun MemberFilterModalContent(toggle: () -> Unit) {
+    Column(
+        Modifier
+            .height(252.dp)
+            .padding(start = 16.dp, end = 16.dp)
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 1.dp)
+    ) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(47.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "회원 유형", style = MaterialTheme.typography.subtitle2)
+            Spacer(modifier = Modifier.weight(1F))
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
+                contentDescription = "취소",
+                modifier = Modifier.clickable(onClick = {
+                    toggle()
+                }),
+                tint = Color.Unspecified
+            )
+        }
+        /**
+         * TODO : 회원 유형도 타입 나오면 Enum이나 Sealed로 바꾸기
+         */
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(60.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "전 체",
+                style = MaterialTheme.typography.subtitle2,
+                modifier = Modifier.width(80.dp),
+                textAlign = TextAlign.Justify
+            )
+            Text(text = "회원권이 있는 회원", style = MaterialTheme.typography.body2)
+        }
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(60.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "수강중 회원",
+                style = MaterialTheme.typography.subtitle2,
+                modifier = Modifier.width(80.dp),
+                textAlign = TextAlign.Justify
+            )
+            Text(text = "회원권이 있는 회원", style = MaterialTheme.typography.body2)
+        }
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(60.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "만료된 회원",
+                style = MaterialTheme.typography.subtitle2,
+                modifier = Modifier.width(80.dp),
+                textAlign = TextAlign.Justify
+            )
+            Text(text = "회원권이 없거나 만료된 회원", style = MaterialTheme.typography.body2)
+        }
+    }
+}
+
 
 /**
- * TODO : 바텀시트 디자인 적용하기
+ * TODO : 얘한테 어떻게 데이터 넘겨줄건지 고민해봐야함.
  */
 @Composable
 @ExperimentalMaterialApi
-fun ModalBottomSheet(modalBottomSheetState: ModalBottomSheetState, scope: CoroutineScope) {
-    val scope = rememberCoroutineScope()
+fun ModalBottomSheet(
+    modalBottomSheetState: ModalBottomSheetState,
+    scope: CoroutineScope,
+    modalContents: @Composable (() -> Unit) -> Unit
+) {
+    val toggle: () -> Unit = {
+        scope.launch {
+            if (modalBottomSheetState.isVisible) modalBottomSheetState.hide()
+            else modalBottomSheetState.show()
+        }
+    }
     ModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
-        sheetContent = {
-            Column(
-                Modifier
-                    .height(252.dp)
-                    .padding(start = 16.dp, end = 16.dp)
-                    .fillMaxWidth()
-            ) {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(47.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(text = "회원 유형", style = MaterialTheme.typography.subtitle2)
-                    Spacer(modifier = Modifier.weight(1F))
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
-                        contentDescription = "취소",
-                        modifier = Modifier.clickable(onClick = {
-                            scope.launch {
-                                if (modalBottomSheetState.isVisible) modalBottomSheetState.hide()
-                                else modalBottomSheetState.show()
-                            }
-                        }),
-                        tint = Color.Unspecified
-                    )
-                }
-                /**
-                 * TODO : 회원 유형도 타입 나오면 Enum이나 Sealed로 바꾸기
-                 */
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(60.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "전 체",
-                        style = MaterialTheme.typography.subtitle2,
-                        modifier = Modifier.width(80.dp),
-                        textAlign = TextAlign.Justify
-                    )
-                    Text(text = "회원권이 있는 회원", style = MaterialTheme.typography.body2)
-                }
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(60.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "수강중 회원",
-                        style = MaterialTheme.typography.subtitle2,
-                        modifier = Modifier.width(80.dp),
-                        textAlign = TextAlign.Justify
-                    )
-                    Text(text = "회원권이 있는 회원", style = MaterialTheme.typography.body2)
-                }
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(60.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "만료된 회원",
-                        style = MaterialTheme.typography.subtitle2,
-                        modifier = Modifier.width(80.dp),
-                        textAlign = TextAlign.Justify
-                    )
-                    Text(text = "회원권이 없거나 만료된 회원", style = MaterialTheme.typography.body2)
-                }
-            }
-        }, sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
-    ) {}
+        sheetContent = { modalContents(toggle) }
+    ) {
+    }
+
 }
 
 /**
@@ -370,3 +450,13 @@ fun MemberItem(
  * 나중에 친구 목록 api 만들어지면 그때 model파일에 클래스 만들것. 현재는 ui데모 위한 임시객체
  */
 data class Member(val nickname: String, val profileImage: Int = R.drawable.ic_launcher_background)
+
+enum class BottomSheetType {
+    FILTER, MY_PROFILE, USER_PROFILE
+}
+
+data class ModalStateHandler @ExperimentalMaterialApi constructor(
+    var modalBottomSheetState: ModalBottomSheetState,
+    var bottomSheetType: BottomSheetType,
+    var bottomSheetContent: @Composable () -> Unit
+)
