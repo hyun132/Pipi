@@ -1,8 +1,8 @@
 package com.example.pipi.presentation.main
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -125,14 +125,13 @@ class MainViewModel(private val repository: MemberRepositoryImpl) : ViewModel() 
     /**
      * 입력된 키워드가 포함된 멤버 출력해주는 함수.
      */
-    fun searchMemberByName() {
-        getMyMembers()
-        if (searchQuery.value.isNotEmpty() && searchQuery.value.isNotBlank()) {
-            val reg = (".*"+searchQuery.value.toList().joinToString(".*")).toRegex()
-            _members.value = _members.value.filter { member: Member ->
+    fun searchMemberByName(): MutableState<List<Member>> {
+        return if (searchQuery.value.isNotEmpty() && searchQuery.value.isNotBlank()) {
+            val reg = (".*" + searchQuery.value.toList().joinToString(".*")).toRegex()
+            mutableStateOf(_members.value.filter { member: Member ->
                 member.nickname.matches(reg)
-            }
-        }
+            })
+        } else members
     }
 
 }

@@ -12,4 +12,10 @@ class Prefs(context: Context) {
         set(value) {
             prefs.edit().putString("token", value).apply()
         }
+
+    var tryAutoLogin: Boolean
+        get() = prefs.getBoolean("tryAutoLogin", false)
+        set(value) {
+            prefs.edit().putBoolean("tryAutoLogin", value).apply()
+        }
 }

@@ -37,8 +37,6 @@ class HeaderRequestInterceptor : Interceptor {
         val response = chain.proceed(request)
 
         if (response.headers("Set-Cookie").isNotEmpty()) {
-//            val regex = ".*(accessToken="
-            //refreshToken=AS21\d321ASdsda, accessToken=AS213add\d23eaa; Path=/; HttpOnly
             response.header("Set-Cookie").let { header ->
                 if (header != null) {
                     ".*accessToken=([^;]*).*".toRegex()

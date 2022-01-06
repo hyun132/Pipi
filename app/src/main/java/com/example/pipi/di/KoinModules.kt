@@ -14,11 +14,13 @@ import com.example.pipi.presentation.main.MainViewModel
 import com.example.pipi.presentation.main.calendar.CalendarViewModel
 import com.example.pipi.presentation.setting.ResetUserPasswordViewModel
 import com.example.pipi.presentation.signup.SignupViewModel
+import com.example.pipi.presentation.start.StartViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val viewModelModules = module {
-    viewModel { LoginViewModel(get(), get()) }
+    viewModel { LoginViewModel(get()) }
+    viewModel { StartViewModel(get()) }
     viewModel { MainViewModel(get()) }
     viewModel { SignupViewModel(get()) }
     viewModel { CalendarViewModel() }

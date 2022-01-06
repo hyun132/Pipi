@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
  * TODO : LiveData 걷어내고 xxxFlow로 변경할 것
  * repository type LoginRespositoryImpl 로 설정하면 안되는 이유
  */
-class LoginViewModel(val logInUseCase: LogInUseCase, val autoLogInUseCase: AutoLogInUseCase) :
+class LoginViewModel(val logInUseCase: LogInUseCase) :
     ViewModel() {
 
     val id = mutableStateOf<String>("")
@@ -40,7 +40,7 @@ class LoginViewModel(val logInUseCase: LogInUseCase, val autoLogInUseCase: AutoL
                             is Result.Success -> {
                                 isLoading.value = false
                                 isLoginSuccess.value = true
-                                Pipi.prefs.token
+                                saveAutoLoginState()
                             }
                             is Result.Error -> {
                                 isLoading.value = false
@@ -56,31 +56,8 @@ class LoginViewModel(val logInUseCase: LogInUseCase, val autoLogInUseCase: AutoL
         }
     }
 
-    /**
-     * TODO : 자동로그인 프로우 픽스되면 반영하기
-     */
-    fun autoLogin() {
-        viewModelScope.launch {
-            Pipi.prefs.token.let { token ->
-                    autoLogInUseCase(AutoLogInUseCase.Params()).onEach { result ->
-                        when (result) {
-                            is Result.Success -> {
-                                isLoading.value = false
-                                isLoginSuccess.value = true
-                                Pipi.prefs.token
-                            }
-                            is Result.Error -> {
-                                isLoading.value = false
-                                errorMessage.value = result.message.toString()
-                            }
-                            is Result.Loading -> {
-                                isLoading.value = true
-                            }
-                        }
-                    }.launchIn(this)
-                }
-
-        }
+    private fun saveAutoLoginState(){
+        Pipi.prefs.tryAutoLogin = autoLogin.value
     }
 
 }

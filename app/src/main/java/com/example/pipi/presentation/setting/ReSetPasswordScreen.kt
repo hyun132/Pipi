@@ -104,8 +104,7 @@ fun ReSetPasswordScreen(
                                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_success),
                                 contentDescription = "success",
                                 tint = Color.Unspecified
-                            ) else {
-                            }
+                            )
 
                         },
                         hideInputData = true,

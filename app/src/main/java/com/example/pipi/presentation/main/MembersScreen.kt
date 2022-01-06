@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,9 +32,9 @@ import androidx.compose.ui.unit.sp
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors
 import com.example.pipi.global.constants.ui.Colors.FONT_GRAY
-import com.example.pipi.global.constants.ui.Colors.PRIMARY_TEXT
 import com.example.pipi.global.constants.ui.Colors.SECONDARY_TEXT_GHOST
 import com.example.pipi.global.constants.ui.Colors.SIDE_BAR_BACKGROUND
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -44,7 +45,8 @@ fun MembersScreen(
     goToCalendarActivity: () -> Unit,
     showMemberRequestScreen: () -> Unit
 ) {
-    val members = viewModel.members
+    val members = viewModel.searchMemberByName()
+    val searchQuery = viewModel.searchQuery
     val revealedCardIds = viewModel.revealedCardIdsList.collectAsState()
     val scope = rememberCoroutineScope()
     val modalBottomSheetState = rememberModalBottomSheetState(
@@ -59,12 +61,13 @@ fun MembersScreen(
         DrawMainTopAppBar { showMemberRequestScreen() }
         Column(
             modifier = Modifier
-                .fillMaxSize().padding(16.dp)
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
             DrawSearchBar(
-                text = viewModel.searchQuery,
                 placeholder = "회원을 검색해 주세요.",
-                onChange = { viewModel.searchMemberByName() }
+                onChange = { query: String -> searchQuery.value = query },
+                query = searchQuery
             )
             Row(
                 modifier = Modifier
@@ -79,7 +82,12 @@ fun MembersScreen(
                     color = Colors.PRIMARY_TEXT
                 )
                 Spacer(modifier = Modifier.weight(1F))
-                Row(modifier = Modifier.clickable(onClick = { viewModel.setBottomSheetState(true) })) {
+                Row(modifier = Modifier.clickable(onClick = {
+                    scope.launch {
+                        if (modalBottomSheetState.isVisible) modalBottomSheetState.hide()
+                        else modalBottomSheetState.show()
+                    }
+                })) {
                     Text(text = "사용중")
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_list_setting),
@@ -114,7 +122,7 @@ fun MembersScreen(
                             onExpand = { viewModel.onItemExpanded(index) },
                             onCollapse = { viewModel.onItemCollapsed(index) },
                             onClick = {
-        //                            scope.launch { modalBottomSheetState.show() }
+                                //                            scope.launch { modalBottomSheetState.show() }
                                 // 달력 화면으로 이동하기
                                 goToCalendarActivity()
                             }
@@ -125,92 +133,150 @@ fun MembersScreen(
         }
     }
 
-    ModalBottomSheet(modalBottomSheetState = modalBottomSheetState, member = Member("", 0))
+    ModalBottomSheet(modalBottomSheetState = modalBottomSheetState, scope)
 }
 
 @Composable
 fun DrawSearchBar(
-    text: MutableState<String>,
     placeholder: String = "",
-    onChange: () -> Unit
+    onChange: (String) -> Unit,
+    query: MutableState<String>
 ) {
-    TextField(
-        value = text.value,
-        onValueChange = {
-            text.value = it
-            onChange()
+    BasicTextField(
+        value = query.value,
+        onValueChange = { textFieldValue ->
+            query.value = textFieldValue
+            onChange(query.value)
         },
-        placeholder = {
-            Text(
-                text = placeholder,
-                style = MaterialTheme.typography.subtitle1,
-                fontSize = 12.sp,
-                color = SECONDARY_TEXT_GHOST
-            )
-        },
-        leadingIcon = {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_search),
-                contentDescription = "검색",
-                Modifier.size(14.dp)
-            )
-        },
+        textStyle = MaterialTheme.typography.body2,
         modifier = Modifier
             .height(30.dp)
             .clip(RoundedCornerShape(4.dp))
             .fillMaxWidth()
-            .height(30.dp),
-        colors = TextFieldDefaults.textFieldColors(
-            textColor = PRIMARY_TEXT,
-            disabledTextColor = Color.Transparent,
-            backgroundColor = SIDE_BAR_BACKGROUND,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            disabledIndicatorColor = Color.Transparent
-        )
+            .height(30.dp)
+            .background(SIDE_BAR_BACKGROUND),
+        decorationBox = { innerTextField ->
+            /**
+             * TODO : searchbox 제대로 만들기
+             */
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(start = 12.dp, end = 12.dp)
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_search),
+                    contentDescription = "검색",
+                    Modifier.size(14.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Box() {
+                    innerTextField()
+                    // 여기 innerTextField앞에 가리던지 기본값을 0으로 하던지
+                    if (query.value.isEmpty()) Text(
+                        text = placeholder,
+                        style = MaterialTheme.typography.subtitle1,
+                        fontSize = 12.sp,
+                        color = SECONDARY_TEXT_GHOST
+                    )
+                }
+            }
+//            TextFieldDefaults.textFieldColors(
+//                textColor = PRIMARY_TEXT,
+//                disabledTextColor = Color.Transparent,
+//                backgroundColor = SIDE_BAR_BACKGROUND,
+//                focusedIndicatorColor = Color.Transparent,
+//                unfocusedIndicatorColor = Color.Transparent,
+//                disabledIndicatorColor = Color.Transparent
+//            )
+        }
     )
 }
 
+
+/**
+ * TODO : 바텀시트 디자인 적용하기
+ */
 @Composable
 @ExperimentalMaterialApi
-fun ModalBottomSheet(modalBottomSheetState: ModalBottomSheetState, member: Member) {
+fun ModalBottomSheet(modalBottomSheetState: ModalBottomSheetState, scope: CoroutineScope) {
     val scope = rememberCoroutineScope()
-    ModalBottomSheetLayout(sheetState = modalBottomSheetState, sheetContent = {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-        ) {
-            Row(
+    ModalBottomSheetLayout(
+        sheetState = modalBottomSheetState,
+        sheetContent = {
+            Column(
                 Modifier
+                    .height(252.dp)
+                    .padding(start = 16.dp, end = 16.dp)
                     .fillMaxWidth()
-                    .height(47.dp),
-                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "회원 구분")
-                Spacer(modifier = Modifier.weight(1F))
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
-                    contentDescription = "취소",
-                    modifier = Modifier.clickable(onClick = {
-                        scope.launch {
-                            modalBottomSheetState.hide()
-                        }
-                    })
-                )
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(47.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "회원 유형", style = MaterialTheme.typography.subtitle2)
+                    Spacer(modifier = Modifier.weight(1F))
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
+                        contentDescription = "취소",
+                        modifier = Modifier.clickable(onClick = {
+                            scope.launch {
+                                if (modalBottomSheetState.isVisible) modalBottomSheetState.hide()
+                                else modalBottomSheetState.show()
+                            }
+                        }),
+                        tint = Color.Unspecified
+                    )
+                }
+                /**
+                 * TODO : 회원 유형도 타입 나오면 Enum이나 Sealed로 바꾸기
+                 */
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(60.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "전 체",
+                        style = MaterialTheme.typography.subtitle2,
+                        modifier = Modifier.width(80.dp),
+                        textAlign = TextAlign.Justify
+                    )
+                    Text(text = "회원권이 있는 회원", style = MaterialTheme.typography.body2)
+                }
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(60.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "수강중 회원",
+                        style = MaterialTheme.typography.subtitle2,
+                        modifier = Modifier.width(80.dp),
+                        textAlign = TextAlign.Justify
+                    )
+                    Text(text = "회원권이 있는 회원", style = MaterialTheme.typography.body2)
+                }
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(60.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "만료된 회원",
+                        style = MaterialTheme.typography.subtitle2,
+                        modifier = Modifier.width(80.dp),
+                        textAlign = TextAlign.Justify
+                    )
+                    Text(text = "회원권이 없거나 만료된 회원", style = MaterialTheme.typography.body2)
+                }
             }
-
-            Image(
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_onboarding),
-                contentDescription = "회원사진",
-                modifier = Modifier
-                    .width(100.dp)
-                    .height(100.dp)
-            )
-            Text(text = member.nickname ?: "알 수 없음.")
-
-        }
-    }) {}
+        }, sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
+    ) {}
 }
 
 /**

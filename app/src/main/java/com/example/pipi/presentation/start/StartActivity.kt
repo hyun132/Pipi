@@ -21,21 +21,43 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
+import com.example.pipi.Pipi
 import com.example.pipi.R
+import com.example.pipi.global.constants.ui.Colors.PRIMARY_BRAND
 import com.example.pipi.global.constants.ui.Components.drawDefaultButton
 import com.example.pipi.presentation.login.LoginActivity
-import com.example.pipi.global.constants.ui.Colors.PRIMARY_BRAND
+import com.example.pipi.presentation.main.MainActivity
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import timber.log.Timber
 
 class StartActivity : AppCompatActivity() {
+
+    val viewModel: StartViewModel by viewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Pipi)
         super.onCreate(savedInstanceState)
+        installSplashScreen().apply {
+            setKeepVisibleCondition{
+                !viewModel.isLoading.value
+            }
+        }
+        if (Pipi.prefs.tryAutoLogin) viewModel.autoLogin()
+        viewModel.isLoginSuccess.onEach {
+            if (it) moveMainActivity()
+        }.launchIn(this.lifecycleScope)
+
         setContent {
             Column(
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(63.dp))
                 Row(
@@ -67,7 +89,10 @@ class StartActivity : AppCompatActivity() {
                     textAlign = TextAlign.End, fontWeight = FontWeight.W700
 
                 )
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
                     Text(
                         text = "보다",
                         style = MaterialTheme.typography.h5,
@@ -96,7 +121,14 @@ class StartActivity : AppCompatActivity() {
                 drawDefaultButton(
                     colorResource(R.color.main_purple),
                     text = "트레이너로 시작하기",
-                    onClick = { moveMainActivity() },
+                    onClick = {
+                        /**
+                         * TODO : 자동로그인 요청 플로우 여기에 추가하기
+                         * 자동로그인 shared에 저장되어 있으면 여기서 로그인 시도하고 바로 넘어감.
+                         * 실패하면 로그인 화면으로 이동. 로그인화면에서는 자동로그인요청 x
+                         */
+                        moveLoginActivity()
+                    },
                     isEnabled = true
                 )
                 Spacer(modifier = Modifier.height(15.dp))
@@ -104,15 +136,21 @@ class StartActivity : AppCompatActivity() {
                     Color.Black,
                     "일반회원으로 시작하기",
                     isEnabled = true,
-                    onClick = { moveMainActivity() })
+                    onClick = { moveLoginActivity() })
                 Spacer(modifier = Modifier.height(32.dp))
             }
         }
     }
 
-    private fun moveMainActivity() {
+    private fun moveLoginActivity() {
         //do something
         startActivity(Intent(this, LoginActivity::class.java))
+        finish()
+    }
+
+    private fun moveMainActivity() {
+        //do something
+        startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 }
