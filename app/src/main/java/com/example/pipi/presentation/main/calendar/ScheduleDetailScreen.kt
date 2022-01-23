@@ -16,9 +16,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavController
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Components.DefaultTopAppbar
-import com.example.pipi.global.constants.utils.BaseCalendar
-import timber.log.Timber
-import java.io.Serializable
 
 @Composable
 fun ScheduleDetailScreen(date: String, navController: NavController, viewModel: CalendarViewModel) {
@@ -36,18 +33,10 @@ fun ScheduleDetailScreen(date: String, navController: NavController, viewModel: 
                     .align(CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_back),
-                    contentDescription = "뒤로가기"
-                )
                 Text(
                     text = date,
 //                    text = calendar.currentDateTime.value,
                     style = MaterialTheme.typography.subtitle2
-                )
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_back),
-                    contentDescription = "뒤로가기"
                 )
             }
         }, optionComponent = {

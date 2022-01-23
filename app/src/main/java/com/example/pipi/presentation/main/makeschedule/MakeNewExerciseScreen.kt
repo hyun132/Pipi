@@ -25,12 +25,14 @@ import androidx.navigation.NavController
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors.BRAND_SECOND
 import com.example.pipi.global.constants.ui.Components.DefaultTopAppbar
-import com.example.pipi.global.constants.utils.BaseCalendar
+import com.example.pipi.global.constants.utils.CalendarUtils
+import java.util.*
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun MakeNewExerciseScreen(navController: NavController, calendar: BaseCalendar) {
+fun MakeNewExerciseScreen(navController: NavController, calendar: Calendar) {
     val selectedParts = mutableStateOf(FilterData("1", "가슴"))
+    val currentDay =
 
     Column(Modifier.fillMaxWidth()) {
         DefaultTopAppbar(navComponent = {
@@ -50,7 +52,7 @@ fun MakeNewExerciseScreen(navController: NavController, calendar: BaseCalendar) 
                     contentDescription = "어제"
                 )
                 Text(
-                    text = calendar.currentDateTime.value,
+                    text = "년  일",
                     style = MaterialTheme.typography.subtitle2
                 )
                 Icon(

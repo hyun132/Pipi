@@ -19,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -29,22 +30,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors
+import com.example.pipi.global.constants.ui.Colors.BRAND_SECOND
 import com.example.pipi.global.constants.ui.Colors.FONT_GRAY
+import com.example.pipi.global.constants.ui.Colors.PRIMARY_TEXT
 import com.example.pipi.global.constants.ui.Colors.SECONDARY_TEXT_GHOST
 import com.example.pipi.global.constants.ui.Colors.SIDE_BAR_BACKGROUND
+import com.example.pipi.global.constants.ui.Colors.WHITE
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.io.Serializable
 import kotlin.math.roundToInt
 
 @ExperimentalMaterialApi
 @Composable
 fun MembersScreen(
     viewModel: MainViewModel,
-    goToCalendarActivity: () -> Unit,
-    showMemberRequestScreen: () -> Unit
+    goToCalendarActivity: (Member) -> Unit,
+    showMemberRequestScreen: () -> Unit,
+    myInfo: Member
 ) {
     val members = viewModel.searchMemberByName()
     val searchQuery = viewModel.searchQuery
@@ -83,12 +88,7 @@ fun MembersScreen(
                     .height(48.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(text = "나의 회원", style = MaterialTheme.typography.subtitle2, color = FONT_GRAY)
-                Text(
-                    text = "13 명",
-                    style = MaterialTheme.typography.subtitle2,
-                    color = Colors.PRIMARY_TEXT
-                )
+                Text(text = "나의 프로필", style = MaterialTheme.typography.subtitle2, color = FONT_GRAY)
                 Spacer(modifier = Modifier.weight(1F))
                 Row(modifier = Modifier.clickable(onClick = {
                     modalContents.value =
@@ -98,13 +98,38 @@ fun MembersScreen(
                             ).run { toggle() }
                         }
                 })) {
-                    Text(text = "사용중")
+                    Text(text = "전체 회원")
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_list_setting),
                         contentDescription = "사용중",
                         tint = Color.Unspecified
                     )
                 }
+            }
+            MemberItem(member = myInfo, onClick = {
+                // 달력 화면으로 이동하기
+//                              goToCalendarActivity()
+                modalContents.value =
+                    { toggle ->
+                        MyInfoModalContent(
+                            toggle,
+                            myInfo,
+                            { member -> goToCalendarActivity(member) }
+                        ).run { toggle() }
+                    }
+            })
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(text = "나의 회원", style = MaterialTheme.typography.subtitle2, color = FONT_GRAY)
+                Text(
+                    text = "13 명",
+                    style = MaterialTheme.typography.subtitle2,
+                    color = Colors.PRIMARY_TEXT
+                )
             }
             LazyColumn(
                 Modifier
@@ -142,7 +167,7 @@ fun MembersScreen(
                                         MyInfoModalContent(
                                             toggle,
                                             item
-                                        ).run { toggle() }
+                                        ) { member ->  goToCalendarActivity(member) }.run { toggle() }
                                     }
                             }
                         )
@@ -224,19 +249,20 @@ fun DrawSearchBar(
 @Composable
 fun MyInfoModalContent(
     toggle: () -> Unit,
-    member: Member
+    member: Member,
+    goToCalendarActivity: (Member) -> Unit
 ) {
     Column(
         Modifier
-            .height(252.dp)
-            .padding(start = 16.dp, end = 16.dp)
+            .height(224.dp)
             .fillMaxWidth()
             .defaultMinSize(minHeight = 1.dp)
     ) {
         Row(
             Modifier
                 .fillMaxWidth()
-                .height(47.dp),
+                .height(47.dp)
+                .padding(start = 16.dp, end = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = "${member.nickname} 회원님", style = MaterialTheme.typography.subtitle2)
@@ -250,14 +276,71 @@ fun MyInfoModalContent(
                 tint = Color.Unspecified
             )
         }
-        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+        Row(modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .drawBehind {
+                val strokeWidth = 1f
+                drawLine(
+                    SIDE_BAR_BACKGROUND,
+                    Offset(0f, 0f),
+                    Offset(size.width, 0f),
+                    strokeWidth
+                )
+            }) {
             Image(
                 imageVector = ImageVector.vectorResource(id = member.profileImage),
-                contentDescription = "회원 프로필"
+                contentDescription = "회원 프로필",
+                Modifier.clip(RoundedCornerShape(8.dp))
             )
+            Spacer(modifier = Modifier.weight(1f))
+            Column(
+                Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "(회 원)", fontSize = 12.sp,
+                    style = MaterialTheme.typography.body2,
+                    color = PRIMARY_TEXT
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                    TextButton(
+                        onClick = { goToCalendarActivity(member) },
+                        modifier = Modifier
+                            .height(26.dp)
+                            .width(84.dp),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Text(
+                            text = "관리하러 가기",
+                            fontSize = 12.sp,
+                            style = MaterialTheme.typography.body2,
+                            color = PRIMARY_TEXT
+                        )
+                    }
+                    /**
+                     * TODO : switch track size 변경 방법 찾아보기
+                     */
+                    Switch(
+                        checked = true,
+                        onCheckedChange = {},
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(26.dp),
+                        colors = SwitchDefaults.colors(
+                            checkedTrackColor = BRAND_SECOND,
+                            uncheckedTrackColor = SECONDARY_TEXT_GHOST,
+                            checkedThumbColor = WHITE,
+                            uncheckedThumbColor = WHITE
+                        )
+                    )
+                }
+            }
         }
     }
 }
+
 
 @ExperimentalMaterialApi
 @Composable
@@ -449,7 +532,11 @@ fun MemberItem(
  * TODO
  * 나중에 친구 목록 api 만들어지면 그때 model파일에 클래스 만들것. 현재는 ui데모 위한 임시객체
  */
-data class Member(val nickname: String, val profileImage: Int = R.drawable.ic_launcher_background)
+data class Member(
+    val nickname: String,
+    val profileImage: Int = R.drawable.ic_launcher_background,
+    val inbody: Int? = null
+) : Serializable
 
 enum class BottomSheetType {
     FILTER, MY_PROFILE, USER_PROFILE

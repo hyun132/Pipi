@@ -35,45 +35,53 @@ object Fonts {
 
     val typography = Typography(
         defaultFontFamily = appFontFamily,
+        //t1
         h1 = TextStyle(
             fontWeight = FontWeight.Bold,
-            fontSize = 96.sp,
+            fontSize = 24.sp,
             letterSpacing = (-1.5).sp,
             lineHeight = 28.sp,
         ),
+        //h1
         h2 = TextStyle(
-            fontWeight = FontWeight.Normal,
-            fontSize = 60.sp,
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
             letterSpacing = (-0.5).sp,
             lineHeight = 28.sp,
         ),
+        //h2
         h3 = TextStyle(
-            fontWeight = FontWeight.Bold,
-            fontSize = 48.sp,
-            letterSpacing = 0.sp
-        ),
-        h4 = TextStyle(
             fontWeight = FontWeight.Normal,
-            fontSize = 34.sp,
-            letterSpacing = 0.25.sp
+            fontSize = 18.sp,
+            letterSpacing = (-0.5).sp,
+            lineHeight = 28.sp,
         ),
-        h5 = TextStyle(
-            fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
-            lineHeight = 36.sp,
-            letterSpacing = 0.sp
-        ),
-        h6 = TextStyle(
+        //p1
+        h4 = TextStyle(
             fontWeight = FontWeight.Bold,
             fontSize = 18.sp,
-            lineHeight = 28.sp,
-            letterSpacing = 0.15.sp
+            letterSpacing = 0.25.sp,
+            lineHeight = 24.sp,
         ),
-        //size:16 , weight:400 , lineHight:24
+        //p2
+        h5 = TextStyle(
+            fontWeight = FontWeight.Normal,
+            fontSize = 18.sp,
+            letterSpacing = 0.25.sp,
+            lineHeight = 24.sp,
+        ),
+        //p3
+        h6 = TextStyle(
+            fontWeight = FontWeight.Bold,
+            fontSize = 14.sp,
+            letterSpacing = 0.25.sp,
+            lineHeight = 24.sp,
+        ),
+        //p4
         subtitle1 = TextStyle(
             fontWeight = FontWeight.Normal,
             lineHeight = 24.sp,
-            fontSize = 16.sp,
+            fontSize = 14.sp,
             letterSpacing = 0.15.sp
         ),
         // p2
@@ -88,6 +96,7 @@ object Fonts {
             fontSize = 16.sp,
             letterSpacing = 0.5.sp
         ),
+        //p4
         body2 = TextStyle(
             fontWeight = FontWeight.Normal,
             fontSize = 14.sp,

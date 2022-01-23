@@ -41,8 +41,10 @@ class MainViewModel(private val repository: MemberRepositoryImpl) : ViewModel() 
     val searchQuery = mutableStateOf<String>("")
 
     /**
-     * TODO
-     * 멤버 불러오는 부분도 stateFlow로 변경할 것.
+     * TODO :멤버 불러오는 부분도 stateFlow로 변경할 것.
+     * TODO : 오프라인시에도 친구목록 확인하는 경우가 있으므로 db에 저장해 둘 필요 있음. 인터넷 연결이 되어있지 않을 시 db에서 불러오도록 하는 로직필요.
+     * TODO : 인터넷연결될 경우 친구 목록을 불러오고 백그라운드에서 db에 저장된 친구목록 갱신해주는 로직이 필요.
+     * TODO : 이 때 친구 목록에 변화가 생긴 경우 그 친구 맨 위로 끌어올려서 새로운 멤버임을 알림.
      * 멤버는 서버에서 한번 불러오면 데이터베이스에 캐싱해둘것.
      * 멤버리스트를 서버와 동기화하는 시점은 논의해볼 것.
      */
@@ -99,6 +101,10 @@ class MainViewModel(private val repository: MemberRepositoryImpl) : ViewModel() 
             )
             _memberRequest.value = dummyMemebers
         }
+    }
+
+    fun deleteMember(member: Member){
+
     }
 
     fun onItemExpanded(cardId: Int) {

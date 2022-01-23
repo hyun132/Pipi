@@ -8,11 +8,12 @@ import androidx.compose.material.Surface
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.pipi.global.constants.utils.BaseCalendar
+import com.example.pipi.global.constants.utils.CalendarUtils
 import com.example.pipi.presentation.main.SelectTrainingTypeScreen
 import com.example.pipi.presentation.main.ui.theme.PipiTheme
+import java.util.*
 
-class ScheduleActivity(val calendar: BaseCalendar) : AppCompatActivity() {
+class ScheduleActivity(val calendar: Calendar) : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

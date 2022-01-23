@@ -1,9 +1,12 @@
 package com.example.pipi.presentation.main.calendar
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
@@ -17,10 +20,12 @@ import androidx.navigation.navArgument
 import com.example.pipi.presentation.main.ui.theme.PipiTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@ExperimentalMaterialApi
 class CalendarActivity : ComponentActivity() {
 
     val viewModel: CalendarViewModel by viewModel()
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,9 +37,9 @@ class CalendarActivity : ComponentActivity() {
                 }
             }
         }
-
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @ExperimentalFoundationApi
     @Composable
     private fun calendarNavHost(navController: NavHostController) {
@@ -50,7 +55,8 @@ class CalendarActivity : ComponentActivity() {
                             navController,
                             date
                         )
-                    })
+                    }
+                )
             }
             composable(
                 route = "${CalendarScreenType.Detail.name}/{date}",

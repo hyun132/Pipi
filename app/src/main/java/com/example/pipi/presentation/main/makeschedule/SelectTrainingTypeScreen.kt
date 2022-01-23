@@ -20,10 +20,11 @@ import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors.QUATERNARY_BRAND
 import com.example.pipi.global.constants.ui.Colors.TERTIARY_BRAND
 import com.example.pipi.global.constants.ui.Components.DefaultTopAppbar
-import com.example.pipi.global.constants.utils.BaseCalendar
+import com.example.pipi.global.constants.utils.CalendarUtils
+import java.util.*
 
 @Composable
-fun SelectTrainingTypeScreen(navController: NavController, calendar: BaseCalendar) {
+fun SelectTrainingTypeScreen(navController: NavController, calendar: Calendar) {
     Column(Modifier.fillMaxWidth()) {
         DefaultTopAppbar(navComponent = {
             Icon(
@@ -42,7 +43,7 @@ fun SelectTrainingTypeScreen(navController: NavController, calendar: BaseCalenda
                     contentDescription = "뒤로가기"
                 )
                 Text(
-                    text = calendar.currentDateTime.value,
+                    text = "년  일",
                     style = MaterialTheme.typography.subtitle2
                 )
                 Icon(
