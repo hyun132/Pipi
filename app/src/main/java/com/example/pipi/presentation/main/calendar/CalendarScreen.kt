@@ -25,12 +25,12 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors.BRAND_SECOND
 import com.example.pipi.global.constants.ui.Colors.PRIMARY_TEXT
+import com.example.pipi.global.constants.ui.Colors.SECONDARY_TEXT_GHOST
 import com.example.pipi.global.constants.utils.CalendarUtils
-import com.example.pipi.global.constants.utils.CalendarUtils.changeToNextMonth
-import com.example.pipi.global.constants.utils.CalendarUtils.changeToPrevMonth
 import com.example.pipi.global.constants.utils.CalendarUtils.getRowOfCalendar
 import com.example.pipi.global.constants.utils.hideModalBottomSheet
 import com.example.pipi.global.constants.utils.showModalBottomSheet
@@ -45,11 +45,12 @@ import java.util.*
 @Composable
 fun CalendarScreen(
     viewModel: CalendarViewModel,
-    onCalendarItemClicked: (String) -> Unit,
+    state: ModalBottomSheetState,
+    onCalendarItemClicked: () -> Unit,
 ) {
-    val state = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden
-    )
+//    val state = rememberModalBottomSheetState(
+//        initialValue = ModalBottomSheetValue.Hidden
+//    )
     val scope = rememberCoroutineScope()
     val month = viewModel.month.observeAsState()
     val year = viewModel.year.observeAsState()
@@ -67,21 +68,15 @@ fun CalendarScreen(
         sheetState = state,
         currentYear = year.value!!,
         currentMonth = month.value!!,
-        onPrevClick = { viewModel.calendar.changeToPrevMonth { } },
-        onNextClick = { viewModel.calendar.changeToNextMonth { } },
+        onPrevClick = { viewModel.movePrevYear() },
+        onNextClick = { viewModel.moveNextYear() },
     ) { _year, _month ->
         viewModel.setCalendar(_year, _month)
+        viewModel.setDayAndDrawTrainingSchedule()
         state.hideModalBottomSheet(scope)
     }
 }
 
-/**
- * TODO
- * 일정 클릭이벤트 어디에 정의해둘건지 정해야함.
- *  1. baseCalendar abstract로 수정하고 onClicked 함수 선언해두고 외부에서 구현하는방법.
- *  2. 외부에서 파라미터로 전달해주는것.
- *  일단은 2번방법으로
- */
 @RequiresApi(Build.VERSION_CODES.O)
 @ExperimentalMaterialApi
 @ExperimentalFoundationApi
@@ -89,7 +84,7 @@ fun CalendarScreen(
 fun DrawTrainingCalendar(
     viewModel: CalendarViewModel,
     onTitleClick: () -> Unit,
-    onCalendarItemClicked: (String) -> Unit
+    onCalendarItemClicked: () -> Unit
 ) {
     val datas = viewModel.data
     val year = viewModel.year.observeAsState(initial = Calendar.getInstance().get(Calendar.YEAR))
@@ -106,7 +101,7 @@ fun DrawTrainingCalendar(
             )
         }
         DrawCalendar(calendar = viewModel.calendar, datas = datas) {
-            onCalendarItemClicked(it)
+            onCalendarItemClicked()
         }
     }
 }
@@ -130,7 +125,6 @@ fun DrawCalendarTitleArea(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
             .height(46.dp)
             .padding(start = 17.dp, end = 17.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -141,6 +135,7 @@ fun DrawCalendarTitleArea(
             Text(
                 text = "${year.value}년 ${month.value + 1}월"
             )
+            Spacer(modifier = Modifier.width(8.dp))
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_drop_down),
                 contentDescription = "날짜 선택"
@@ -177,7 +172,7 @@ fun DrawCalendarTitleArea(
 fun DrawCalendar(
     calendar: Calendar,
     datas: MutableList<CalendarUtils.DataModel>,
-    onItemClicked: (String) -> Unit,
+    onItemClicked: (Calendar) -> Unit,
 ) {
     BoxWithConstraints(Modifier.fillMaxSize()) {
         LazyVerticalGrid(
@@ -187,10 +182,19 @@ fun DrawCalendar(
                     DayItem(
                         data = item,
                         onClick = {
-                            onItemClicked(item.day.toString())
+                            val selectedCalendar = Calendar.getInstance()
+                            selectedCalendar.set(item.year, item.month, item.day)
+                            onItemClicked(selectedCalendar)
                             Timber.d("itemClicked :: dat is ${item.day}")
                         },
-                        height = maxHeight / getRowOfCalendar().dp
+                        height = maxHeight / getRowOfCalendar().dp,
+                        color = if (item.month == calendar.get(Calendar.MONTH)) {
+                            if (item.day == Calendar.getInstance()
+                                    .get(
+                                        Calendar.DATE
+                                    )
+                            ) BRAND_SECOND else PRIMARY_TEXT
+                        } else SECONDARY_TEXT_GHOST
                     )
                 }
             },
@@ -204,18 +208,20 @@ fun DrawCalendar(
  * calendar에 그려질 하나의 날짜 셀
  */
 @Composable
-fun DayItem(data: CalendarUtils.DataModel, height: Float, onClick: () -> Unit) {
+fun DayItem(data: CalendarUtils.DataModel, height: Float, color: Color, onClick: () -> Unit) {
     Column(
         Modifier
             .fillMaxSize()
             .height(height.dp)
+            .padding(top = 8.dp)
             .clickable { onClick() }) {
         Text(
             text = data.day.toString(),
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .height(24.dp)
-                .align(CenterHorizontally)
+                .align(CenterHorizontally),
+            color = color
         )
         Text(
             text = "할일1", modifier = Modifier
@@ -275,7 +281,9 @@ fun DrawModalBottomSheet(
             Text(
                 text = currentYear.toString(),
                 style = MaterialTheme.typography.h4,
-                modifier = Modifier.weight(1F)
+                modifier = Modifier.weight(1F),
+                fontSize = 15.sp,
+                textAlign = TextAlign.Center
             )
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_right_arrow),
@@ -309,6 +317,6 @@ fun DrawModalBottomSheet(
                 )
             }
         }, modifier = Modifier.padding(start = 61.dp, end = 61.dp))
-    }, sheetState = sheetState) {
+    }, sheetState = sheetState, sheetShape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp)) {
     }
 }

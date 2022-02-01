@@ -42,11 +42,7 @@ class StartActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Pipi)
         super.onCreate(savedInstanceState)
-        installSplashScreen().apply {
-            setKeepVisibleCondition{
-                !viewModel.isLoading.value
-            }
-        }
+        installSplashScreen()
         if (Pipi.prefs.tryAutoLogin) viewModel.autoLogin()
         viewModel.isLoginSuccess.onEach {
             if (it) moveMainActivity()

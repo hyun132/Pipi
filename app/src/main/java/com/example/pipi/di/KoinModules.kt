@@ -12,6 +12,7 @@ import com.example.pipi.presentation.duplicated.PhoneAuthViewModel
 import com.example.pipi.presentation.login.LoginViewModel
 import com.example.pipi.presentation.main.MainViewModel
 import com.example.pipi.presentation.main.calendar.CalendarViewModel
+import com.example.pipi.presentation.main.calendar.makeschedule.ScheduleViewModel
 import com.example.pipi.presentation.setting.ResetUserPasswordViewModel
 import com.example.pipi.presentation.signup.SignupViewModel
 import com.example.pipi.presentation.start.StartViewModel
@@ -24,6 +25,7 @@ val viewModelModules = module {
     viewModel { MainViewModel(get()) }
     viewModel { SignupViewModel(get()) }
     viewModel { CalendarViewModel() }
+    viewModel { ScheduleViewModel() }
     viewModel { PhoneAuthViewModel(get(), get()) }
     viewModel { ResetUserPasswordViewModel(get()) }
 }

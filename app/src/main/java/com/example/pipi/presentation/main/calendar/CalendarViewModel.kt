@@ -5,7 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.pipi.global.constants.utils.CalendarUtils
 import com.example.pipi.global.constants.utils.CalendarUtils.changeToNextMonth
+import com.example.pipi.global.constants.utils.CalendarUtils.changeToNextYear
 import com.example.pipi.global.constants.utils.CalendarUtils.changeToPrevMonth
+import com.example.pipi.global.constants.utils.CalendarUtils.changeToPrevYear
 import com.example.pipi.global.constants.utils.CalendarUtils.setCalendarDataAndDraw
 import java.util.*
 
@@ -72,6 +74,20 @@ class CalendarViewModel : ViewModel() {
      */
     fun movePrevMonth() {
         calendar.changeToPrevMonth { setDay() }
+    }
+
+    /**
+     * calendar의 year를 다음해로 변경
+     */
+    fun moveNextYear() {
+        calendar.changeToNextYear { setDay() }
+    }
+
+    /**
+     * calendar의 year를 이전해로 변경
+     */
+    fun movePrevYear() {
+        calendar.changeToPrevYear { setDay() }
     }
 
 }

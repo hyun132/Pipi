@@ -25,11 +25,21 @@ object CalendarUtils : Serializable {
     private var currentMonthMaxDate = 0
 
     data class DataModel(
+        val year: Int = Calendar.getInstance().get(Calendar.YEAR),
         val day: Int = 1,
+        val month: Int = 1,
         val schedules: MutableList<String> = mutableListOf<String>()
     ) : Serializable // 추후 아이템 관련 api 받으면 데이터타입 수정 및 파일분리 예정.
 
     fun getRowOfCalendar() = ROW_OF_CALENDAR
+
+    fun Calendar.getDate() = this.get(Calendar.DATE)
+    fun Calendar.getYear() = this.get(Calendar.YEAR)
+    fun Calendar.getMonth() = this.get(Calendar.MONTH)
+
+    fun Calendar.getCurrentDateString():String{
+        return "${this.getYear()}년 ${this.getMonth()+1}월 ${this.getDate()}일"
+    }
 
     /**
      * 화면에 표시될 월을 기반으로 화면에 트레이닝 스케쥴 그려준다.
@@ -45,12 +55,22 @@ object CalendarUtils : Serializable {
         this.drawMonthDate(data) { Timber.d("change calendar date");onDataChanged(data) }
     }
 
+    fun Calendar.changeToPrevYear(dataChangedCallback: (Calendar) -> Unit) {
+        this.set(Calendar.YEAR, this.getYear() - 1)
+        dataChangedCallback(this)
+    }
+
+    fun Calendar.changeToNextYear(dataChangedCallback: (Calendar) -> Unit) {
+        this.set(Calendar.YEAR, this.getYear() + 1)
+        dataChangedCallback(this)
+    }
+
     fun Calendar.changeToPrevMonth(dataChangedCallback: (Calendar) -> Unit) {
-        if (this.get(Calendar.MONTH) == Calendar.JANUARY) {
-            this.set(Calendar.YEAR, this.get(Calendar.YEAR) - 1)
+        if (this.getMonth() == Calendar.JANUARY) {
+            this.set(Calendar.YEAR, this.getYear() - 1)
             this.set(Calendar.MONTH, Calendar.DECEMBER)
         } else {
-            this.set(Calendar.MONTH, this.get(Calendar.MONTH) - 1)
+            this.set(Calendar.MONTH, this.getMonth() - 1)
         }
         dataChangedCallback(this)
     }
@@ -59,11 +79,11 @@ object CalendarUtils : Serializable {
      * calendar의 월을 다음달로 변경
      */
     fun Calendar.changeToNextMonth(dataChangedCallback: (Calendar) -> Unit) {
-        if (this.get(Calendar.MONTH) == Calendar.DECEMBER) {
-            this.set(Calendar.YEAR, this.get(Calendar.YEAR) + 1)
+        if (this.getMonth() == Calendar.DECEMBER) {
+            this.set(Calendar.YEAR, this.getYear() + 1)
             this.set(Calendar.MONTH, Calendar.JANUARY)
         } else {
-            this.set(Calendar.MONTH, this.get(Calendar.MONTH) + 1)
+            this.set(Calendar.MONTH, this.getMonth() + 1)
         }
         dataChangedCallback(this)
     }
@@ -71,9 +91,9 @@ object CalendarUtils : Serializable {
     /**
      * 이번달 달력에 보일 다음달 날짜/데이터
      */
-    private fun makeNextMonthHeadToShow(data: MutableList<DataModel>) {
+    private fun makeNextMonthHeadToShow(data: MutableList<DataModel>, calendar: Calendar) {
         for (i in 1..nextMonthHead) {
-            data.add(DataModel(i))
+            data.add(DataModel(day = i, month = calendar.getMonth()))
         }
     }
 
@@ -81,18 +101,28 @@ object CalendarUtils : Serializable {
      * 이번달 달력에 보일 이전달 마지막주 날짜들
      */
     private fun makePrevMonthTailToShow(calendar: Calendar, data: MutableList<DataModel>) {
-        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 1) // 지난달 가져옴
+        calendar.set(Calendar.MONTH, calendar.getMonth() - 1) // 지난달 가져옴
         val maxDate = calendar.getActualMaximum(Calendar.DATE) // 가져온 달의 마지막 날짜
         val maxOffsetDate = maxDate - prevMonthTail // 이번달 달력에 보여진 지난달 날짜 시작일
 
-        for (i in maxOffsetDate + 1..maxDate) data.add(DataModel(i))
+        for (i in maxOffsetDate + 1..maxDate) data.add(
+            DataModel(
+                day = i,
+                month = calendar.getMonth()
+            )
+        )
     }
 
     /**
      * 이번 달의 데이터를 가져오는 함수
      */
     private fun makeCurrentMonth(calendar: Calendar, data: MutableList<DataModel>) {
-        for (i in 1..calendar.getActualMaximum(Calendar.DATE)) data.add(DataModel(i))
+        for (i in 1..calendar.getActualMaximum(Calendar.DATE)) data.add(
+            DataModel(
+                day = i,
+                month = calendar.getMonth()
+            )
+        )
     }
 
     /**
@@ -119,7 +149,7 @@ object CalendarUtils : Serializable {
         makeCurrentMonth(this, data)
 
         nextMonthHead = ROW_OF_CALENDAR * DAYS_OF_WEEK - (prevMonthTail + currentMonthMaxDate)
-        makeNextMonthHeadToShow(data)
+        makeNextMonthHeadToShow(calendar = this.clone() as Calendar, data = data)
 
         dataChangedCallback(data)
     }

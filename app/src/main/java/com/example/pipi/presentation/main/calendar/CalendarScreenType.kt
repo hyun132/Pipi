@@ -1,15 +1,15 @@
 package com.example.pipi.presentation.main.calendar
 
 enum class CalendarScreenType {
-    Calendar,
+    MonthlySchedule,
     Detail;
 
     companion object {
         fun fromRoute(route: String?): CalendarScreenType =
             when (route?.substringBefore("/")) {
-                Calendar.name -> Calendar
+                MonthlySchedule.name -> MonthlySchedule
                 Detail.name -> Detail
-                null -> Calendar
+                null -> MonthlySchedule
                 else -> throw IllegalArgumentException("Route $route is not recognized.")
             }
     }

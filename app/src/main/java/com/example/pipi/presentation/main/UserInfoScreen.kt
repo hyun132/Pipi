@@ -6,10 +6,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors
+import com.example.pipi.global.constants.ui.Colors.ALERT
 import com.example.pipi.global.constants.ui.Colors.PRIMARY_TEXT
 import com.example.pipi.global.constants.ui.Components
 import com.example.pipi.presentation.main.MainViewModel
@@ -28,7 +29,7 @@ import com.example.pipi.presentation.main.Member
 @Composable
 fun UserInfoScreen(
     viewModel: MainViewModel,
-    member: Member = Member("테스터", R.drawable.ic_launcher_foreground,null),
+    member: Member = Member("테스터", R.drawable.ic_launcher_foreground, null),
     goBack: () -> Unit,
     goToMakeScheduleActivity: (Member) -> Unit
 ) {
@@ -123,4 +124,52 @@ fun DrawTopAppBar(text: String, navIcon: Int, goBack: () -> Unit) {
                 .clickable { goBack() }
         )
     })
+}
+
+@Composable
+fun DrawModal(
+    content: @Composable () -> Unit,
+    onNagativeClick: () -> Unit,
+    onPositiveClick: () -> Unit
+) {
+    Column {
+        val openDialog = remember { mutableStateOf(false) }
+
+        if (openDialog.value) {
+
+            AlertDialog(
+                onDismissRequest = {
+                    // Dismiss the dialog when the user clicks outside the dialog or on the back
+                    // button. If you want to disable that functionality, simply use an empty
+                    // onCloseRequest.
+                    openDialog.value = false
+                },
+                title = {
+                    Text(text = "Dialog Title")
+                },
+                text = {
+                    Text("해당 회원을 삭제하시겠습니까?", style = MaterialTheme.typography.h4, fontSize = 16.sp)
+                },
+                confirmButton = {
+                    Button(
+
+                        onClick = {
+                            openDialog.value = false
+                        }) {
+                        Text("삭제", color = ALERT)
+                    }
+                },
+                dismissButton = {
+                    Button(
+
+                        onClick = {
+                            openDialog.value = false
+                        }) {
+                        Text("취소")
+                    }
+                }
+            )
+        }
+    }
+
 }
