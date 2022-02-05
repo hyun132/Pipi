@@ -13,4 +13,12 @@ class MemberRepositoryImpl(private val api: PipiApi) : MemberRepository {
         TODO("Not yet implemented")
     }
 
+    override suspend fun approveMemberRequest(id: String): LoginResponse {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun denyMemberRequest(id: String): LoginResponse {
+        TODO("Not yet implemented")
+    }
+
 }

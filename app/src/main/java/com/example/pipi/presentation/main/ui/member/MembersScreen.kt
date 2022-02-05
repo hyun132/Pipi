@@ -1,4 +1,4 @@
-package com.example.pipi.presentation.main
+package com.example.pipi.presentation.main.ui.member
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.MutableTransitionState
@@ -38,34 +38,48 @@ import com.example.pipi.global.constants.ui.Colors.PRIMARY_TEXT
 import com.example.pipi.global.constants.ui.Colors.SECONDARY_TEXT_GHOST
 import com.example.pipi.global.constants.ui.Colors.SIDE_BAR_BACKGROUND
 import com.example.pipi.global.constants.ui.Colors.WHITE
+import com.example.pipi.presentation.main.DrawMainTopAppBar
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.viewModel
 import java.io.Serializable
 import kotlin.math.roundToInt
 
+@InternalCoroutinesApi
 @ExperimentalMaterialApi
 @Composable
 fun MembersScreen(
-    viewModel: MainViewModel,
+    modalBottomSheetState: ModalBottomSheetState,
+    scope: CoroutineScope,
     goToCalendarActivity: (Member) -> Unit,
     showMemberRequestScreen: () -> Unit,
     myInfo: Member
 ) {
-    val members = viewModel.searchMemberByName()
+    val viewModel: MemberViewModel by viewModel()
+    val state = viewModel.memberState
     val searchQuery = viewModel.searchQuery
     val revealedCardIds = viewModel.revealedCardIdsList.collectAsState()
-
-    val scope = rememberCoroutineScope()
-    val modalBottomSheetState = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden
-    )
 
     val modalContents: MutableState<@Composable (() -> Unit) -> Unit> =
         remember {
             mutableStateOf({ toggle -> MemberFilterModalContent(toggle) })
         }
 
-    viewModel.getMyMembers()
+    LaunchedEffect(key1 = true) {
+        viewModel.getMyMembers()
+        viewModel.uiEvnet.collect { event ->
+            when (event) {
+                else -> Unit
+            }
+        }
+    }
+
+    /**
+     * scroll 어떻게 해야 할 지 생각해봐야함.
+     */
+
     Column(
         Modifier
             .fillMaxSize()
@@ -97,6 +111,7 @@ fun MembersScreen(
                                 toggle
                             ).run { toggle() }
                         }
+
                 })) {
                     Text(text = "전체 회원")
                     Icon(
@@ -135,7 +150,7 @@ fun MembersScreen(
                 Modifier
                     .fillMaxWidth()
             ) {
-                itemsIndexed(members.value) { index, item ->
+                itemsIndexed(state.memberList) { index, item ->
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                         Row(
                             Modifier
@@ -167,14 +182,14 @@ fun MembersScreen(
                                         MyInfoModalContent(
                                             toggle,
                                             item
-                                        ) { member ->  goToCalendarActivity(member) }.run { toggle() }
+                                        ) { member -> goToCalendarActivity(member) }.run { toggle() }
                                     }
                             }
                         )
                     }
                 }
             }
-            if (members.value.isEmpty()) Box(
+            if (state.memberList.isEmpty()) Box(
                 Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
@@ -190,6 +205,11 @@ fun MembersScreen(
 
     }
     ModalBottomSheet(modalBottomSheetState, scope, modalContents.value)
+}
+
+enum class MemberModalType {
+    FILTER,
+    USER_INFO
 }
 
 @Composable

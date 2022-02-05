@@ -25,5 +25,5 @@ abstract class CoroutineUseCase<in T, R>(private val coroutineDispatcher: Corout
     }.flowOn(coroutineDispatcher)
 
     @Throws(RuntimeException::class)
-    protected abstract suspend fun execute(parameters: T): R
+    abstract suspend fun execute(parameters: T): R
 }

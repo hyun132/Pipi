@@ -23,7 +23,7 @@ import com.example.pipi.global.constants.ui.Colors.ALERT
 import com.example.pipi.global.constants.ui.Colors.PRIMARY_TEXT
 import com.example.pipi.global.constants.ui.Components
 import com.example.pipi.presentation.main.MainViewModel
-import com.example.pipi.presentation.main.Member
+import com.example.pipi.presentation.main.ui.member.Member
 
 
 @Composable

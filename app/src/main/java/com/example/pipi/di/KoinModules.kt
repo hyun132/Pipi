@@ -6,6 +6,7 @@ import com.example.pipi.data.repository.MemberRepositoryImpl
 import com.example.pipi.data.repository.SignUpRepositoryImpl
 import com.example.pipi.data.repository.UserInfoRepositoryImpl
 import com.example.pipi.domain.repository.LogInRepository
+import com.example.pipi.domain.repository.MemberRepository
 import com.example.pipi.domain.repository.UserInfoRepository
 import com.example.pipi.domain.use_case.*
 import com.example.pipi.presentation.duplicated.PhoneAuthViewModel
@@ -13,6 +14,8 @@ import com.example.pipi.presentation.login.LoginViewModel
 import com.example.pipi.presentation.main.MainViewModel
 import com.example.pipi.presentation.main.calendar.CalendarViewModel
 import com.example.pipi.presentation.main.calendar.makeschedule.ScheduleViewModel
+import com.example.pipi.presentation.main.ui.member.MemberRequestViewModel
+import com.example.pipi.presentation.main.ui.member.MemberViewModel
 import com.example.pipi.presentation.setting.ResetUserPasswordViewModel
 import com.example.pipi.presentation.signup.SignupViewModel
 import com.example.pipi.presentation.start.StartViewModel
@@ -22,7 +25,9 @@ import org.koin.dsl.module
 val viewModelModules = module {
     viewModel { LoginViewModel(get()) }
     viewModel { StartViewModel(get()) }
-    viewModel { MainViewModel(get()) }
+    viewModel { MainViewModel() }
+    viewModel { MemberViewModel(get()) }
+    viewModel { MemberRequestViewModel(get(), get(), get()) }
     viewModel { SignupViewModel(get()) }
     viewModel { CalendarViewModel() }
     viewModel { ScheduleViewModel() }
@@ -35,7 +40,7 @@ val repositoryModules = module {
     factory<UserInfoRepository> { UserInfoRepositoryImpl(get()) }
 //    single { LoginRepositoryImpl(get()) }
     single { SignUpRepositoryImpl(get()) }
-    single { MemberRepositoryImpl(get()) }
+    single<MemberRepository> { MemberRepositoryImpl(get()) }
     single { PipiService().loginApi }
 }
 
@@ -46,6 +51,10 @@ val useCaseModules = module {
     single { RequestPhoneAuthMessageUseCase(get()) }
     single { CheckPhoneAuthUseCase(get()) }
     single { ResetPasswordUseCase(get()) }
+    single { GetMemberRequestsUseCase(get()) }
+    single { GetMyMembersUseCase(get()) }
+    single { DenyMemberRequestUseCase(get()) }
+    single { ApproveMemberRequestUseCase(get()) }
 }
 
 val pipiModules = listOf(viewModelModules, repositoryModules, useCaseModules)

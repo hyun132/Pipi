@@ -1,15 +1,14 @@
-package com.example.pipi.presentation.main
+package com.example.pipi.presentation.main.ui.member
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,27 +22,46 @@ import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors.BRAND_SECOND
 import com.example.pipi.global.constants.ui.Colors.PRIMARY_TEXT
 import com.example.pipi.global.constants.ui.Components.DefaultTopAppbar
+import com.example.pipi.global.constants.utils.UiEvent
+import kotlinx.coroutines.flow.collect
+import org.koin.androidx.compose.viewModel
 
 @ExperimentalMaterialApi
 @Composable
-fun MemberRequestScreen(viewModel: MainViewModel, goBack: () -> Unit) {
-    val requests = viewModel.memberRequest
+fun MemberRequestScreen(scaffoldState: ScaffoldState, goBack: () -> Unit) {
+    val viewModel: MemberRequestViewModel by viewModel()
+    val state = viewModel.memberState
+    LaunchedEffect(key1 = true) {
+        viewModel.getMemberRequest()
+        viewModel.uiEvnet.collect { event ->
+            when (event) {
+                is UiEvent.ShowSnackbar -> {
+                    scaffoldState.snackbarHostState.showSnackbar(event.message)
+                }
+                else -> Unit
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
         DrawTopAppBar(goBack)
-        DrawContent(requests)
+        DrawContent(viewModel, state)
     }
 }
 
 @Composable
-fun DrawContent(data: MutableState<List<Member>>) {
-    if (data.value.isNotEmpty()) {
+fun DrawContent(viewModel: MemberRequestViewModel, state: MemberRequestState) {
+    if (state.requestList.isNotEmpty()) {
         LazyColumn(contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
-            itemsIndexed(data.value) { index, item ->
+            itemsIndexed(state.requestList) { index, item ->
                 Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                    DrawMemberItem(item) {/* TODO : onClick() */ }
+                    DrawMemberItem(
+                        item, viewModel::approveRequest,
+                        viewModel::denyRequest
+                    )
                 }
             }
         }
@@ -63,11 +81,11 @@ fun DrawContent(data: MutableState<List<Member>>) {
 }
 
 @Composable
-fun DrawMemberItem(item: Member, onClick: () -> Unit?) {
-    MemberItem(member = item, onClick = { onClick() }) {
+fun DrawMemberItem(item: Member, onAccept: (Member) -> Unit, onDeny: (Member) -> Unit) {
+    MemberItem(member = item, onClick = {}) {
         Row(horizontalArrangement = Arrangement.End) {
             Button(
-                onClick = { /*수락*/ },
+                onClick = { onAccept(item) },
                 modifier = Modifier
                     .height(25.dp)
                     .width(66.dp)
@@ -87,7 +105,7 @@ fun DrawMemberItem(item: Member, onClick: () -> Unit?) {
             }
             Spacer(Modifier.width(8.dp))
             OutlinedButton(
-                onClick = { /*거절*/ },
+                onClick = { onDeny(item) },
                 border = BorderStroke(1.dp, PRIMARY_TEXT),
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier

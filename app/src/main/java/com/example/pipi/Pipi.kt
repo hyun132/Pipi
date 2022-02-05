@@ -3,7 +3,7 @@ package com.example.pipi
 import android.app.Application
 import com.example.pipi.di.pipiModules
 import com.example.pipi.domain.model.Prefs
-import com.example.pipi.presentation.main.Member
+import com.example.pipi.presentation.main.ui.member.Member
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import timber.log.Timber
