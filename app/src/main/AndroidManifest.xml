@@ -16,12 +16,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
         <activity
-            android:name=".presentation.main.calendar.CalendarActivity"
+            android:name=".presentation.main.schedule.CalendarActivity"
             android:exported="false"
             android:label="@string/title_activity_calendar"
             android:theme="@style/Theme.Pipi.NoActionBar" />
         <activity
-            android:name="com.example.pipi.presentation.main.calendar.makeschedule.ScheduleActivity"
+            android:name="com.example.pipi.presentation.main.schedule.makeschedule.ScheduleActivity"
             android:exported="false" />
         <activity
             android:name=".presentation.main.MainActivity"

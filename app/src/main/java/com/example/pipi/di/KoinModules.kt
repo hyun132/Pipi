@@ -12,8 +12,9 @@ import com.example.pipi.domain.use_case.*
 import com.example.pipi.presentation.duplicated.PhoneAuthViewModel
 import com.example.pipi.presentation.login.LoginViewModel
 import com.example.pipi.presentation.main.MainViewModel
-import com.example.pipi.presentation.main.calendar.CalendarViewModel
-import com.example.pipi.presentation.main.calendar.makeschedule.ScheduleViewModel
+import com.example.pipi.presentation.main.schedule.CalendarViewModel
+import com.example.pipi.presentation.main.schedule.makeschedule.MakeNewExerciseViewModel
+import com.example.pipi.presentation.main.schedule.makeschedule.ScheduleViewModel
 import com.example.pipi.presentation.main.ui.member.MemberRequestViewModel
 import com.example.pipi.presentation.main.ui.member.MemberViewModel
 import com.example.pipi.presentation.setting.ResetUserPasswordViewModel
@@ -33,6 +34,7 @@ val viewModelModules = module {
     viewModel { ScheduleViewModel() }
     viewModel { PhoneAuthViewModel(get(), get()) }
     viewModel { ResetUserPasswordViewModel(get()) }
+    viewModel { MakeNewExerciseViewModel() }
 }
 
 val repositoryModules = module {

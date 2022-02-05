@@ -1,4 +1,4 @@
-package com.example.pipi.presentation.main.calendar
+package com.example.pipi.presentation.main.schedule
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.MutableLiveData

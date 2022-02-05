@@ -1,4 +1,4 @@
-package com.example.pipi.presentation.main.calendar
+package com.example.pipi.presentation.main.schedule
 
 import BaseCalendar.Companion.DAYS_OF_WEEK
 import android.os.Build

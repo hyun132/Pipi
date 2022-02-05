@@ -1,4 +1,4 @@
-package com.example.pipi.presentation.main.calendar
+package com.example.pipi.presentation.main.schedule
 
 import android.os.Build
 import android.os.Bundle
@@ -14,8 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.pipi.presentation.main.SelectTrainingTypeScreen
-import com.example.pipi.presentation.main.calendar.makeschedule.MakeNewExerciseScreen
-import com.example.pipi.presentation.main.calendar.makeschedule.ScheduleViewModel
+import com.example.pipi.presentation.main.schedule.makeschedule.MakeNewExerciseScreen
 import com.example.pipi.presentation.main.ui.theme.PipiTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -66,7 +65,7 @@ class CalendarActivity : ComponentActivity() {
             composable(ScheduleRoute.SCHEDULE) {
                 ScheduleDetailScreen(
                     viewModel.calendar,
-                    navigate = { navController.navigate(ScheduleRoute.MAKE_NEW_SCHEDULE) },
+                    navigate = { navController.navigate(ScheduleRoute.SELECT_TRAINING_TYPE) },
                     goBack = { navController.goBack() }
                 )
             }

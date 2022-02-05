@@ -1,4 +1,4 @@
-package com.example.pipi.presentation.main.calendar.makeschedule
+package com.example.pipi.presentation.main.schedule.makeschedule
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.border
@@ -8,7 +8,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,10 +41,9 @@ fun MakeNewExerciseScreen(
     calendar: Calendar,
     modalBottomSheetState: ModalBottomSheetState,
 ) {
-    val viewModel: ScheduleViewModel by viewModel()
+    val viewModel: MakeNewExerciseViewModel by viewModel()
     val scope = rememberCoroutineScope()
-    val modalDataType = remember { mutableStateOf(DataType.PARTS) }
-    val openDialog = remember { mutableStateOf(false) }
+
     Scaffold(topBar = { DrawTopAppbar(calendar, goBack) }) {
         Row(
             Modifier
@@ -52,7 +52,7 @@ fun MakeNewExerciseScreen(
         ) {
             TextButton(
                 onClick = {
-                    modalDataType.value = DataType.PARTS
+                    viewModel.setModalDataType(ModalDataType.PARTS)
                     modalBottomSheetState.showModalBottomSheet(scope)
                 }, modifier = Modifier
                     .border(
@@ -65,7 +65,7 @@ fun MakeNewExerciseScreen(
                 contentPadding = PaddingValues(0.dp)
             ) {
                 Text(
-                    text = viewModel.selectedPart.value?.name ?: "부위 선택",
+                    text = viewModel.exerciseToCreate.parts?.name ?: "부위 선택",
                     style = MaterialTheme.typography.subtitle2,
                     fontSize = 12.sp,
                     lineHeight = 14.sp,
@@ -83,8 +83,10 @@ fun MakeNewExerciseScreen(
 
             TextButton(
                 onClick = {
-                    viewModel.selectedPart.value?.let {
-                        modalDataType.value = DataType.EQUIPMENT
+                    viewModel.exerciseToCreate.parts?.let {
+                        viewModel.setModalDataType(ModalDataType.EQUIPMENT)
+
+                        //TODO : 이것도 uiEvent로 다 빼야됨
                         modalBottomSheetState.showModalBottomSheet(scope)
                     }
                 }, modifier = Modifier
@@ -98,7 +100,7 @@ fun MakeNewExerciseScreen(
                 contentPadding = PaddingValues(0.dp)
             ) {
                 Text(
-                    text = viewModel.selectedPart.value?.name ?: "장비 선택",
+                    text = viewModel.exerciseToCreate.equipment?.name ?: "장비 선택",
                     style = MaterialTheme.typography.subtitle2,
                     fontSize = 12.sp,
                     lineHeight = 14.sp,
@@ -115,33 +117,43 @@ fun MakeNewExerciseScreen(
             }
         }
 
-
-        val tempItem = ExerciseItem(
-            Data("1", "등"),
-            Data("1", "바벨"), exercise = Data
-                ("2", "운동이름"), 1, 1, 1
+        //운동 삭제부분만들 때 이것도 viewmodel로 빼야됨
+        val tempItem = Exercise(
+            parts = BottomSheetData("1", "등"),
+            equipment = BottomSheetData("1", "바벨"),
+            exercise = BottomSheetData("2", "운동이름"),
+            name = "테스트운동",
+            1, 1, 1
         )
-        ///// 임시
-        Button(onClick = {
-            openDialog.value = true
-        }) {
-            Text(text = "temp")
-        }
-        DrawAlertDialog(
-            item = tempItem,
-            openDialog,
-            { Timber.i("${it.exercise.name} 가 삭제됨") },
-            { Timber.i("취소") })
-        //////////
-        DrawModalBottomSheet(
-            modalBottomSheetState,
-            data = if (modalDataType.value == DataType.PARTS) viewModel.partsData else viewModel.equipmentData,
-            close = { modalBottomSheetState.hideModalBottomSheet(scope) }
-        ) { item ->
-            if (modalDataType.value == DataType.PARTS) viewModel.selectedPart.value = item
-            else viewModel.selectedEquipmentData.value = item
 
-            modalBottomSheetState.hideModalBottomSheet(scope)
+        if (viewModel.state.dialogVisibility) {
+            when (viewModel.state.dialogDataType) {
+                DialogType.CREATE -> CreateExerciseDialog(
+                    item = tempItem,
+                    close = viewModel::closeDialog,
+                    confirm = {/* TODO : 세 값 모두 입력되면? 이 운동 객체 추가하도록 함.*/ viewModel.createExercise() },
+                    viewModel
+                )
+                DialogType.UPDATE -> DeleteExerciseDialog(
+                    tempItem,
+                    viewModel::closeDialog,
+                    {},
+                    { Timber.i("취소") })
+                DialogType.DELETE -> DeleteExerciseDialog(
+                    tempItem,
+                    viewModel::closeDialog,
+                    { exercise -> viewModel.deleteExercise(exercise) },
+                    { Timber.i("취소") })
+            }
+        }
+        if (viewModel.state.modalVisibility) {
+            DrawModalBottomSheet(
+                modalBottomSheetState,
+                data = viewModel.state.modalBottomSheetDataList,
+                close = { modalBottomSheetState.hideModalBottomSheet(scope) }
+            ) { item ->
+                viewModel.onItemSelect(item)
+            }
         }
     }
 }
@@ -150,14 +162,15 @@ fun MakeNewExerciseScreen(
 @Composable
 fun DrawModalBottomSheet(
     sheetState: ModalBottomSheetState,
-    data: List<Data>,
+    data: List<BottomSheetData>,
     close: () -> Unit,
-    itemClick: (Data) -> Unit
+    itemClick: (BottomSheetData) -> Unit
 ) {
     ModalBottomSheetLayout(sheetContent = {
         Column(
             Modifier
                 .fillMaxWidth()
+                .height(270.dp)
                 .padding(start = 16.dp, end = 16.dp, top = 12.dp)
         ) {
             Row(Modifier.fillMaxWidth()) {
@@ -217,11 +230,11 @@ fun DrawTopAppbar(calendar: Calendar, goBack: () -> Unit) {
 }
 
 @Composable
-fun DrawAlertDialog(
-    item: ExerciseItem,
-    openDialog: MutableState<Boolean>,
-    confirm: (ExerciseItem) -> Unit,
-    cancel: (ExerciseItem) -> Unit
+fun DeleteExerciseDialog(
+    item: Exercise,
+    close: () -> Unit,
+    confirm: (Exercise) -> Unit,
+    cancel: (Exercise) -> Unit
 ) {
     /**
      * TODO : Dialog로 바꾸고 나머지 만들 것.
@@ -231,7 +244,7 @@ fun DrawAlertDialog(
             // Dismiss the dialog when the user clicks outside the dialog or on the back
             // button. If you want to disable that functionality, simply use an empty
             // onCloseRequest.
-            openDialog.value = false
+            close()
         }, content = {
             Text(
                 "해당 회원을 삭제하시겠습니까?",
@@ -249,17 +262,17 @@ fun DrawAlertDialog(
                         .weight(1f)
                         .clickable {
                             confirm(item)
-                            openDialog.value = false
+                            close()
                         })
                 Button(
                     onClick = {
                         cancel(item)
-                        openDialog.value = false
+                        close()
                     },
                     modifier = Modifier
                         .weight(1f)
                         .clickable {
-                            openDialog.value = false
+                            close()
                         }
                 ) {
                     Text("취소")
@@ -269,14 +282,95 @@ fun DrawAlertDialog(
     )
 }
 
-data class ExerciseItem(
-    val parts: Data,
-    val equipment: Data,
-    val exercise: Data,
-    var reps: Int,
-    var weight: Int,
-    var set: Int
-)
+/**
+ * TODO : dialog 예쁘게 재사용할 수 있는 방법 ??
+ */
+@Composable
+fun CreateExerciseDialog(
+    item: Exercise,
+    close: () -> Unit,
+    confirm: (Exercise) -> Unit,
+    viewModel: MakeNewExerciseViewModel
+) {
+    Dialog(
+        onDismissRequest = { close() },
+        content = {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .height(220.dp)
+            ) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(48.dp), verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "운동 추가",
+                        Modifier.weight(1f),
+                        style = MaterialTheme.typography.subtitle2
+                    )
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_cancel),
+                        contentDescription = "닫기"
+                    )
+                }
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    TextWithUnit(
+                        viewModel.exerciseToCreate.weight.toString(),
+                        viewModel::setWeight,
+                        "Kg"
+                    )
+                    TextWithUnit(
+                        viewModel.exerciseToCreate.reps.toString(),
+                        viewModel::setReps,
+                        "Reps"
+                    )
+                    TextWithUnit(
+                        viewModel.exerciseToCreate.sets.toString(),
+                        viewModel::setSets,
+                        "Sets"
+                    )
+                }
+                Row(Modifier.fillMaxWidth()) {
+                    Text("삭제",
+                        color = Colors.ALERT,
+                        modifier = Modifier
+                            .wrapContentHeight()
+                            .weight(1f)
+                            .clickable {
+                                confirm(item)
+                                close()
+                            })
+                    Button(
+                        onClick = {
+                            close()
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable {
+                                close()
+                            }
+                    ) {
+                        Text("취소")
+                    }
+                }
+            }
+        }
+    )
+}
+
+@Composable
+fun TextWithUnit(text: String, onChange: (String) -> Unit, unit: String) {
+    Row() {
+        TextField(
+            value = text,
+            onValueChange = { value -> onChange(value) },
+            modifier = Modifier.width(64.dp)
+        )
+        Text(text = unit, style = MaterialTheme.typography.subtitle1)
+    }
+}
 
 enum class ButtonClickState {
     CLICKED, NOT_CLICKED
@@ -285,14 +379,14 @@ enum class ButtonClickState {
 @Composable
 //버튼을 클릭하면 외부의 선택된 아이템을 이 아이템으로 변경
 //선택된 아이템과 같은 아이템인 경우 색상을 변경하도록 함.
-fun DrawFilteringButton(filterData: Data, onClick: () -> Unit) {
+fun DrawFilteringButton(filterBottomSheetData: BottomSheetData, onClick: () -> Unit) {
     OutlinedButton(onClick = {
         onClick()
         /**
          * 클릭하면 observe하고 있던 상태를 변경해야함 (선택된 아이템)
          */
     }, Modifier.border(1.dp, color = BRAND_SECOND)) {
-        Text(text = filterData.name)
+        Text(text = filterBottomSheetData.name)
     }
 }
 
@@ -319,20 +413,7 @@ fun DrawFilteringButton(filterData: Data, onClick: () -> Unit) {
 //data class Filter(val title: String = "부위", val dataList: List<Data>)
 
 
-data class Data(val id: String, val name: String)
+data class BottomSheetData(val id: String, val name: String)
 
-val partsData = listOf<Data>(
-    Data("1", "가슴"),
-    Data("2", "등"),
-    Data("3", "어깨"),
-    Data("4", "하체"),
-    Data("5", "이두박근"),
-    Data("6", "삼두박근"),
-    Data("7", "복근"),
-    Data("8", "유산소")
-)
 
-enum class DataType {
-    PARTS,
-    EQUIPMENT
-}
+

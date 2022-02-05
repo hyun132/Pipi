@@ -1,4 +1,4 @@
-package com.example.pipi.presentation.main.calendar
+package com.example.pipi.presentation.main.schedule
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*

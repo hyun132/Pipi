@@ -24,7 +24,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Components.DefaultTopAppbar
-import com.example.pipi.presentation.main.calendar.CalendarActivity
+import com.example.pipi.presentation.main.schedule.CalendarActivity
 import com.example.pipi.presentation.main.ui.UserInfoScreen
 import com.example.pipi.presentation.main.ui.member.Member
 import com.example.pipi.presentation.main.ui.member.MemberRequestScreen

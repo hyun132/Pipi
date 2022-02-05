@@ -1,4 +1,4 @@
-package com.example.pipi.presentation.main.calendar
+package com.example.pipi.presentation.main.schedule
 
 enum class CalendarScreenType {
     MonthlySchedule,
