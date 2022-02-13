@@ -1,4 +1,4 @@
-package com.example.pipi.domain.model.dto
+package com.example.pipi.domain.model.login
 
 import com.google.gson.annotations.SerializedName
 

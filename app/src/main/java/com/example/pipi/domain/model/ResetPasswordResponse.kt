@@ -1,4 +1,4 @@
-package com.example.pipi.data.response
+package com.example.pipi.domain.model
 
 
 data class ResetPasswordResponse(

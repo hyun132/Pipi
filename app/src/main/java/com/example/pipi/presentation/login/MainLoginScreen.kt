@@ -129,7 +129,7 @@ fun MainLoginScreen(
                                 })
                                 .fillMaxWidth()
                                 .align(Alignment.CenterHorizontally),
-                            style = MaterialTheme.typography.subtitle2,
+                            style = MaterialTheme.typography.h5,
                             fontSize = 12.sp,
                             textAlign = TextAlign.Center
                         )
@@ -141,14 +141,14 @@ fun MainLoginScreen(
                         ) {
                             Text(
                                 text = "아직 회원이 아니신가요",
-                                style = MaterialTheme.typography.subtitle2,
+                                style = MaterialTheme.typography.h5,
                                 color = SECONDARY_TEXT_GHOST,
                                 fontSize = 12.sp,
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = "회원가입",
-                                style = MaterialTheme.typography.subtitle2,
+                                style = MaterialTheme.typography.h5,
                                 color = MaterialTheme.colors.primary,
                                 fontSize = 12.sp,
                                 modifier = Modifier
@@ -172,7 +172,7 @@ fun MainLoginScreen(
                             text = snackbarData.message,
                             modifier = Modifier.fillMaxWidth(),
                             color = MaterialTheme.colors.onBackground,
-                            style = MaterialTheme.typography.body2
+                            style = MaterialTheme.typography.subtitle1
                         )
                     }
                 })
@@ -188,7 +188,7 @@ fun DrawCheckBoxArea(viewModel: LoginViewModel) {
         label = {
             Text(
                 text = "자동로그인",
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.subtitle1,
                 color = PRIMARY_TEXT
             )
         },
@@ -210,7 +210,7 @@ fun DrawCheckBoxArea(viewModel: LoginViewModel) {
         label = {
             Text(
                 text = "휴대전화 번호 저장",
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.subtitle1,
                 color = PRIMARY_TEXT
             )
         },

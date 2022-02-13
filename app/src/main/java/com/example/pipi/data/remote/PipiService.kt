@@ -50,7 +50,6 @@ class HeaderRequestInterceptor : Interceptor {
                 }
             }
         }
-
         return response
     }
 

@@ -85,7 +85,7 @@ fun UserInfoScreen(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_inbody),
                     contentDescription = "인바디"
                 )
-                Text(text = "회원님께서 아직\n인바디 사진을 업로드하지 않았어요!", style = MaterialTheme.typography.body2)
+                Text(text = "회원님께서 아직\n인바디 사진을 업로드하지 않았어요!", style = MaterialTheme.typography.subtitle1)
             }
         }
 

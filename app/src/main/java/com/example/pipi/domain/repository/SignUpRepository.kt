@@ -1,7 +1,7 @@
 package com.example.pipi.domain.repository
 
-import com.example.pipi.data.response.PhoneAuthResponse
-import com.example.pipi.data.response.SignUpResponse
+import com.example.pipi.domain.model.phoneauth.PhoneAuthResponse
+import com.example.pipi.domain.model.signup.SignUpResponse
 
 interface SignUpRepository {
     suspend fun signUp(id: String, password: String, name: String): SignUpResponse

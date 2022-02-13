@@ -166,7 +166,7 @@ fun DrawOnBoardingImage(modifier: Modifier) {
 //        Text(text = plainText, style = MaterialTheme.typography.subtitle1)
 //        Text(
 //            text = boldText,
-//            style = MaterialTheme.typography.subtitle2,
+//            style = MaterialTheme.typography.h5,
 //            fontWeight = FontWeight(700)
 //        )
 //    }

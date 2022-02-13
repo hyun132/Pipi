@@ -1,8 +1,7 @@
 package com.example.pipi.data.repository
 
 import com.example.pipi.data.remote.PipiApi
-import com.example.pipi.data.response.LoginResponse
-import com.example.pipi.domain.model.dto.LoginDto
+import com.example.pipi.domain.model.login.LoginDto
 import com.example.pipi.domain.repository.LogInRepository
 
 class LoginRepositoryImpl(private val api: PipiApi) : LogInRepository {

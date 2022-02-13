@@ -1,11 +1,12 @@
 package com.example.pipi.data.remote
 
-import com.example.pipi.data.response.LoginResponse
-import com.example.pipi.data.response.PhoneAuthResponse
-import com.example.pipi.data.response.ResetPasswordResponse
-import com.example.pipi.data.response.SignUpResponse
-import com.example.pipi.domain.model.dto.LoginDto
-import com.example.pipi.domain.model.dto.SignUpDto
+import com.example.pipi.domain.model.schedule.ScheduleResponse
+import com.example.pipi.domain.model.login.LoginResponse
+import com.example.pipi.domain.model.phoneauth.PhoneAuthResponse
+import com.example.pipi.domain.model.ResetPasswordResponse
+import com.example.pipi.domain.model.signup.SignUpResponse
+import com.example.pipi.domain.model.login.LoginDto
+import com.example.pipi.domain.model.signup.SignUpDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -45,4 +46,12 @@ interface PipiApi {
         @Body trainerPassword: String
     ): ResetPasswordResponse
 
+    suspend fun getMonthlySchedule(
+        @Body phoneNumber:String,
+        @Body isTrainer:Boolean,
+        @Body yearMonth:String
+    ): ScheduleResponse
+
+    // update, create
+    suspend fun saveDaySchedule(scheduleData: ScheduleResponse):ScheduleResponse
 }

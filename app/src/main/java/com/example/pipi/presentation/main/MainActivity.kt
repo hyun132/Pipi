@@ -14,16 +14,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Components.DefaultTopAppbar
+import com.example.pipi.global.constants.ui.setProjectTheme
 import com.example.pipi.presentation.main.schedule.CalendarActivity
 import com.example.pipi.presentation.main.ui.UserInfoScreen
 import com.example.pipi.presentation.main.ui.member.Member
@@ -45,16 +46,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val navController = rememberNavController()
-            val scaffoldState = rememberScaffoldState()
-            Scaffold(scaffoldState = scaffoldState) {
-                MainScreen(
-                    viewModel,
-                    navController,
-                    { member -> goToCalendarActivity(member) },
-                    member = Member("계정 본인", R.drawable.ic_launcher_foreground),
-                    scaffoldState
-                )
+            setProjectTheme {
+                val navController = rememberNavController()
+                val scaffoldState = rememberScaffoldState()
+                Scaffold(scaffoldState = scaffoldState) {
+                    MainScreen(
+                        viewModel,
+                        navController,
+                        { member -> goToCalendarActivity(member) },
+                        member = Member("계정 본인", R.drawable.ic_launcher_foreground),
+                        scaffoldState
+                    )
+                }
             }
         }
     }
@@ -77,7 +80,7 @@ fun MainScreen(
     navController: NavHostController,
     goToCalendarActivity: (Member) -> Unit,
     member: Member,
-    state:ScaffoldState
+    state: ScaffoldState
 ) {
     val coroutineScope = rememberCoroutineScope()
     val modalBottomSheetState = rememberModalBottomSheetState(
@@ -123,13 +126,13 @@ fun DrawMainTopAppBar(showMemberRequestScreen: () -> Unit) {
     DefaultTopAppbar(
         title = {
             Text(
-                text = "회원관리",
+                text = stringResource(R.string.member_screen_topappbar_title),
                 style = MaterialTheme.typography.h1,
-                fontSize = 24.sp,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.fillMaxWidth()
             )
         },
+        navComponent = {},
         optionComponent = {
             Row() {
                 Icon(

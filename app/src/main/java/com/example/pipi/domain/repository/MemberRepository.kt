@@ -1,6 +1,6 @@
 package com.example.pipi.domain.repository
 
-import com.example.pipi.data.response.LoginResponse
+import com.example.pipi.domain.model.login.LoginResponse
 
 /**
  * TODO : api 나오면 리턴타입 변경해야함.

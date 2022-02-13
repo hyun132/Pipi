@@ -69,7 +69,7 @@ fun ReSetPasswordScreen(
                     Spacer(modifier = Modifier.height(22.dp))
                     Text(
                         text = "휴대전화 번호 인증을 해주세요.",
-                        style = MaterialTheme.typography.body2,
+                        style = MaterialTheme.typography.subtitle1,
                         fontWeight = FontWeight(400),
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center

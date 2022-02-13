@@ -1,9 +1,7 @@
 package com.example.pipi.data.repository
 
 import com.example.pipi.data.remote.PipiApi
-import com.example.pipi.domain.model.dto.PhoneAuthMessageRequestDto
-import com.example.pipi.domain.model.dto.PhoneAuthRequestDto
-import com.example.pipi.domain.model.dto.SignUpDto
+import com.example.pipi.domain.model.signup.SignUpDto
 import com.example.pipi.domain.repository.SignUpRepository
 
 class SignUpRepositoryImpl(private val api: PipiApi) : SignUpRepository {

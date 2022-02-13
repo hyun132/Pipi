@@ -102,7 +102,7 @@ fun PhoneAuthScreen(
                     DrawStep(step.first, step.second)
                     Spacer(modifier = Modifier.height(22.dp))
                     Text(
-                        text = "휴대전화 번호 인증을 해주세요.", style = MaterialTheme.typography.body2,
+                        text = "휴대전화 번호 인증을 해주세요.", style = MaterialTheme.typography.subtitle1,
                         fontWeight = FontWeight(400),
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
@@ -118,7 +118,7 @@ fun PhoneAuthScreen(
                                 if (timerStarted) {
                                     Text(
                                         text = formattedTime,
-                                        style = MaterialTheme.typography.subtitle2,
+                                        style = MaterialTheme.typography.h5,
                                         fontSize = 11.sp,
                                         color = ALERT
                                     )
@@ -134,7 +134,7 @@ fun PhoneAuthScreen(
                                     content = {
                                         Text(
                                             text = "인증번호전송",
-                                            style = MaterialTheme.typography.subtitle2,
+                                            style = MaterialTheme.typography.h5,
                                             fontSize = 11.sp,
                                             textAlign = TextAlign.Center,
                                             modifier = Modifier
@@ -169,7 +169,7 @@ fun PhoneAuthScreen(
                                 content = {
                                     Text(
                                         text = "확인",
-                                        style = MaterialTheme.typography.subtitle2,
+                                        style = MaterialTheme.typography.h5,
                                         fontSize = 11.sp,
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier.fillMaxWidth(),

@@ -98,7 +98,7 @@ fun DrawMemberItem(item: Member, onAccept: (Member) -> Unit, onDeny: (Member) ->
                 Text(
                     text = "회원수락",
                     color = Color.White,
-                    style = MaterialTheme.typography.body2,
+                    style = MaterialTheme.typography.subtitle1,
                     textAlign = TextAlign.Center,
                     fontSize = 10.sp
                 )
@@ -121,7 +121,7 @@ fun DrawMemberItem(item: Member, onAccept: (Member) -> Unit, onDeny: (Member) ->
                 Text(
                     text = "거절",
                     color = PRIMARY_TEXT,
-                    style = MaterialTheme.typography.body2,
+                    style = MaterialTheme.typography.subtitle1,
                     textAlign = TextAlign.Center,
                     fontSize = 10.sp
                 )

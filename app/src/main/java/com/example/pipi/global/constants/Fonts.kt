@@ -59,14 +59,14 @@ object Fonts {
         //p1
         h4 = TextStyle(
             fontWeight = FontWeight.Bold,
-            fontSize = 18.sp,
+            fontSize = 16.sp,
             letterSpacing = 0.25.sp,
             lineHeight = 24.sp,
         ),
         //p2
         h5 = TextStyle(
             fontWeight = FontWeight.Normal,
-            fontSize = 18.sp,
+            fontSize = 16.sp,
             letterSpacing = 0.25.sp,
             lineHeight = 24.sp,
         ),
@@ -84,23 +84,25 @@ object Fonts {
             fontSize = 14.sp,
             letterSpacing = 0.15.sp
         ),
-        // p2
+        // p5
         subtitle2 = TextStyle(
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
             lineHeight = 24.sp,
             letterSpacing = 0.15.sp
         ),
+        // p6
         body1 = TextStyle(
             fontWeight = FontWeight.Normal,
-            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            fontSize = 12.sp,
             letterSpacing = 0.5.sp
         ),
-        //p4
+        //p7
         body2 = TextStyle(
             fontWeight = FontWeight.Normal,
-            fontSize = 14.sp,
-            lineHeight = 24.sp,
+            fontSize = 10.sp,
+            lineHeight = 17.sp,
             letterSpacing = 0.25.sp
         ),
         button = TextStyle(

@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
@@ -25,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.consumePositionChange
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
@@ -41,7 +43,6 @@ import com.example.pipi.global.constants.ui.Colors.WHITE
 import com.example.pipi.presentation.main.DrawMainTopAppBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.viewModel
 import java.io.Serializable
@@ -59,7 +60,6 @@ fun MembersScreen(
 ) {
     val viewModel: MemberViewModel by viewModel()
     val state = viewModel.memberState
-    val searchQuery = viewModel.searchQuery
     val revealedCardIds = viewModel.revealedCardIdsList.collectAsState()
 
     val modalContents: MutableState<@Composable (() -> Unit) -> Unit> =
@@ -83,26 +83,28 @@ fun MembersScreen(
     Column(
         Modifier
             .fillMaxSize()
-            .height(69.dp)
     ) {
         DrawMainTopAppBar { showMemberRequestScreen() }
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(start = 16.dp, end = 16.dp)
         ) {
             DrawSearchBar(
-                placeholder = "회원을 검색해 주세요.",
-                onChange = { query: String -> searchQuery.value = query },
-                query = searchQuery
+                placeholder = stringResource(R.string.member_search_hint),
+                onChange = { query: String ->
+                    viewModel.setQuery(query)
+                    viewModel.searchMemberByName()
+                },
+                query = state.query
             )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = CenterVertically,
             ) {
-                Text(text = "나의 프로필", style = MaterialTheme.typography.subtitle2, color = FONT_GRAY)
+                Text(text = "나의 프로필", style = MaterialTheme.typography.h5, color = FONT_GRAY)
                 Spacer(modifier = Modifier.weight(1F))
                 Row(modifier = Modifier.clickable(onClick = {
                     modalContents.value =
@@ -111,9 +113,12 @@ fun MembersScreen(
                                 toggle
                             ).run { toggle() }
                         }
-
-                })) {
-                    Text(text = "전체 회원")
+                }), verticalAlignment = CenterVertically) {
+                    Text(
+                        text = "전체 회원",
+                        style = MaterialTheme.typography.body1,
+                        modifier = Modifier.wrapContentHeight(CenterVertically)
+                    )
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_list_setting),
                         contentDescription = "사용중",
@@ -128,9 +133,8 @@ fun MembersScreen(
                     { toggle ->
                         MyInfoModalContent(
                             toggle,
-                            myInfo,
-                            { member -> goToCalendarActivity(member) }
-                        ).run { toggle() }
+                            myInfo
+                        ) { member -> goToCalendarActivity(member) }.run { toggle() }
                     }
             })
             Row(
@@ -139,10 +143,10 @@ fun MembersScreen(
                     .height(48.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(text = "나의 회원", style = MaterialTheme.typography.subtitle2, color = FONT_GRAY)
+                Text(text = "나의 회원", style = MaterialTheme.typography.h5, color = FONT_GRAY)
                 Text(
-                    text = "13 명",
-                    style = MaterialTheme.typography.subtitle2,
+                    text = "${state.memberList.size} 명",
+                    style = MaterialTheme.typography.h5,
                     color = Colors.PRIMARY_TEXT
                 )
             }
@@ -150,7 +154,7 @@ fun MembersScreen(
                 Modifier
                     .fillMaxWidth()
             ) {
-                itemsIndexed(state.memberList) { index, item ->
+                itemsIndexed(state.filteredMemberList) { index, item ->
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                         Row(
                             Modifier
@@ -189,14 +193,14 @@ fun MembersScreen(
                     }
                 }
             }
-            if (state.memberList.isEmpty()) Box(
+            if (state.filteredMemberList.isEmpty()) Box(
                 Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = "검색된 회원이 없네요!\n회원을 추가해 주세요!",
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.subtitle2,
+                    style = MaterialTheme.typography.h5,
                     color = SECONDARY_TEXT_GHOST
                 )
             }
@@ -216,25 +220,25 @@ enum class MemberModalType {
 fun DrawSearchBar(
     placeholder: String = "",
     onChange: (String) -> Unit,
-    query: MutableState<String>
+    query: String
 ) {
     BasicTextField(
-        value = query.value,
+        value = query,
         onValueChange = { textFieldValue ->
-            query.value = textFieldValue
-            onChange(query.value)
+            onChange(textFieldValue)
         },
-        textStyle = MaterialTheme.typography.body2,
+        textStyle = MaterialTheme.typography.subtitle1,
         modifier = Modifier
-            .height(30.dp)
             .clip(RoundedCornerShape(4.dp))
             .fillMaxWidth()
             .height(30.dp)
             .background(SIDE_BAR_BACKGROUND),
         decorationBox = { innerTextField ->
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(start = 12.dp, end = 12.dp)
+                verticalAlignment = CenterVertically,
+                modifier = Modifier
+                    .padding(start = 12.dp, end = 12.dp)
+                    .height(30.dp)
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_search),
@@ -242,16 +246,13 @@ fun DrawSearchBar(
                     Modifier.size(14.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
-                Box() {
-                    innerTextField()
-                    // 여기 innerTextField앞에 가리던지 기본값을 0으로 하던지
-                    if (query.value.isEmpty()) Text(
-                        text = placeholder,
-                        style = MaterialTheme.typography.subtitle1,
-                        fontSize = 12.sp,
-                        color = SECONDARY_TEXT_GHOST
-                    )
-                }
+                innerTextField()
+                if (query.isEmpty()) Text(
+                    text = placeholder,
+                    style = MaterialTheme.typography.subtitle1,
+                    color = SECONDARY_TEXT_GHOST,
+                    modifier = Modifier.wrapContentHeight(CenterVertically)
+                )
             }
 //            TextFieldDefaults.textFieldColors(
 //                textColor = PRIMARY_TEXT,
@@ -285,7 +286,7 @@ fun MyInfoModalContent(
                 .padding(start = 16.dp, end = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "${member.nickname} 회원님", style = MaterialTheme.typography.subtitle2)
+            Text(text = "${member.nickname} 회원님", style = MaterialTheme.typography.h5)
             Spacer(modifier = Modifier.weight(1F))
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
@@ -320,7 +321,7 @@ fun MyInfoModalContent(
             ) {
                 Text(
                     text = "(회 원)", fontSize = 12.sp,
-                    style = MaterialTheme.typography.body2,
+                    style = MaterialTheme.typography.subtitle1,
                     color = PRIMARY_TEXT
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -335,7 +336,7 @@ fun MyInfoModalContent(
                         Text(
                             text = "관리하러 가기",
                             fontSize = 12.sp,
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.subtitle1,
                             color = PRIMARY_TEXT
                         )
                     }
@@ -378,7 +379,7 @@ fun MemberFilterModalContent(toggle: () -> Unit) {
                 .height(47.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "회원 유형", style = MaterialTheme.typography.subtitle2)
+            Text(text = "회원 유형", style = MaterialTheme.typography.h5)
             Spacer(modifier = Modifier.weight(1F))
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete),
@@ -400,11 +401,11 @@ fun MemberFilterModalContent(toggle: () -> Unit) {
         ) {
             Text(
                 text = "전 체",
-                style = MaterialTheme.typography.subtitle2,
+                style = MaterialTheme.typography.h5,
                 modifier = Modifier.width(80.dp),
                 textAlign = TextAlign.Justify
             )
-            Text(text = "회원권이 있는 회원", style = MaterialTheme.typography.body2)
+            Text(text = "회원권이 있는 회원", style = MaterialTheme.typography.subtitle1)
         }
         Row(
             Modifier
@@ -414,11 +415,11 @@ fun MemberFilterModalContent(toggle: () -> Unit) {
         ) {
             Text(
                 text = "수강중 회원",
-                style = MaterialTheme.typography.subtitle2,
+                style = MaterialTheme.typography.h5,
                 modifier = Modifier.width(80.dp),
                 textAlign = TextAlign.Justify
             )
-            Text(text = "회원권이 있는 회원", style = MaterialTheme.typography.body2)
+            Text(text = "회원권이 있는 회원", style = MaterialTheme.typography.subtitle1)
         }
         Row(
             Modifier
@@ -428,11 +429,11 @@ fun MemberFilterModalContent(toggle: () -> Unit) {
         ) {
             Text(
                 text = "만료된 회원",
-                style = MaterialTheme.typography.subtitle2,
+                style = MaterialTheme.typography.h5,
                 modifier = Modifier.width(80.dp),
                 textAlign = TextAlign.Justify
             )
-            Text(text = "회원권이 없거나 만료된 회원", style = MaterialTheme.typography.body2)
+            Text(text = "회원권이 없거나 만료된 회원", style = MaterialTheme.typography.subtitle1)
         }
     }
 }
@@ -538,7 +539,7 @@ fun MemberItem(
         Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = member.nickname,
-            style = MaterialTheme.typography.subtitle2,
+            style = MaterialTheme.typography.h5,
             color = Colors.PRIMARY_TEXT,
             fontSize = 14.sp
         )

@@ -73,7 +73,7 @@ fun SetNickNameScreen(
                     DrawStep(step.first, step.second)
                     Spacer(modifier = Modifier.height(22.dp))
                     Text(
-                        text = "닉네임을 설정해 주세요.", style = MaterialTheme.typography.body2,
+                        text = "닉네임을 설정해 주세요.", style = MaterialTheme.typography.subtitle1,
                         fontWeight = FontWeight(400),
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center

@@ -2,4 +2,14 @@
     <string name="app_name">Pipi</string>
     <string name="appbar_back">goBack</string>
     <string name="title_activity_calendar">CalendarActivity</string>
+
+    <!-- SelectTrainingTypeScreen -->
+    <string name="training_type_item_title_pt">PT 퍼스널 트레이닝</string>
+    <string name="training_type_item_title_at">AT 과제 트레이닝</string>
+    <string name="training_type_at_description">학생에게 일 단위 운동 루틴을 제공합니다.</string>
+    <string name="training_type_pt_description">선생님과 수행한 운동을 기록합니다.</string>
+    <string name="member_search_hint">회원을 검색해 주세요.</string>
+    <string name="member_screen_topappbar_title">회원관리</string>
+
+
 </resources>

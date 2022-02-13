@@ -1,7 +1,7 @@
 package com.example.pipi.domain.use_case
 
 import com.example.pipi.data.repository.SignUpRepositoryImpl
-import com.example.pipi.data.response.PhoneAuthResponse
+import com.example.pipi.domain.model.phoneauth.PhoneAuthResponse
 import com.example.pipi.domain.use_case.base.CoroutineUseCase
 import kotlinx.coroutines.Dispatchers
 

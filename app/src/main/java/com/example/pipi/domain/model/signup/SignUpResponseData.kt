@@ -1,6 +1,7 @@
-package com.example.pipi.data.response
+package com.example.pipi.domain.model.signup
 
-data class LoginResponseData(
+
+data class SignUpResponseData(
     val createdAt: String,
     val trainerName: String,
     val trainerPassword: String,

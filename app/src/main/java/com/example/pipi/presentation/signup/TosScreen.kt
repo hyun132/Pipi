@@ -58,7 +58,7 @@ fun TosScreen(
                         label = {
                             Text(
                                 text = "전체동의",
-                                style = MaterialTheme.typography.subtitle2,
+                                style = MaterialTheme.typography.h5,
                                 color = PRIMARY_TEXT
                             )
                         },
@@ -86,7 +86,7 @@ fun TosScreen(
                             label = {
                                 Text(
                                     text = item.title,
-                                    style = MaterialTheme.typography.body2,
+                                    style = MaterialTheme.typography.subtitle1,
                                     color = PRIMARY_TEXT
                                 )
                             },

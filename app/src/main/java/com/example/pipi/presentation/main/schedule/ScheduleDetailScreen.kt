@@ -36,7 +36,7 @@ fun ScheduleDetailScreen(calendar: Calendar, goBack: () -> Unit, navigate: () ->
             ) {
                 Text(
                     text = calendar.getCurrentDateString(),
-                    style = MaterialTheme.typography.subtitle2
+                    style = MaterialTheme.typography.h5
                 )
             }
         }, optionComponent = {

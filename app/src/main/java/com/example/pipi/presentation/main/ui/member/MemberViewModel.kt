@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.pipi.data.repository.MemberRepositoryImpl
 import com.example.pipi.domain.use_case.GetMyMembersUseCase
 import com.example.pipi.global.constants.utils.UiEvent
 import kotlinx.coroutines.Dispatchers
@@ -27,8 +26,6 @@ class MemberViewModel(private val getMyMembersUseCase: GetMyMembersUseCase) : Vi
     private val _revealedCardIdsList = MutableStateFlow(listOf<Int>())
     val revealedCardIdsList: StateFlow<List<Int>> get() = _revealedCardIdsList
 
-    val searchQuery = mutableStateOf<String>("")
-
     //내 정보 가지고 있을 객체 필요
     fun getMembers() {
         viewModelScope.launch {
@@ -36,13 +33,18 @@ class MemberViewModel(private val getMyMembersUseCase: GetMyMembersUseCase) : Vi
         }
     }
 
+    fun setQuery(query: String) {
+        Timber.i("set query: $query")
+        memberState = memberState.copy(query = query)
+    }
+
     /**
      * 입력된 키워드가 포함된 멤버 출력해주는 함수.
      */
-    fun searchMemberByName(): MemberState {
-        val reg = (".*" + searchQuery.value.toList().joinToString(".*")).toRegex()
-        return memberState.copy(
-            memberList = if (searchQuery.value.isNotEmpty() && searchQuery.value.isNotBlank()) {
+    fun searchMemberByName() {
+        val reg = (".*" + memberState.query.toList().joinToString(".*")).toRegex()
+        memberState = memberState.copy(
+            filteredMemberList = if (memberState.query.isNotEmpty() && memberState.query.isNotBlank()) {
                 memberState.memberList.filter { member: Member ->
                     member.nickname.matches(reg)
                 }
@@ -94,7 +96,8 @@ class MemberViewModel(private val getMyMembersUseCase: GetMyMembersUseCase) : Vi
                 Member("회원18"),
                 Member("회원19"),
             )
-            memberState = memberState.copy(memberList = dummyMemebers)
+            memberState =
+                memberState.copy(memberList = dummyMemebers, filteredMemberList = dummyMemebers)
         }
         Timber.d("loadMemberCalled>>>>>>>>")
     }

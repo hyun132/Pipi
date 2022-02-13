@@ -43,7 +43,7 @@ fun SetPasswordScreen(
             DefaultTopAppbar(title = {
                 Text(
                     text = "회원가입",
-                    style = MaterialTheme.typography.subtitle2
+                    style = MaterialTheme.typography.h5
                 )
             }, navComponent = {
                 Icon(
@@ -67,7 +67,7 @@ fun SetPasswordScreen(
                     Spacer(modifier = Modifier.height(22.dp))
                     Text(
                         text = "비밀번호를 설정해 주세요.",
-                        style = MaterialTheme.typography.body2,
+                        style = MaterialTheme.typography.subtitle1,
                         fontWeight = FontWeight(400),
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center

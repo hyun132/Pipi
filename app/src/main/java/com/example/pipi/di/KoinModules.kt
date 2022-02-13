@@ -38,8 +38,8 @@ val viewModelModules = module {
 }
 
 val repositoryModules = module {
-    factory<LogInRepository> { LoginRepositoryImpl(get()) }
-    factory<UserInfoRepository> { UserInfoRepositoryImpl(get()) }
+    single<LogInRepository> { LoginRepositoryImpl(get()) }
+    single<UserInfoRepository> { UserInfoRepositoryImpl(get()) }
 //    single { LoginRepositoryImpl(get()) }
     single { SignUpRepositoryImpl(get()) }
     single<MemberRepository> { MemberRepositoryImpl(get()) }
@@ -57,6 +57,7 @@ val useCaseModules = module {
     single { GetMyMembersUseCase(get()) }
     single { DenyMemberRequestUseCase(get()) }
     single { ApproveMemberRequestUseCase(get()) }
+    single { GetMonthlyScheduleUseCase(get()) }
 }
 
 val pipiModules = listOf(viewModelModules, repositoryModules, useCaseModules)

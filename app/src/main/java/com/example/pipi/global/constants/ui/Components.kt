@@ -59,44 +59,22 @@ object Components {
 
     @Composable
     fun DefaultTopAppbar(
-        title: @Composable () -> Unit = {},
+        title: (@Composable () -> Unit) = {},
         navComponent: @Composable () -> Unit = {},
         optionComponent: @Composable () -> Unit = {}
     ) {
-        ConstraintLayout(
+        Row(
             Modifier
                 .fillMaxWidth()
                 .height(69.dp)
                 .padding(start = 16.dp, end = 16.dp),
+            verticalAlignment = CenterVertically
         ) {
-            val (nav, title, option) = createRefs()
-
-            Box(modifier = Modifier
-                .constrainAs(nav) {
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                }) { navComponent() }
-            Box(modifier = Modifier
-                .constrainAs(title) {
-                    linkTo(
-                        parent.start,
-                        parent.top,
-                        parent.end,
-                        parent.bottom,
-                        horizontalBias = 0.5F
-                    )
-                }
-                .widthIn(max = 250.dp, min = 100.dp), contentAlignment = Center) {
+            navComponent()
+            Box(Modifier.weight(1f)) {
                 title()
             }
-            Box(modifier = Modifier
-                .constrainAs(option) {
-                    end.linkTo(parent.end)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                }) { optionComponent() }
-
+            optionComponent()
         }
     }
 
@@ -136,7 +114,7 @@ object Components {
             if (title.isNotEmpty()) Text(
                 text = title,
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.subtitle2,
+                style = MaterialTheme.typography.h5,
                 fontSize = 12.sp,
                 color = SECONDARY_TEXT_GHOST
             )
@@ -186,7 +164,7 @@ object Components {
             if (errorMessage.isNotEmpty()) Text(
                 text = errorMessage,
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.subtitle2,
+                style = MaterialTheme.typography.h5,
                 fontSize = 12.sp,
                 color = ALERT
             )
@@ -206,7 +184,7 @@ object Components {
         if (!title.isNullOrEmpty()) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.subtitle2,
+                style = MaterialTheme.typography.h5,
                 fontSize = 12.sp,
                 modifier = Modifier.fillMaxWidth(),
                 color = FONT_GRAY
@@ -246,7 +224,7 @@ object Components {
                 Text(
                     text = if (input.isEmpty()) hint else "",
                     color = Colors.SECONDARY_TEXT_GHOST,
-                    style = MaterialTheme.typography.body2,
+                    style = MaterialTheme.typography.subtitle1,
                     fontWeight = FontWeight(400),
                 )
             }
@@ -255,7 +233,7 @@ object Components {
             Text(
                 text = errorMessage,
                 color = Colors.ALERT,
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.subtitle1,
                 fontWeight = FontWeight(400),
                 modifier = Modifier
                     .padding(top = 8.dp)
