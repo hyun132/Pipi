@@ -20,4 +20,14 @@ object Colors {
     val LIGHT_BLUE = Color(0xffEAF9F5)
     val LIGHT_YELLOW = Color(0xffFFFDEF)
     val LIGHT_PURPLE = Color(0xffF8F5FF)
+    //운동 리스팅
+    val E_WHOLE_PART = Color(0xFFFFAAAA)
+    val E_CHEST = Color(0xFFFDFFAA)
+    val E_BACK = Color(0xFFC0FFAA)
+    val E_SHOULDER = Color(0xFFAAE0FF)
+    val E_LOWER_BODY = Color(0xFFCACACA)
+    val E_BICEPS = Color(0xFFFFAAE7)
+    val E_TRICEPS = Color(0xFFBE6CFF)
+    val E_ABS = Color(0xFFEF4646)
+    val E_AEROBIC = Color(0xFFFFAD4E)
 }

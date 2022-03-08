@@ -1,7 +1,7 @@
 package com.example.pipi.domain.model.schedule
 
 
-data class DaySchedule(
+data class DayScheduleDto(
     val date: String,
     val name: String,
     val part: String,

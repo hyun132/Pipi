@@ -21,11 +21,14 @@ import java.util.*
 @Composable
 fun ScheduleDetailScreen(calendar: Calendar, goBack: () -> Unit, navigate: () -> Unit) {
     Column() {
+        /**
+         * TODO : 얘 topappbar text변경 안되는것도 수정해야함.
+         */
         DefaultTopAppbar(navComponent = {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_back),
                 contentDescription = "뒤로가기",
-                Modifier.clickable { goBack() }
+                Modifier.clickable { goBack() },
             )
         }, title = {
             Row(
@@ -36,7 +39,8 @@ fun ScheduleDetailScreen(calendar: Calendar, goBack: () -> Unit, navigate: () ->
             ) {
                 Text(
                     text = calendar.getCurrentDateString(),
-                    style = MaterialTheme.typography.h5
+                    style = MaterialTheme.typography.h4,
+                    textAlign = TextAlign.Center
                 )
             }
         }, optionComponent = {
@@ -51,7 +55,11 @@ fun ScheduleDetailScreen(calendar: Calendar, goBack: () -> Unit, navigate: () ->
                 }
             )
         })
-        Row(Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+        Row(
+            Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
             Text(
                 text = "트레이닝 일정이 없네요\n일정을 추가해보세요!",
                 textAlign = TextAlign.Center,

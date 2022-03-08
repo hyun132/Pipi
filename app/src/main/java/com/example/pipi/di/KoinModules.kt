@@ -1,12 +1,12 @@
 package com.example.pipi.di
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.example.pipi.data.remote.PipiService
-import com.example.pipi.data.repository.LoginRepositoryImpl
-import com.example.pipi.data.repository.MemberRepositoryImpl
-import com.example.pipi.data.repository.SignUpRepositoryImpl
-import com.example.pipi.data.repository.UserInfoRepositoryImpl
+import com.example.pipi.data.repository.*
 import com.example.pipi.domain.repository.LogInRepository
 import com.example.pipi.domain.repository.MemberRepository
+import com.example.pipi.domain.repository.ScheduleRepository
 import com.example.pipi.domain.repository.UserInfoRepository
 import com.example.pipi.domain.use_case.*
 import com.example.pipi.presentation.duplicated.PhoneAuthViewModel
@@ -23,6 +23,7 @@ import com.example.pipi.presentation.start.StartViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
+@RequiresApi(Build.VERSION_CODES.O)
 val viewModelModules = module {
     viewModel { LoginViewModel(get()) }
     viewModel { StartViewModel(get()) }
@@ -30,7 +31,7 @@ val viewModelModules = module {
     viewModel { MemberViewModel(get()) }
     viewModel { MemberRequestViewModel(get(), get(), get()) }
     viewModel { SignupViewModel(get()) }
-    viewModel { CalendarViewModel() }
+    viewModel { CalendarViewModel(get()) }
     viewModel { ScheduleViewModel() }
     viewModel { PhoneAuthViewModel(get(), get()) }
     viewModel { ResetUserPasswordViewModel(get()) }
@@ -43,6 +44,7 @@ val repositoryModules = module {
 //    single { LoginRepositoryImpl(get()) }
     single { SignUpRepositoryImpl(get()) }
     single<MemberRepository> { MemberRepositoryImpl(get()) }
+    single<ScheduleRepository> { ScheduleRepositoryImpl(get()) }
     single { PipiService().loginApi }
 }
 

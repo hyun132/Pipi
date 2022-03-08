@@ -30,10 +30,11 @@ import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors.BRAND_SECOND
 import com.example.pipi.global.constants.ui.Colors.PRIMARY_TEXT
 import com.example.pipi.global.constants.ui.Colors.SECONDARY_TEXT_GHOST
-import com.example.pipi.global.constants.utils.CalendarUtils
 import com.example.pipi.global.constants.utils.CalendarUtils.getRowOfCalendar
 import com.example.pipi.global.constants.utils.hideModalBottomSheet
 import com.example.pipi.global.constants.utils.showModalBottomSheet
+import com.example.pipi.presentation.main.schedule.model.ScheduleItem
+import com.example.pipi.presentation.main.schedule.model.setColorByParts
 import okhttp3.internal.trimSubstring
 import timber.log.Timber
 import java.time.Month
@@ -51,6 +52,7 @@ fun CalendarScreen(
 //    val state = rememberModalBottomSheetState(
 //        initialValue = ModalBottomSheetValue.Hidden
 //    )
+    viewModel.setDayAndDrawTrainingSchedule()
     val scope = rememberCoroutineScope()
     val month = viewModel.month.observeAsState()
     val year = viewModel.year.observeAsState()
@@ -166,12 +168,14 @@ fun DrawCalendarTitleArea(
 
 /**
  * 일정 데이터 받아와서 화면에 그려주는 함수
+ * TODO : 달력 다음달/이전달로 옮길ㄸ ㅐ 데이터 변경시켜주는 부분 추가해야함.
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @ExperimentalFoundationApi
 @Composable
 fun DrawCalendar(
     calendar: Calendar,
-    datas: MutableList<CalendarUtils.DataModel>,
+    datas: MutableList<ScheduleItem>,
     onItemClicked: (Calendar) -> Unit,
 ) {
     BoxWithConstraints(Modifier.fillMaxSize()) {
@@ -181,20 +185,26 @@ fun DrawCalendar(
                 items(datas) { item ->
                     DayItem(
                         data = item,
-                        onClick = {
-                            val selectedCalendar = Calendar.getInstance()
-                            selectedCalendar.set(item.year, item.month, item.day)
-                            onItemClicked(selectedCalendar)
-                            Timber.d("itemClicked :: dat is ${item.day}")
-                        },
-                        height = maxHeight / getRowOfCalendar().dp,
-                        color = if (item.month == calendar.get(Calendar.MONTH)) {
-                            if (item.day == Calendar.getInstance()
-                                    .get(
-                                        Calendar.DATE
-                                    )
+                        color = if (item.date?.monthValue == calendar.get(Calendar.MONTH) + 1) {
+                            if (item.date.dayOfMonth == Calendar.getInstance().get(Calendar.DATE)
                             ) BRAND_SECOND else PRIMARY_TEXT
-                        } else SECONDARY_TEXT_GHOST
+                        } else SECONDARY_TEXT_GHOST,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .height(maxHeight / getRowOfCalendar())
+                            .padding(top = 8.dp)
+                            .clickable {
+                                val selectedCalendar = Calendar.getInstance()
+                                item.date?.let {
+                                    selectedCalendar.set(
+                                        it.year,
+                                        it.monthValue,
+                                        it.dayOfMonth
+                                    )
+                                }
+                                onItemClicked(selectedCalendar)
+                                Timber.d("itemClicked :: dat is ${item.date?.dayOfMonth}")
+                            }
                     )
                 }
             },
@@ -206,41 +216,45 @@ fun DrawCalendar(
 
 /**
  * calendar에 그려질 하나의 날짜 셀
+ * scheduleData는 해당 날짜에 해당하는만큼만 필터링해서 넘겨받는다.
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DayItem(data: CalendarUtils.DataModel, height: Float, color: Color, onClick: () -> Unit) {
+fun DayItem(
+    data: ScheduleItem,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
     Column(
-        Modifier
-            .fillMaxSize()
-            .height(height.dp)
-            .padding(top = 8.dp)
-            .clickable { onClick() }) {
+        modifier = modifier
+    ) {
         Text(
-            text = data.day.toString(),
+            text = data.date?.dayOfMonth.toString(),
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .height(24.dp)
                 .align(CenterHorizontally),
             color = color
         )
-        Text(
-            text = "할일1", modifier = Modifier
-                .background(Color.Yellow)
-                .fillMaxWidth()
-        )
-        Text(
-            text = "할일12", modifier = Modifier
-                .background(Color.Blue)
-                .fillMaxWidth()
-        )
-        Text(
-            text = "할일3333333",
-            modifier = Modifier
-                .background(Color.Yellow)
-                .fillMaxWidth(),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+        // 여기서 데이터는 최대 5개만 출력되어야 한다.
+        Column() {
+            for (idx in 0 until minOf(5, data.dayExercise.size)) {
+                Text(
+                    text = "${data.dayExercise[idx].parts} ${data.dayExercise[idx].sets.size}",
+                    modifier = Modifier
+                        .background(
+                            color = setColorByParts(data.dayExercise[idx].parts),
+                            shape = RoundedCornerShape(2.8.dp),
+                        )
+                        .fillMaxWidth()
+                        .padding(start = 8.dp, end = 8.dp),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.body2
+                )
+            }
+        }
+
         Spacer(
             modifier = Modifier
                 .fillMaxSize()

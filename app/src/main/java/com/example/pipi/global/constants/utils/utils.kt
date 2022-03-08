@@ -4,6 +4,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 import java.util.regex.Pattern
 
 fun phoneNumberValidation(phoneNumber: String): Boolean =
@@ -49,4 +50,9 @@ fun ModalBottomSheetState.showModalBottomSheet(scope: CoroutineScope) {
     scope.launch {
         this@showModalBottomSheet.show()
     }
+}
+
+fun fillNumberWith0(num:Int):String{
+    val df = DecimalFormat("00")
+    return df.format(num)
 }

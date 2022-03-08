@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.pipi.R
 import com.example.pipi.global.constants.ui.Colors.QUATERNARY_BRAND
@@ -20,8 +21,13 @@ import java.util.*
 
 @Composable
 fun SelectTrainingTypeScreen(navigate: () -> Unit, goBack: () -> Unit, calendar: Calendar) {
-
-    Scaffold(topBar = { DrawTopAppbar(goBack = goBack, calendar = calendar) }) {
+    Scaffold(topBar = {
+        DrawTopAppbar(
+            goBack = goBack,
+            calendar = calendar,
+            alignment = TextAlign.Center
+        )
+    }) {
         Column(Modifier.fillMaxSize()) {
             DrawTrainingTypeItem(
                 title = stringResource(R.string.training_type_item_title_pt),
@@ -49,8 +55,9 @@ fun SelectTrainingTypeScreen(navigate: () -> Unit, goBack: () -> Unit, calendar:
     }
 }
 
+//TODO : 테마 부분 다시 확인하기. 왜 일부 안먹지?
 @Composable
-fun DrawTopAppbar(goBack: () -> Unit, calendar: Calendar) {
+fun DrawTopAppbar(goBack: () -> Unit, calendar: Calendar, alignment: TextAlign = TextAlign.Start) {
     DefaultTopAppbar(navComponent = {
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_back),
@@ -65,7 +72,8 @@ fun DrawTopAppbar(goBack: () -> Unit, calendar: Calendar) {
         ) {
             Text(
                 text = calendar.getCurrentDateString(),
-                style = MaterialTheme.typography.h5
+                style = MaterialTheme.typography.subtitle2,
+                textAlign = alignment
             )
         }
     })

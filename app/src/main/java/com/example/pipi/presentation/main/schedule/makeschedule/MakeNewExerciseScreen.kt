@@ -11,16 +11,18 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,6 +36,7 @@ import com.example.pipi.global.constants.ui.Colors.SECONDARY_TEXT_GHOST
 import com.example.pipi.global.constants.ui.Components.DefaultTopAppbar
 import com.example.pipi.global.constants.utils.CalendarUtils.getCurrentDateString
 import com.example.pipi.global.constants.utils.showModalBottomSheet
+import com.example.pipi.presentation.main.ui.theme.PipiTheme
 import kotlinx.coroutines.CoroutineScope
 import org.koin.androidx.compose.viewModel
 import timber.log.Timber
@@ -51,7 +54,7 @@ fun MakeNewExerciseScreen(
     val viewModel: MakeNewExerciseViewModel by viewModel()
     val scope = rememberCoroutineScope()
 
-    Scaffold(topBar = { DrawTopAppbar(calendar, goBack) }) {
+    Scaffold(topBar = { DrawTopAppbar(calendar, goBack, textAlign = TextAlign.Center) }) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -266,7 +269,7 @@ fun DrawModalBottomSheet(
 }
 
 @Composable
-fun DrawTopAppbar(calendar: Calendar, goBack: () -> Unit) {
+fun DrawTopAppbar(calendar: Calendar, goBack: () -> Unit, textAlign: TextAlign = TextAlign.Start) {
     DefaultTopAppbar(navComponent = {
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_back),
@@ -280,8 +283,9 @@ fun DrawTopAppbar(calendar: Calendar, goBack: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = calendar.getCurrentDateString(),
-                style = MaterialTheme.typography.h4
+                text = calendar.getCurrentDateString() + "글자크기왜안먹어",
+                style = MaterialTheme.typography.h4,
+                textAlign = textAlign
             )
         }
     }, optionComponent = {
@@ -352,6 +356,7 @@ fun CreateExerciseDialog(
                 Modifier
                     .fillMaxWidth()
                     .height(220.dp)
+                    .padding(12.dp)
                     .background(
                         color = MaterialTheme.colors.surface,
                         shape = RoundedCornerShape(14.dp)
@@ -360,7 +365,8 @@ fun CreateExerciseDialog(
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .height(48.dp), verticalAlignment = Alignment.CenterVertically
+                        .padding(bottom = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = "운동 추가",
@@ -369,10 +375,24 @@ fun CreateExerciseDialog(
                     )
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_cancel),
-                        contentDescription = "닫기"
+                        contentDescription = "닫기",
+                        modifier = Modifier.padding(end = 15.dp)
                     )
                 }
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Spacer(modifier = Modifier.height(19.dp))
+                Text(
+                    text = item.name,
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+                Spacer(modifier = Modifier.height(19.dp))
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, end = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
                     TextWithUnit(
                         viewModel.exerciseToCreate.weight?.toString() ?: "",
                         viewModel::setWeight,
@@ -389,7 +409,14 @@ fun CreateExerciseDialog(
                         "Sets"
                     )
                 }
-                Row(Modifier.fillMaxWidth()) {
+                Spacer(modifier = Modifier.weight(1f))
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(end = 13.dp),
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.End
+                ) {
                     Text("취소",
                         color = Colors.ALERT,
                         modifier = Modifier
@@ -397,14 +424,18 @@ fun CreateExerciseDialog(
                             .clickable {
                                 close()
                             })
-                    Text("확인",
-                        color = Colors.ALERT,
+                    Spacer(modifier = Modifier.width(22.dp))
+                    Text(
+                        "확인",
+                        color = Colors.PRIMARY_TEXT,
                         modifier = Modifier
                             .wrapContentHeight()
                             .clickable {
                                 confirm(item)
                                 close()
-                            })
+                            },
+                        style = MaterialTheme.typography.subtitle1
+                    )
                 }
             }
         }
@@ -417,7 +448,18 @@ fun TextWithUnit(text: String, onChange: (String) -> Unit, unit: String) {
         BasicTextField(
             value = text,
             onValueChange = { value -> onChange(value) },
-            modifier = Modifier.width(64.dp)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier
+                .width(64.dp)
+                .drawBehind {
+                    val y = size.height
+                    drawLine(
+                        Color.Black,
+                        Offset(0f, y),
+                        Offset(size.width, y),
+                        3F
+                    )
+                }
         )
         Text(text = unit, style = MaterialTheme.typography.subtitle1)
     }
@@ -435,13 +477,12 @@ fun ExerciseItemView(index: Int, exerciseItem: ExerciseItem, deleteMode: Boolean
         Box(modifier = Modifier
             .width(54.dp)
             .height(84.dp)
-            .padding(9.dp)
             .constrainAs(item) {
                 bottom.linkTo(parent.bottom)
                 start.linkTo(parent.start)
             }
             .border(1.dp, color = SECONDARY_TEXT_GHOST, shape = RoundedCornerShape(12.dp))) {
-            Column() {
+            Column(Modifier.padding(9.dp)) {
                 Text(
                     text = index.toString(),
                     style = MaterialTheme.typography.body1,

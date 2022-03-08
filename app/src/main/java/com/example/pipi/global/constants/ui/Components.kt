@@ -26,7 +26,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
-import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.pipi.R
 import com.example.pipi.global.constants.Fonts
 import com.example.pipi.global.constants.ui.Colors.ALERT
@@ -71,7 +70,7 @@ object Components {
             verticalAlignment = CenterVertically
         ) {
             navComponent()
-            Box(Modifier.weight(1f)) {
+            Box(Modifier.weight(1f), contentAlignment = Center) {
                 title()
             }
             optionComponent()

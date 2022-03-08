@@ -31,7 +31,7 @@ fun setProjectTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Compos
     MaterialTheme(
         colors = if (darkTheme) DarkColor else LightColor,
         content = content,
-        typography = typography
+        typography = typography,
     )
 //https://medium.com/mobile-app-development-publication/android-jetpack-compose-theme-made-easy-1812150239fe
 

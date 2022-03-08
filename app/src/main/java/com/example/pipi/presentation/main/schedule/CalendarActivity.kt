@@ -13,9 +13,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.pipi.global.constants.ui.setProjectTheme
 import com.example.pipi.presentation.main.SelectTrainingTypeScreen
 import com.example.pipi.presentation.main.schedule.makeschedule.MakeNewExerciseScreen
-import com.example.pipi.presentation.main.ui.theme.PipiTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @ExperimentalMaterialApi
@@ -28,7 +28,7 @@ class CalendarActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            PipiTheme {
+            setProjectTheme() {
                 val navController = rememberNavController()
                 Surface(color = MaterialTheme.colors.background) {
                     calendarNavHost(navController)
@@ -80,7 +80,7 @@ class CalendarActivity : ComponentActivity() {
                 MakeNewExerciseScreen(
                     goBack = { navController.navigateUp() },
                     calendar = viewModel.calendar,
-                    modalBottomSheetState=state
+                    modalBottomSheetState = state
                 )
             }
         }

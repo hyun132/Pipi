@@ -1,14 +1,25 @@
 package com.example.pipi.presentation.main.schedule
 
-import androidx.compose.runtime.mutableStateListOf
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.pipi.global.constants.utils.CalendarUtils
+import androidx.lifecycle.viewModelScope
+import com.example.pipi.domain.model.schedule.SetInfo
+import com.example.pipi.domain.use_case.GetMonthlyScheduleUseCase
+import com.example.pipi.global.constants.utils.CalendarUtils.DAYS_OF_WEEK
+import com.example.pipi.global.constants.utils.CalendarUtils.ROW_OF_CALENDAR
 import com.example.pipi.global.constants.utils.CalendarUtils.changeToNextMonth
 import com.example.pipi.global.constants.utils.CalendarUtils.changeToNextYear
 import com.example.pipi.global.constants.utils.CalendarUtils.changeToPrevMonth
 import com.example.pipi.global.constants.utils.CalendarUtils.changeToPrevYear
 import com.example.pipi.global.constants.utils.CalendarUtils.setCalendarDataAndDraw
+import com.example.pipi.global.result.Result
+import com.example.pipi.presentation.main.schedule.model.*
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.*
 
 /**
@@ -17,22 +28,55 @@ import java.util.*
  * BaseCalendar에 있는 이전/다음달로 넘어가는 부분도 여기서 관리하는게 맞는것 같다.
  * calendarview topappbar, modal창에 들어갈 데이터들 모두 여기서 관리한다.
  */
-class CalendarViewModel : ViewModel() {
+@RequiresApi(Build.VERSION_CODES.O)
+class CalendarViewModel(val getMonthlyScheduleUseCase: GetMonthlyScheduleUseCase) : ViewModel() {
 
     val calendar: Calendar = Calendar.getInstance()
 
-    //서버에서 가져올 데이터도 어떻게 넘겨올건지를 고민해볼 필요가 있다.
-    var data = mutableStateListOf<CalendarUtils.DataModel>()
+//    val state = CalendarViewState() ui관련 state도 클래스로 묶을 것.
+
+    var loadedlastData = mutableMapOf<String, MutableList<ExerciseSchedule>>()  //지난달 데이터
+    var loadedCurrentData = mutableMapOf<String, MutableList<ExerciseSchedule>>() // 이번달 데이터
+    var loadedNextData = mutableMapOf<String, MutableList<ExerciseSchedule>>()  //다음달 데이터
+
+    var data = MutableList<ScheduleItem>(ROW_OF_CALENDAR* DAYS_OF_WEEK) { ScheduleItem() }
 
     var year = MutableLiveData(calendar.get(Calendar.YEAR))
     val month = MutableLiveData(calendar.get(Calendar.MONTH))
     val day = MutableLiveData(calendar.get(Calendar.DATE))
 
     init {
-        calendar.setCalendarDataAndDraw(
-            year.value!!,
-            month.value!!,
-            data, {})
+        setDummyData()
+    }
+
+    /**
+     * 이번달 캘린더 페이지에 보여질 이전달, 이번달,다음달 데이터 불러오는 함수
+     * 이번달 1일이 있는 저번달 마지막주, 이번달 마지막날과 같은 주인 다음달 첫주 데이터도 그려주어야 하기 때문
+     */
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun loadCurrentMonthPageData() {
+        viewModelScope.launch {
+            getMonthlyScheduleUseCase(
+                GetMonthlyScheduleUseCase.Params(
+                    "01092875815",
+                    true,
+                    "$year-$month"
+                )
+            ).onEach {
+                when (it) {
+                    is Result.Success -> {
+                        Timber.i("result Success")
+                        loadedCurrentData = (it.data?.scheduleDto?.toScheduleItem() ?: mutableMapOf())
+                    }
+                    is Result.Error -> {
+                        Timber.i("result Error")
+                    }
+                    is Result.Loading -> {
+                        Timber.i("result Loading")
+                    }
+                }
+            }.launchIn(this)
+        }
     }
 
     /**
@@ -58,7 +102,11 @@ class CalendarViewModel : ViewModel() {
         calendar.setCalendarDataAndDraw(
             year.value!!,
             month.value!!,
-            data, {})
+            loadedlastData,
+            loadedCurrentData,
+            loadedNextData,
+            data
+        ) {}
     }
 
     /**
@@ -90,4 +138,19 @@ class CalendarViewModel : ViewModel() {
         calendar.changeToPrevYear { setDay() }
     }
 
+
+    fun setDummyData(){
+        loadedCurrentData = mutableMapOf("2022-03-01" to mutableListOf<ExerciseSchedule>(ExerciseSchedule("운동1",Parts.ABS,0,ScheduleType.PT,
+            listOf(SetInfo("10","30")))),
+            "2022-03-31" to mutableListOf<ExerciseSchedule>(ExerciseSchedule("운동31",Parts.BACK,0,ScheduleType.PT,
+                listOf(SetInfo("10","30"),SetInfo("20","40"),SetInfo("30","50")))))
+        loadedlastData = mutableMapOf("2022-02-01" to mutableListOf<ExerciseSchedule>(ExerciseSchedule("운동1",Parts.ABS,0,ScheduleType.PT,
+            listOf(SetInfo("10","30")))),
+            "2022-02-28" to mutableListOf<ExerciseSchedule>(ExerciseSchedule("운동28",Parts.AEROBIC,0,ScheduleType.PT,
+                listOf(SetInfo("10","30")))))
+        loadedNextData = mutableMapOf("2022-04-01" to mutableListOf<ExerciseSchedule>(ExerciseSchedule("운동41",Parts.ABS,0,ScheduleType.PT,
+            listOf(SetInfo("10","30")))),
+            "2022-04-02" to mutableListOf<ExerciseSchedule>(ExerciseSchedule("운동42",Parts.CHEST,0,ScheduleType.PT,
+                listOf(SetInfo("10","30"),SetInfo("10","30"),SetInfo("10","30")))))
+    }
 }
